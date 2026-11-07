@@ -133,6 +133,9 @@ src/
   tarefas.py                lembretes e alertas                                    (extra)
   briefing.py               manchetes por tema e resumo matinal                    (extra)
   agendador.py              alertas, briefing e exclusão de mensagens              (extra)
+  avaliacao.py              --avaliar: acerto, tempo, CSVs e comparação A x B
+  servidor.py               modo --servidor: lê .env e sobe bot e painel           (extra)
+  armazenamento.py          interface de armazenamento (SQLite local; Supabase = EM ABERTO) (extra)
 data/
   base.json
 docs/
@@ -142,7 +145,7 @@ docs/
   processo_desenvolvimento.md  planejamento.md  arquitetura.md  ux.md
   design/                                            tokens.css, tokens.json e imagens da identidade (§19)
 painel/                     front-end do painel web (HTML/JS estático)             (extra)
-testes/                     perguntas (equipe e público), resultados.csv, comparacao_modelos.csv, usabilidade.md, test_*.py
+testes/                     fixtures/base_exemplo.json (base fictícia só para testes), perguntas (equipe e público), resultados.csv, comparacao_modelos.csv, usabilidade.md, test_*.py
 scripts/                    lista registros com data de verificação antiga         (extra)
 .env.example                só nomes das variáveis, sem valores                    (extra)
 .github/workflows/deploy.yml

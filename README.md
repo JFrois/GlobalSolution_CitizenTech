@@ -215,10 +215,12 @@ python src/sistema.py
 |---|---|
 | `python src/sistema.py --avaliar` | Roda as perguntas de teste e mostra taxa de acerto e tempo médio |
 | `python src/sistema.py --validar-entrega` | Confere se todos os registros da base estão completos |
+| `python src/sistema.py --simples` | Texto puro, sem cor nem molduras (leitores de tela); também automático com `NO_COLOR` ou saída redirecionada |
+| `python src/sistema.py --base caminho.json` | Usa outra base (ex.: `testes/fixtures/base_exemplo.json`, só para testes) |
 | `python src/sistema.py --servidor` | Sobe o bot do Telegram, o painel e o agendador (precisa de `.env`; ver `.env.example`) |
 | `python -m unittest discover -s testes -t .` | Roda os testes automatizados |
 
-<!-- TODO: ajustar se algum modo mudar durante a implementação (spec §6.1). -->
+> **Estado atual (07/11/2026):** terminal, busca, grafo/Dijkstra, modelos A/B, `--avaliar` e a base de servidor (roteador, bot, esqueleto do painel) estão implementados. Faltam: redigir as 17 orientações (hoje `PREENCHER`), cofre/criptografia, tarefas/briefing e as telas do painel. A base `data/base.json` é um esqueleto; `--validar-entrega` falha até a equipe preencher os textos.
 
 ---
 

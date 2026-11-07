@@ -57,6 +57,8 @@ Uma linha por uso relevante. **Resultado**: aceito, aceito com ajustes ou rejeit
 | 07/11 | Juan | Claude Code | Desenhar as telas na Estreia clara, fazer a crítica de design e corrigir os problemas encontrados | Aceito; aprovado pela equipe em 07/11 | Contraste medido por script (bordas de campos falhavam em 3:1 e foram corrigidas); aba ativa ganhou marcação além da cor; alvos de toque ajustados para 44 px |
 | 07/11 | Juan | Claude Code | Propor na spec a aba "Perguntar" no Mini App com a cena da verificação (§10.5) | Aceito; aprovado pela equipe em 07/11 | A ideia veio da crítica de design e foi aceita pelo Juan; a proposta mantém as regras da spec (resposta só da base, sem LLM nessa rota, pergunta não gravada, "reduzir movimento") |
 
+| 07/11 | Juan | Claude Code | Implementar a Onda 1 (base, busca, grafo/Dijkstra, respostas A/B, terminal, `--avaliar`, testes) e o servidor base (roteador, bot, esqueleto do painel, deploy) a partir da spec | Aceito, aguardando revisão da equipe | 60 testes automatizados; a busca foi medida com as 14 perguntas congeladas antes das palavras-chave (16/18 com os limites; erros Q02 e Q06 registrados, sem alterar as perguntas). Orientações da base seguem `PREENCHER` (texto é da equipe). Bot e Gemini **não foram testados com rede/chaves**; a palavra-chave "pagar" foi removida após os testes mostrarem resposta errada para "IPVA" |
+
 <!-- Modelo para novas linhas:
 | DD/MM | Nome | Ferramenta | Pedido resumido (sem dados pessoais) | Aceito / Ajustado / Rejeitado | Como foi conferido |
 -->
