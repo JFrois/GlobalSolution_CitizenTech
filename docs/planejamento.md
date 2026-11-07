@@ -17,7 +17,7 @@
 | A4 a A6 | Concluído | Busca, índice × linear, decisão C·A·B, grafo e Dijkstra |
 | A7 | Concluído | Modelos A e B; campo `titulo` acrescentado à spec |
 | A8 | Concluído | Terminal completo; testado em Python 3.9 e 3.14 (não testado em Windows) |
-| A9, A10 | Concluído | `--avaliar` e 127 testes automatizados |
+| A9, A10 | Concluído | `--avaliar` e 132 testes automatizados |
 | A11 | Concluído | `scripts/verificacoes_antigas.py` |
 | B1 | Concluído | `testes/perguntas.json` (19 perguntas), congelado antes das palavras-chave; feito pelo Juan |
 | E1 (redigir as 17 orientações) | **Rascunho feito** | Escrito pela IA a partir das páginas oficiais, em 07/11 |

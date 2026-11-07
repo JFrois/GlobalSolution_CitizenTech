@@ -5,8 +5,9 @@ Uso (com o ambiente do servidor ativo, onde google-genai está instalado):
 
 Faz duas coisas:
   1. lista os modelos que aceitam generateContent para essa chave;
-  2. chama cada modelo da cascata do bot (src/roteador.py) com uma pergunta trivial e
-     mostra o tempo e o resultado (ok, 404 = nome não existe, 429 = cota, timeout...).
+  2. monta a cascata do bot (src/roteador.py: todos os modelos de texto da chave, do mais leve
+     ao mais pesado) e chama os primeiros com uma pergunta trivial, mostrando o tempo e o
+     resultado (ok, 404 = nome não existe, 429 = cota, 503 = sobrecarga, timeout...).
 """
 import sys
 import time
@@ -46,16 +47,20 @@ def main() -> int:
     except Exception as erro:
         print("  não consegui listar (%s %s)" % (type(erro).__name__, getattr(erro, "code", "")))
 
-    modelo_env = config.get("GEMINI_MODELO")
-    cascata = ([modelo_env] if modelo_env else []) + [m for m in roteador.MODELOS_GEMINI if m != modelo_env]
-    print("\nTeste de cada modelo da cascata do bot:")
-    for modelo in cascata:
+    modelo_env = config.get("GEMINI_MODELO") or None
+    fila = roteador.modelos_da_chave(cliente)
+    if modelo_env:
+        fila = [modelo_env] + [m for m in fila if m != modelo_env]
+    limite = len(fila) if "--todos" in sys.argv else 8
+    print("\nCascata do bot (ordem em que os modelos são tentados): %d modelos" % len(fila))
+    print("Testando os %d primeiros (use --todos para testar todos):" % min(limite, len(fila)))
+    for modelo in fila[:limite]:
         inicio = time.time()
         try:
             r = cliente.models.generate_content(model=modelo, contents="Responda só com a palavra: ok")
-            print("  %-28s OK em %.1fs (%s)" % (modelo, time.time() - inicio, (r.text or "").strip()[:20]))
+            print("  %-34s OK em %.1fs (%s)" % (modelo, time.time() - inicio, (r.text or "").strip()[:20]))
         except Exception as erro:
-            print("  %-28s FALHOU em %.1fs: %s %s" % (modelo, time.time() - inicio,
+            print("  %-34s FALHOU em %.1fs: %s %s" % (modelo, time.time() - inicio,
                                                       type(erro).__name__, getattr(erro, "code", "")))
     return 0
 

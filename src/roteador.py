@@ -12,23 +12,103 @@ from __future__ import annotations
 
 import logging
 import re
+import time
 
 import ponte
 
-# Cascata de modelos Gemini: tenta na ordem; se um falhar (cota 429, sobrecarga 503, tempo
-# esgotado), passa ao próximo. A tarefa é só escolher uma de 4 ferramentas, então os modelos
-# leves e rápidos vêm primeiro; "-latest" são apelidos que o Google mantém apontando para o
-# modelo atual. Nomes conferidos em 07/11/2026 com scripts/testar_gemini.py (a lista que a
-# chave enxerga). Em teste, gemini-3.8-flash dava 503 e gemini-4-argon e gemini-3.1-pro-preview
-# davam 429 (sem cota); por isso ficaram fora da cascata padrão. Dá para trocar com GEMINI_MODELO.
+# Cascata de modelos Gemini: o bot percorre TODOS os modelos de texto que a chave enxerga, do
+# mais leve ao mais pesado, até um responder. A tarefa é só escolher 1 de 4 ferramentas, então
+# os modelos "lite" e "flash" vêm primeiro; os "pro" por último. Se um falha (cota 429,
+# sobrecarga 503, tempo esgotado, nome sem function calling), ele fica de fora por um tempo e o
+# próximo é tentado. GEMINI_MODELO (no .env) vira o primeiro da fila.
+#
+# MODELOS_GEMINI é só a lista de reserva, usada se a descoberta pela chave falhar.
 MODELOS_GEMINI = ("gemini-flash-lite-latest", "gemini-flash-latest",
-                  "gemini-2.5-flash-lite", "gemini-2.5-flash")
-MODELO_GEMINI = MODELOS_GEMINI[0]
+                  "gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-2.5-pro")
 log = logging.getLogger("citizen.llm")
-TEMPO_LIMITE_LLM = 15  # segundos no total; usado por quem chama (telegram_bot)
-# Cada tentativa tem o próprio limite. Erro 429 volta em menos de 1 s, então só o modelo
-# lento gasta esse tempo; 6 s bastam para o function calling de um modelo flash.
-TEMPO_POR_MODELO_MS = 6000
+PRAZO_TOTAL_S = 25  # segundos para tentar modelos numa mesma mensagem (o bot espera este tempo)
+TEMPO_LIMITE_LLM = PRAZO_TOTAL_S + 5  # limite externo de quem chama (telegram_bot)
+TEMPO_POR_MODELO_MS = 6000  # cada tentativa tem o próprio limite; 429 volta em menos de 1 s
+VALIDADE_DA_LISTA_S = 3600  # a lista de modelos da chave é consultada de hora em hora
+
+# Modelos que não servem para escolher ferramenta (imagem, voz, agente de tela, robótica...).
+EXCLUIR_NO_NOME = ("image", "tts", "transcribe", "computer-use", "robotics", "customtools",
+                   "nano-banana", "embedding", "live", "audio", "omni")
+
+# Modelos em "geladeira": nome -> instante (time.time) até quando ficam de fora.
+_de_fora = {}
+_lista_em_cache = {"valida_ate": 0.0, "nomes": []}
+
+
+def ordenar_modelos(nomes):
+    """Filtra e ordena os nomes de modelo: lite, depois flash, depois pro, depois o resto.
+    Dentro de cada grupo, "-latest" primeiro, versões estáveis antes das "preview"."""
+    uteis = sorted({n.replace("models/", "") for n in nomes
+                    if "gemini" in n and not any(x in n for x in EXCLUIR_NO_NOME)})
+
+    def chave(nome):
+        flash, leve, pro = "flash" in nome, "lite" in nome, "pro" in nome
+        grupo = 0 if (flash and leve) else 1 if flash else 2 if pro else 3
+        return (grupo, 0 if "latest" in nome else 1, 1 if "preview" in nome else 0, nome)
+
+    return sorted(uteis, key=chave)
+
+
+def pausa_depois_de_falhar(erro):
+    """Quantos segundos o modelo fica de fora depois de um erro."""
+    codigo = getattr(erro, "code", None)
+    if codigo == 429:  # sem cota: demora a voltar
+        return 600
+    if codigo == 404:  # nome que não existe para esta chave
+        return 3600
+    if codigo in (400, 403):  # pedido ou chave recusados
+        return 600
+    return 120  # 503, tempo esgotado, resposta vazia: costuma passar logo
+
+
+def percorrer(modelos, tentar, agora=time.time, prazo_s=PRAZO_TOTAL_S):
+    """Chama tentar(modelo) em cada modelo, na ordem, até um devolver resultado.
+
+    Pula os que estão em pausa e para ao estourar o prazo. Se nenhum responder, levanta o
+    último erro (quem chama usa o fallback por regras, então o bot nunca fica mudo)."""
+    inicio, ultimo_erro = agora(), None
+    for modelo in modelos:
+        if agora() - inicio > prazo_s:
+            log.warning("Gemini: prazo de %ss esgotado", prazo_s)
+            break
+        if _de_fora.get(modelo, 0) > agora():
+            continue
+        try:
+            log.info("Gemini: tentando o modelo %s", modelo)
+            resultado = tentar(modelo)
+            _de_fora.pop(modelo, None)
+            return resultado
+        except Exception as erro:
+            ultimo_erro = erro
+            _de_fora[modelo] = agora() + pausa_depois_de_falhar(erro)
+            log.warning("Gemini: o modelo %s falhou (%s %s)", modelo, type(erro).__name__,
+                        getattr(erro, "code", ""))
+    raise ultimo_erro or RuntimeError("nenhum modelo Gemini disponível agora")
+
+
+def modelos_da_chave(cliente, agora=time.time):
+    """Lista de modelos de texto que a chave enxerga, já ordenada (com cache de 1 hora)."""
+    if _lista_em_cache["nomes"] and _lista_em_cache["valida_ate"] > agora():
+        return _lista_em_cache["nomes"]
+    try:
+        nomes = [m.name or "" for m in cliente.models.list()
+                 if "generateContent" in (getattr(m, "supported_actions", None) or [])]
+        ordenados = ordenar_modelos(nomes)
+    except Exception as erro:
+        log.warning("Gemini: não consegui listar os modelos (%s); usando a lista de reserva",
+                    type(erro).__name__)
+        ordenados = []
+    if not ordenados:
+        ordenados = list(MODELOS_GEMINI)
+    _lista_em_cache.update(valida_ate=agora() + VALIDADE_DA_LISTA_S, nomes=ordenados)
+    log.info("Gemini: %d modelos na cascata (o primeiro é %s)", len(ordenados), ordenados[0])
+    return ordenados
+
 
 FERRAMENTAS = ("buscar_orientacao", "cofre_documento", "gerenciar_tarefas", "briefing_matinal")
 
@@ -107,11 +187,11 @@ def rotear(texto, llm=None):
     return fallback_por_regras(texto)
 
 
-def chamar_gemini(texto, api_key, modelos=None):
+def chamar_gemini(texto, api_key, preferido=None):
     """Pede ao Gemini (function calling) a ferramenta, percorrendo a cascata de modelos.
 
-    `modelos` (opcional) substitui a cascata; o .env pode trazer GEMINI_MODELO,
-    que vira o primeiro da lista. Import tardio da biblioteca.
+    `preferido` (GEMINI_MODELO do .env) vai para o início da fila; os demais vêm da lista
+    de modelos que a chave enxerga. Import tardio da biblioteca.
     """
     from google import genai
     from google.genai import types
@@ -144,26 +224,22 @@ def chamar_gemini(texto, api_key, modelos=None):
                 mode=types.FunctionCallingConfigMode.ANY)),
         # Só queremos saber qual ferramenta escolher; não deixar o SDK executar nada sozinho.
         automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True, maximum_remote_calls=None))
-    ultimo_erro = None
-    for modelo in (modelos or MODELOS_GEMINI):
-        try:
-            log.info("Gemini: tentando o modelo %s", modelo)
-            resposta = cliente.models.generate_content(model=modelo, contents=texto, config=config)
-            candidatos = resposta.candidates or []
-            conteudo = candidatos[0].content if candidatos else None
-            partes = (conteudo.parts if conteudo else None) or []
-            chamada = partes[0].function_call if partes else None
-            if chamada is None or not chamada.name:
-                raise ValueError("resposta sem chamada de função")
-            # Log sem o texto da mensagem (spec §13): só o modelo e a ferramenta escolhida.
-            log.info("Gemini: o modelo %s respondeu (ferramenta %s)", modelo, chamada.name)
-            return chamada.name, dict(chamada.args or {})
-        except Exception as erro:  # modelo indisponível ou resposta vazia: tenta o próximo
-            ultimo_erro = erro
-            log.warning("Gemini: o modelo %s falhou (%s %s)", modelo, type(erro).__name__,
-                        getattr(erro, "code", ""))
-    # Todos falharam: quem chama cai no fallback por regras.
-    raise ultimo_erro or RuntimeError("nenhum modelo Gemini configurado")
+    def tentar(modelo):
+        resposta = cliente.models.generate_content(model=modelo, contents=texto, config=config)
+        candidatos = resposta.candidates or []
+        conteudo = candidatos[0].content if candidatos else None
+        partes = (conteudo.parts if conteudo else None) or []
+        chamada = partes[0].function_call if partes else None
+        if chamada is None or not chamada.name:
+            raise ValueError("resposta sem chamada de função")
+        # Log sem o texto da mensagem (spec §13): só o modelo e a ferramenta escolhida.
+        log.info("Gemini: o modelo %s respondeu (ferramenta %s)", modelo, chamada.name)
+        return chamada.name, dict(chamada.args or {})
+
+    fila = modelos_da_chave(cliente)
+    if preferido:
+        fila = [preferido] + [m for m in fila if m != preferido]
+    return percorrer(fila, tentar)
 
 
 def resposta_direta_basta(texto, base):

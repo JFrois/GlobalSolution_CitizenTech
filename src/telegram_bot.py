@@ -82,10 +82,8 @@ def criar_bot(config, base, armazem, links):
     rota = Router()
     dp.include_router(rota)
     chave_gemini = config.get("GEMINI_API_KEY")
-    # GEMINI_MODELO (opcional) vira o primeiro da cascata; os demais ficam de reserva.
-    modelo_env = config.get("GEMINI_MODELO")
-    modelos = ((modelo_env,) + tuple(m for m in roteador.MODELOS_GEMINI if m != modelo_env)
-               if modelo_env else roteador.MODELOS_GEMINI)
+    # GEMINI_MODELO (opcional) vai para o início da fila; os demais vêm da lista da chave.
+    modelo_env = config.get("GEMINI_MODELO") or None
 
     async def responder(mensagem, resultado, user_id):
         # O bot usa parse_mode HTML. A resposta de um assunto já vem em HTML escapado
@@ -200,10 +198,15 @@ def criar_bot(config, base, armazem, links):
             if chave_gemini and roteador.resposta_direta_basta(texto, base):
                 log.info("Resposta direta da base (sem Gemini)")
             elif chave_gemini:
+                try:  # "digitando..." enquanto a IA pensa; se falhar, não faz diferença
+                    if m.bot:
+                        await m.bot.send_chat_action(m.chat.id, "typing")
+                except Exception:
+                    pass
                 # O Gemini roda em outra thread, com tempo limite; se falhar, usa regras.
                 try:
                     nome, args = await asyncio.wait_for(
-                        asyncio.to_thread(roteador.chamar_gemini, texto, chave_gemini, modelos),
+                        asyncio.to_thread(roteador.chamar_gemini, texto, chave_gemini, modelo_env),
                         timeout=roteador.TEMPO_LIMITE_LLM)
                     chamada = roteador.validar_chamada(nome, args)
                 except Exception as erro:
