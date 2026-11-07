@@ -13,12 +13,12 @@
       "tema": "documentacao",
       "palavras_chave": ["segunda via", "rg", "identidade", "cin", "perdi", "carteira de identidade", "documento"],
       "pergunta": "Como solicitar a 2ª via da carteira de identidade (CIN/RG)?",
-      "orientacao": "PREENCHER",
+      "orientacao": "A segunda via da CIN é emitida pelos órgãos de identificação dos estados e do Distrito Federal, e pode ser pedida em qualquer estado, mesmo naquele onde você não nasceu nem mora.\nSe perdeu o documento, registre um boletim de ocorrência no seu estado.\nAcesse gov.br/identidade e clique em \"Saiba como fazer a sua\" para ver as regras do seu estado e agendar a emissão.\nLeve a certidão de nascimento ou de casamento atualizada. A segunda via pode ser cobrada, e o valor e os documentos exigidos variam de estado para estado.\nEnquanto a nova via não fica pronta, a versão digital da CIN no aplicativo gov.br pode ser usada.",
       "confirmar_antes": true,
       "abrangencia": "estadual",
-      "referencia": "https://www.gov.br",
+      "referencia": "https://www.gov.br/secom/pt-br/acompanhe-a-secom/noticias/2026/02/saiba-como-solicitar-a-2a-via-da-cin-apos-caso-de-perda",
       "referencias_estaduais": {},
-      "data_verificacao": "",
+      "data_verificacao": "2026-11-07",
       "relacionados": ["DOC-002", "DOC-003", "SRV-004", "DIR-004"]
     },
     {
@@ -27,9 +27,9 @@
       "tema": "documentacao",
       "palavras_chave": ["cin digital", "identidade digital", "carteira digital", "identidade no celular", "celular", "app gov.br", "aplicativo", "documento"],
       "pergunta": "Como ter a Carteira de Identidade Nacional (CIN) digital no app gov.br?",
-      "orientacao": "PREENCHER",
-      "referencia": "https://www.gov.br",
-      "data_verificacao": "",
+      "orientacao": "Tenha em mãos a CIN impressa que você recebeu na emissão.\nAbra o aplicativo gov.br, entre na seção \"carteira de documentos\" e baixe a CIN em formato digital.\nÉ preciso ter conta gov.br para usar o aplicativo.\nTodo modelo físico da CIN (papel ou cartão) tem uma versão digital, mas só a última CIN emitida tem o QR Code válido.",
+      "referencia": "https://www.gov.br/gestao/pt-br/assuntos/noticias/2026/junho/governo-do-brasil-envia-notificacoes-personalizadas-sobre-o-uso-da-versao-digital-da-cin-saiba-como-usar",
+      "data_verificacao": "2026-11-07",
       "relacionados": ["DOC-001"]
     },
     {
@@ -38,9 +38,10 @@
       "tema": "documentacao",
       "palavras_chave": ["segunda via", "titulo de eleitor", "titulo", "eleitor", "perdi", "documento"],
       "pergunta": "Como pedir a 2ª via do título de eleitor?",
-      "orientacao": "PREENCHER",
-      "referencia": "https://www.tse.jus.br",
-      "data_verificacao": "",
+      "orientacao": "No site do TSE, abra o Autoatendimento Eleitoral, escolha \"Título Eleitoral\" e depois \"Imprima seu título eleitoral\". Informe os dados pedidos.\nVocê pode abrir o título em página cheia ou baixar o arquivo em PDF. É gratuito.\nOutra opção é o aplicativo e-Título: em \"Mais opções\", toque em \"Imprimir Título Eleitoral\". O e-Título só libera o acesso a quem tem inscrição regular ou suspensa.\nSe o título estiver cancelado, regularize a situação antes de pedir a segunda via.\nSe preferir atendimento presencial, procure o cartório eleitoral levando um documento oficial de identificação com foto.",
+      "confirmar_antes": true,
+      "referencia": "https://www.tse.jus.br/comunicacao/noticias/2024/Janeiro/precisa-da-2a-via-do-seu-titulo-confira-como-emitir-em-apenas-3-passos",
+      "data_verificacao": "2026-11-07",
       "relacionados": ["DOC-001", "DOC-004", "DOC-005"]
     },
     {
@@ -49,10 +50,10 @@
       "tema": "documentacao",
       "palavras_chave": ["titulo cancelado", "cancelado", "regularizar", "titulo", "eleitor", "documento"],
       "pergunta": "Meu título de eleitor foi cancelado: como regularizar?",
-      "orientacao": "PREENCHER",
+      "orientacao": "O título costuma ser cancelado quando o eleitor deixa de votar, de justificar e de pagar as multas em três eleições seguidas.\nPrimeiro consulte sua situação no Autoatendimento Eleitoral do TSE, no aplicativo e-Título ou no cartório eleitoral.\nPela internet: no Autoatendimento Eleitoral, escolha \"Título Eleitoral\" e \"Regularize seu título eleitoral cancelado\", preencha o formulário, envie os documentos pedidos, pague as multas e anote o protocolo para acompanhar o pedido.\nPresencialmente: vá ao cartório eleitoral onde o título está inscrito, com documento original com foto e comprovante de residência. Veja antes se é preciso agendar.\nRegularizar é gratuito; só há cobrança de multa por falta sem justificativa. Desconfie de qualquer outra cobrança.\nO cadastro eleitoral foi reaberto em 3 de novembro de 2026, e os pedidos de regularização voltaram a ser atendidos.",
       "confirmar_antes": true,
-      "referencia": "https://www.tse.jus.br",
-      "data_verificacao": "",
+      "referencia": "https://www.tse.jus.br/comunicacao/noticias/2025/Dezembro/eleitor-em-dia-veja-como-regularizar-o-titulo-cancelado",
+      "data_verificacao": "2026-11-07",
       "relacionados": ["DOC-003", "DOC-005"]
     },
     {
@@ -61,9 +62,9 @@
       "tema": "documentacao",
       "palavras_chave": ["situacao eleitoral", "consultar", "regular", "quitacao", "titulo", "eleitor", "documento"],
       "pergunta": "Como consultar minha situação eleitoral?",
-      "orientacao": "PREENCHER",
-      "referencia": "https://www.tse.jus.br",
-      "data_verificacao": "",
+      "orientacao": "No Autoatendimento Eleitoral do Portal do TSE, abra o menu \"Consultas\" e clique em \"Situação do título\".\nInforme o número do título, o CPF ou o nome, e a data de nascimento. A consulta é gratuita e mostra pendências e como regularizar.\nTambém dá para consultar pela página principal do TSE, em \"Situação eleitoral\", no menu de serviços.\nPara comprovar que está em dia, emita a certidão de quitação eleitoral: Portal do TSE, Serviços Eleitorais, Certidões. É gratuita.",
+      "referencia": "https://www.tse.jus.br/comunicacao/noticias/2026/Abril/eleitor-em-dia-saiba-como-verificar-se-seu-titulo-esta-regular-1",
+      "data_verificacao": "2026-11-07",
       "relacionados": ["DOC-003", "DOC-004"]
     },
     {
@@ -72,9 +73,9 @@
       "tema": "servicos",
       "palavras_chave": ["meu inss", "inss", "135", "aposentadoria", "beneficio", "previdencia"],
       "pergunta": "Como acessar o Meu INSS e o telefone 135?",
-      "orientacao": "PREENCHER",
-      "referencia": "https://www.gov.br/inss",
-      "data_verificacao": "",
+      "orientacao": "O Meu INSS fica em gov.br/meuinss e no aplicativo Meu INSS (Android e iOS). Reúne mais de 90 serviços, como pedir benefícios, tirar extratos, agendar perícia e enviar documentos.\nPara entrar é preciso ter uma conta gov.br. Ao criá-la, informe CPF, nome completo e data de nascimento e responda perguntas sobre o seu cadastro no INSS.\nPelo telefone 135 o atendimento humano funciona de segunda a sábado, das 7h às 22h, e o eletrônico, 24 horas. Ligação de telefone fixo é gratuita; de celular, custa como chamada local.\nPelo 135 também é possível agendar atendimento em agência, consultar o resultado de perícia e a data de pagamento do benefício.",
+      "referencia": "https://www.gov.br/inss/pt-br/canais_atendimento/meu-inss/meu-inss",
+      "data_verificacao": "2026-11-07",
       "relacionados": ["SRV-002", "SRV-003", "SRV-004", "SRV-006"]
     },
     {
@@ -83,10 +84,10 @@
       "tema": "servicos",
       "palavras_chave": ["pericia", "pericia medica", "agendar", "marcar", "inss", "auxilio"],
       "pergunta": "Como agendar a perícia médica do INSS?",
-      "orientacao": "PREENCHER",
+      "orientacao": "Para pedir o benefício por incapacidade temporária (antigo auxílio-doença), entre no Meu INSS e escolha \"Pedir Benefício por Incapacidade\".\nEm muitos casos o INSS analisa só os documentos médicos, sem perícia presencial. Em outros, como o acidente de trabalho, a perícia é presencial.\nSe o sistema indicar perícia presencial, é preciso agendar dia e agência. Pelo telefone 135 também é possível agendar atendimento e consultar o resultado da perícia.\nQuem já recebe o benefício e ainda não pode trabalhar deve pedir a perícia de prorrogação, no Meu INSS, nos últimos 15 dias antes de o benefício acabar.\nTenha em mãos um documento de identificação (RG, CIN, CNH ou carteira de trabalho), o CPF e o documento médico.",
       "confirmar_antes": true,
-      "referencia": "https://www.gov.br/inss",
-      "data_verificacao": "",
+      "referencia": "https://www.gov.br/inss/pt-br/noticias/precisa-fazer-pericia-medica-confira-o-passo-a-passo-do-atestmed",
+      "data_verificacao": "2026-11-07",
       "relacionados": ["SRV-001"]
     },
     {
@@ -95,9 +96,9 @@
       "tema": "servicos",
       "palavras_chave": ["cnis", "extrato", "simulacao", "aposentadoria", "contribuicao", "inss"],
       "pergunta": "Como tirar o extrato CNIS e simular a aposentadoria?",
-      "orientacao": "PREENCHER",
-      "referencia": "https://www.gov.br/inss",
-      "data_verificacao": "",
+      "orientacao": "Extrato CNIS: entre no Meu INSS com CPF e senha, clique em \"Do que você precisa?\", digite CNIS, escolha o serviço e baixe o documento. É gratuito e feito pela internet.\nHá três tipos de extrato: relações previdenciárias, relações previdenciárias com remunerações e ano civil.\nSimulação de aposentadoria: no Meu INSS, busque \"Simular aposentadoria\", confira ou ajuste seus dados no ícone de lápis e clique em \"Recalcular\".\nO resultado da simulação serve só para consulta e não garante o direito à aposentadoria.",
+      "referencia": "https://www.gov.br/pt-br/servicos/emitir-extrato-de-contribuicao-cnis",
+      "data_verificacao": "2026-11-07",
       "relacionados": ["SRV-001"]
     },
     {
@@ -106,9 +107,9 @@
       "tema": "servicos",
       "palavras_chave": ["cadunico", "cadastro unico", "inscricao", "inscrever", "programas sociais", "bolsa familia"],
       "pergunta": "Como me inscrever no CadÚnico?",
-      "orientacao": "PREENCHER",
-      "referencia": "https://www.gov.br/mds",
-      "data_verificacao": "",
+      "orientacao": "Qualquer família de baixa renda pode se cadastrar no CadÚnico, de graça. Famílias com renda de até meio salário mínimo por pessoa devem ser registradas.\nA inscrição é presencial, no posto de atendimento da sua cidade, em geral o CRAS ou o setor do Bolsa Família.\nO responsável leva documento com foto, CPF (ou título de eleitor) e comprovante de endereço, ou uma declaração de residência. Os demais moradores levam um documento cada: CPF, título, certidão de nascimento ou casamento, identidade ou carteira de trabalho.\nBasta uma pessoa com mais de 16 anos (de preferência mulher) na entrevista. Se faltar documento, o cadastro fica incompleto e a família não entra nos programas até completar.\nAtualize os dados a cada dois anos ou sempre que algo mudar na família.",
+      "referencia": "https://www.gov.br/pt-br/servicos/inscrever-se-no-cadastro-unico-para-programas-sociais-do-governo-federal",
+      "data_verificacao": "2026-11-07",
       "relacionados": ["DOC-001", "SRV-001", "DIR-006"]
     },
     {
@@ -117,9 +118,9 @@
       "tema": "servicos",
       "palavras_chave": ["cartao nacional de saude", "cartao sus", "cns", "saude", "sus"],
       "pergunta": "Como obter o Cartão Nacional de Saúde (cartão do SUS)?",
-      "orientacao": "PREENCHER",
-      "referencia": "https://www.gov.br/saude",
-      "data_verificacao": "",
+      "orientacao": "Não é possível emitir um novo Cartão Nacional de Saúde (CNS) pelo Meu SUS Digital.\nA emissão e as alterações de cadastro são feitas pessoalmente, em um estabelecimento de saúde. Pergunte lá quais documentos levar.\nDepois de emitido, o número do seu CNS aparece no Meu SUS Digital.",
+      "referencia": "https://www.gov.br/saude/pt-br/composicao/seidigi/meususdigital/perguntas-e-respostas/cidadao/9-como-faco-o-cartao",
+      "data_verificacao": "2026-11-07",
       "relacionados": ["SRV-006"]
     },
     {
@@ -128,9 +129,9 @@
       "tema": "servicos",
       "palavras_chave": ["meu sus digital", "sus digital", "vacinas", "exames", "saude", "sus"],
       "pergunta": "Como usar o Meu SUS Digital?",
-      "orientacao": "PREENCHER",
-      "referencia": "https://www.gov.br/saude",
-      "data_verificacao": "",
+      "orientacao": "O Meu SUS Digital reúne suas informações de saúde registradas nos sistemas do SUS. Está disponível como aplicativo e na versão web.\nO acesso é feito com a conta gov.br, a mesma usada em outros serviços digitais, como o Meu INSS.\nNele você vê a carteira de vacinação, resultados de exames, medicamentos, atendimentos e o número do Cartão Nacional de Saúde.\nA marcação de consultas só aparece se o seu município usa o sistema compatível e ativou essa opção.",
+      "referencia": "https://www.gov.br/saude/pt-br/composicao/seidigi/meususdigital/perguntas-e-respostas/cidadao",
+      "data_verificacao": "2026-11-07",
       "relacionados": ["SRV-005", "SRV-001"]
     },
     {
@@ -139,9 +140,9 @@
       "tema": "direitos",
       "palavras_chave": ["consumidor.gov.br", "consumidor", "reclamar", "reclamacao", "empresa", "produto"],
       "pergunta": "Como reclamar de um produto ou serviço pelo Consumidor.gov.br?",
-      "orientacao": "PREENCHER",
-      "referencia": "https://www.consumidor.gov.br",
-      "data_verificacao": "",
+      "orientacao": "Entre no consumidor.gov.br com uma conta gov.br de nível prata ou ouro. Não dá para reclamar de forma anônima.\nSó é possível reclamar de empresas que aderiram à plataforma. Se a empresa não participar, procure o Procon, a Defensoria Pública ou o Juizado Especial Cível.\nA empresa tem até 10 dias, contados do registro, para responder.\nDepois da resposta você tem até 20 dias para marcar a reclamação como \"Resolvida\" ou \"Não Resolvida\". Tudo é gratuito e feito pela internet.",
+      "referencia": "https://www.consumidor.gov.br/pages/conteudo/publico/1",
+      "data_verificacao": "2026-11-07",
       "relacionados": ["DIR-002", "DIR-005"]
     },
     {
@@ -150,9 +151,9 @@
       "tema": "direitos",
       "palavras_chave": ["defensoria publica", "defensoria", "advogado", "gratuito", "assistencia juridica"],
       "pergunta": "Como buscar ajuda da Defensoria Pública?",
-      "orientacao": "PREENCHER",
-      "referencia": "https://www.dpu.def.br",
-      "data_verificacao": "",
+      "orientacao": "A Defensoria Pública dá assistência jurídica gratuita a quem não pode pagar um advogado.\nA Defensoria Pública da União (DPU) cuida de casos que envolvem a União e órgãos federais, como benefícios do INSS, saúde e direitos de migrantes. Como referência, atende famílias com renda de até R$ 2 mil por mês, ou quem comprova gastos extraordinários.\nCasos da Justiça estadual, como família, consumidor e indenização contra empresas, são da Defensoria Pública do seu estado.\nNão há intermediários: procure a unidade diretamente. Os endereços e canais da DPU estão na página de contatos do site, que também leva às defensorias estaduais.",
+      "referencia": "https://www.dpu.def.br/noticias-institucional/233-slideshow/66949-saiba-como-a-defensoria-publica-da-uniao-pode-ajudar-voce",
+      "data_verificacao": "2026-11-07",
       "relacionados": ["DIR-001", "DIR-003", "DIR-004", "DIR-005"]
     },
     {
@@ -161,9 +162,9 @@
       "tema": "direitos",
       "palavras_chave": ["disque 100", "ligue 180", "denuncia", "violencia", "direitos humanos", "mulher"],
       "pergunta": "Quando usar o Disque 100 e o Ligue 180?",
-      "orientacao": "PREENCHER",
-      "referencia": "https://www.gov.br/mdh",
-      "data_verificacao": "",
+      "orientacao": "Disque 100 e Ligue 180 são serviços diferentes.\nDisque 100: denúncias de violações de direitos humanos. Disque 100 em qualquer telefone, a qualquer hora; também há site, WhatsApp e Telegram. A denúncia pode ser anônima e recebe número de protocolo.\nLigue 180: Central de Atendimento à Mulher, para violência contra mulheres. A ligação é gratuita, 24 horas por dia, e há atendimento pelo WhatsApp (61) 9610-0180. Orienta sobre direitos e registra denúncias.\nEm caso de emergência ou risco imediato, ligue 190 para a Polícia Militar.",
+      "referencia": "https://www.gov.br/mdh/pt-br/ondh",
+      "data_verificacao": "2026-11-07",
       "relacionados": ["DIR-002"]
     },
     {
@@ -172,10 +173,10 @@
       "tema": "direitos",
       "palavras_chave": ["certidao de nascimento", "certidao", "nascimento", "gratuita", "cartorio"],
       "pergunta": "Como conseguir a certidão de nascimento gratuita?",
-      "orientacao": "PREENCHER",
+      "orientacao": "O registro de nascimento e a primeira certidão são gratuitos para todos.\nAs demais certidões do cartório de registro civil, como a segunda via, são gratuitas só para quem é reconhecidamente pobre.\nA pobreza se comprova por declaração da própria pessoa. Se ela for analfabeta, a declaração é feita a seu pedido, com a assinatura de duas testemunhas.\nDeclarar algo falso gera responsabilidade civil e criminal.\nProcure o cartório de registro civil e pergunte quais documentos e procedimentos ele exige.",
       "confirmar_antes": true,
-      "referencia": "https://www.cnj.jus.br",
-      "data_verificacao": "",
+      "referencia": "https://www.planalto.gov.br/ccivil_03/leis/l9534.htm",
+      "data_verificacao": "2026-11-07",
       "relacionados": ["DIR-002", "DOC-001"]
     },
     {
@@ -184,9 +185,9 @@
       "tema": "direitos",
       "palavras_chave": ["juizado especial civel", "juizado", "pequenas causas", "processo", "justica"],
       "pergunta": "Como funciona o Juizado Especial Cível?",
-      "orientacao": "PREENCHER",
-      "referencia": "https://www.cnj.jus.br",
-      "data_verificacao": "",
+      "orientacao": "O Juizado Especial Cível julga causas de menor complexidade, de forma mais simples e rápida, como problemas de consumo, cobranças e pequenos acidentes de trânsito.\nO limite é de 40 salários mínimos. Até 20 salários mínimos não é preciso contratar advogado.\nPodem entrar com ação pessoas físicas maiores de 18 anos e capazes, microempreendedores individuais, microempresas e empresas de pequeno porte.\nNão cabem nos juizados ações trabalhistas, de família com crianças ou adolescentes, de herança e inventário, entre outras.",
+      "referencia": "https://www.cnj.jus.br/cnj-servico-para-que-servem-os-juizados-especiais/",
+      "data_verificacao": "2026-11-07",
       "relacionados": ["DIR-001", "DIR-002"]
     },
     {
@@ -195,10 +196,10 @@
       "tema": "direitos",
       "palavras_chave": ["tarifa social", "energia", "luz", "conta de luz", "desconto"],
       "pergunta": "Como conseguir a Tarifa Social de Energia Elétrica?",
-      "orientacao": "PREENCHER",
+      "orientacao": "Podem receber a Tarifa Social famílias no CadÚnico com renda de até meio salário mínimo por pessoa, famílias com renda de até 3 salários mínimos quando alguém precisa de equipamento elétrico de uso contínuo por doença ou deficiência, e idosos com 65 anos ou mais ou pessoas com deficiência que recebem o BPC.\nO benefício vale só para residência, uma unidade consumidora por família. O CadÚnico precisa estar atualizado nos últimos 2 anos.\nDesde janeiro de 2022 a inclusão é automática, quando um membro da família é o titular do contrato com a distribuidora. Nesse caso não é preciso pedir.\nSe a família tem direito e não recebeu o desconto, fale com a distribuidora de energia.\nAs regras de desconto mudaram em julho de 2025. Veja a regra atual na ANEEL ou na sua conta de luz.",
       "confirmar_antes": true,
-      "referencia": "https://www.gov.br/aneel",
-      "data_verificacao": "",
+      "referencia": "https://www.gov.br/aneel/pt-br/assuntos/tarifas/tarifa-social",
+      "data_verificacao": "2026-11-07",
       "relacionados": ["SRV-004"]
     }
   ]
