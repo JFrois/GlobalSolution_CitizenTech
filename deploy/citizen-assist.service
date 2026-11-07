@@ -1,0 +1,15 @@
+# Serviço systemd de exemplo. Copie para /etc/systemd/system/ na VM.
+# O .env fica SOMENTE na VM (nunca no Git).
+[Unit]
+Description=Citizen Assist AI (bot e painel)
+After=network-online.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/citizen-assist
+ExecStart=/home/ubuntu/citizen-assist/.venv/bin/python src/sistema.py --servidor
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
