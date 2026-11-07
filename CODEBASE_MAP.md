@@ -12,6 +12,7 @@ Mapa curto do repositório (atualizar ao criar ou mover módulos).
 | `testes/test_*.py` | 117 testes (`python -m unittest discover -s testes -t .`) | Passando |
 | `testes/usabilidade.md` | Modelo do teste de usabilidade (T1 a T5, clareza, SUS) | Modelo vazio; teste pendente |
 | `testes/resultados.csv`, `comparacao_modelos.csv` | Saída de `--avaliar` (versionados com `git add -f`) | Gerados em 07/11 |
+| `scripts/testar_gemini.py` | Testa a chave do Gemini do `.env` e lista os modelos que ela enxerga | Pronto; rodar com o ambiente do servidor |
 | `scripts/verificacoes_antigas.py` | Lista registros com verificação > 90 dias | Pronto |
 | `docs/` | Spec (fonte de verdade), planejamento, arquitetura, UX, `uso_ia.md` | Atualizados em 07/11 |
 | `src/ponte.py` | Liga o servidor ao núcleo (preparar, buscar, formatar, UF) | Pronto, testado |

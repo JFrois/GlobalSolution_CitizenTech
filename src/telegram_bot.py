@@ -41,6 +41,13 @@ COMANDOS = (("menu", "Ver os assuntos por tema"),
             ("apagar_meus_dados", "Apagar os seus dados"))
 # Quem escreve só uma destas palavras quer o menu, não uma busca.
 PALAVRAS_DE_MENU = {"menu", "temas", "assuntos", "ajuda", "inicio", "início", "começar", "comecar"}
+
+
+def eh_palavra_de_menu(texto):
+    """True se a mensagem é só uma palavra de menu. Mensagem sem texto (voz, foto) é False."""
+    return bool(texto) and texto.strip().lower() in PALAVRAS_DE_MENU
+
+
 MSG_ERRO = "Tive um problema para responder agora. Tente de novo em instantes."
 
 
@@ -52,7 +59,8 @@ def teclado(linhas):
 
 def botoes_assuntos(base, ids):
     """Um botão por assunto (callback 'ab:<id>'); o id nunca aparece para o usuário."""
-    return teclado([[(base["registros_por_id"][i]["pergunta"][:60], "ab:" + i)] for i in ids])
+    # Título curto do assunto: a pergunta inteira fica cortada no botão.
+    return teclado([[(ponte.titulo_do(base["registros_por_id"][i]), "ab:" + i)] for i in ids])
 
 
 def criar_bot(config, base, armazem, links):
@@ -91,7 +99,7 @@ def criar_bot(config, base, armazem, links):
     async def comando_menu(m: Message):
         await m.answer(html.escape(MSG_MENU), reply_markup=teclado_de_temas())
 
-    @rota.message(F.text.func(lambda t: t.strip().lower() in PALAVRAS_DE_MENU))
+    @rota.message(F.text.func(eh_palavra_de_menu))
     async def palavra_de_menu(m: Message):
         await m.answer(html.escape(MSG_MENU), reply_markup=teclado_de_temas())
 

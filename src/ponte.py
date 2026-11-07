@@ -26,6 +26,7 @@ aviso_sem_base = respostas.aviso_sem_base
 formatar_data = respostas.formatar_data
 
 tokenizar = busca.normalizar
+titulo_do = respostas.titulo_do
 
 
 def preparar(base: dict) -> dict:
