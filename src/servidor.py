@@ -73,6 +73,13 @@ def iniciar(caminho_base=None):
                            links, config.get("PAINEL_URL", ""))
 
     async def rodar():
+        # Registra os comandos no menu do Telegram. Se falhar (rede), o bot segue sem eles.
+        try:
+            from aiogram.types import BotCommand
+            await bot.set_my_commands([BotCommand(command=c, description=d)
+                                       for c, d in telegram_bot.COMANDOS])
+        except Exception as erro:
+            logging.getLogger("citizen.bot").warning("set_my_commands falhou (%s)", type(erro).__name__)
         # Painel só em localhost: o Caddy faz o HTTPS na frente (spec §12).
         servidor_web = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=8000,
                                                      log_level="warning"))

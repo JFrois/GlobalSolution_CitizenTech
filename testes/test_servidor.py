@@ -214,6 +214,32 @@ class TestAppFastAPI(unittest.TestCase):
         self.assertEqual(self.cliente.post("/api/perguntar", json=[1]).json()["decisao"], "INVALIDA")
 
 
+def _tem_aiogram():
+    try:
+        import aiogram  # noqa: F401
+    except ImportError:
+        return False
+    return True
+
+
+@unittest.skipUnless(_tem_aiogram(), "precisa de aiogram (pip install -r requirements.txt)")
+class TestBot(unittest.TestCase):
+    def test_bot_monta_com_html_menu_e_comandos(self):
+        import armazenamento
+        import ponte
+        import telegram_bot
+        b = ponte.preparar(base.carregar_base(FIXTURE))
+        bot, dp = telegram_bot.criar_bot({"TELEGRAM_BOT_TOKEN": "1:ABC"}, b,
+                                         armazenamento.ArmazenamentoSQLite(":memory:"), painel.LinksUnicos())
+        self.assertEqual(str(bot.default.parse_mode), "ParseMode.HTML")
+        self.assertIn("menu", telegram_bot.PALAVRAS_DE_MENU)
+        self.assertEqual([c for c, _ in telegram_bot.COMANDOS],
+                         ["menu", "localizacao", "painel", "apagar_meus_dados"])
+        self.assertIn("/menu", telegram_bot.MSG_BOAS_VINDAS)
+        # A mensagem de "sem base" do Telegram não repete a lista numerada do terminal.
+        self.assertNotIn("1  ", telegram_bot.MSG_SEM_BASE)
+
+
 class TestServidor(unittest.TestCase):
     def test_env_faltando_e_listado(self):
         self.assertEqual(servidor.faltando({}), ["TELEGRAM_BOT_TOKEN", "SESSAO_SEGREDO"])

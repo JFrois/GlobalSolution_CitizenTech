@@ -28,7 +28,19 @@ MSG_BOAS_VINDAS = (
     "Olá! Sou o Citizen Assist AI, um assistente de orientação cidadã NÃO OFICIAL.\n"
     "Respondo só com informações verificadas em fontes oficiais e sempre mostro a fonte.\n\n"
     "Escreva sua dúvida, por exemplo: como consultar minha situação eleitoral.\n"
-    "Comandos: /localizacao  /painel  /apagar_meus_dados")
+    "Ou toque em /menu para ver os assuntos por tema.\n"
+    "Comandos: /menu  /localizacao  /painel  /apagar_meus_dados")
+MSG_MENU = "Escolha um tema para ver os assuntos, ou escreva sua dúvida com suas palavras."
+MSG_SEM_BASE = ("Não encontrei orientação verificada sobre isso na minha base. "
+                "Não sou um canal oficial e não vou inventar instruções.\n\n"
+                "Você pode consultar o portal oficial: %s\nou escolher um tema abaixo:")
+# Comandos que aparecem no menu do Telegram (bot.set_my_commands, chamado ao iniciar).
+COMANDOS = (("menu", "Ver os assuntos por tema"),
+            ("localizacao", "Informar o seu estado"),
+            ("painel", "Abrir o painel"),
+            ("apagar_meus_dados", "Apagar os seus dados"))
+# Quem escreve só uma destas palavras quer o menu, não uma busca.
+PALAVRAS_DE_MENU = {"menu", "temas", "assuntos", "ajuda", "inicio", "início", "começar", "comecar"}
 MSG_ERRO = "Tive um problema para responder agora. Tente de novo em instantes."
 
 
@@ -61,6 +73,9 @@ def criar_bot(config, base, armazem, links):
         # O bot usa parse_mode HTML. A resposta de um assunto já vem em HTML escapado
         # (ponte.formatar_telegram); os demais textos passam por html.escape.
         texto = resultado.get("html") or html.escape(resultado["texto"])
+        if resultado["decisao"] == "SEM_BASE":
+            # Os temas vão nos botões; não repetir a lista numerada do terminal.
+            texto = html.escape(MSG_SEM_BASE % ponte.GOV_BR)
         markup = botoes_assuntos(base, resultado["opcoes"]) if resultado["opcoes"] else None
         if resultado["decisao"] == "SEM_BASE":
             markup = teclado([[(nome, "tema:" + tid)] for tid, nome in base["temas"].items()])
@@ -68,6 +83,17 @@ def criar_bot(config, base, armazem, links):
         registro = base["registros_por_id"].get(resultado.get("registro", ""), {})
         if registro.get("abrangencia") == "estadual" and not armazem.obter_uf(user_id):
             await mensagem.answer("Para ver o link do seu estado, use /localizacao.")
+
+    def teclado_de_temas():
+        return teclado([[(nome, "tema:" + tid)] for tid, nome in base["temas"].items()])
+
+    @rota.message(Command("menu", "ajuda"))
+    async def comando_menu(m: Message):
+        await m.answer(html.escape(MSG_MENU), reply_markup=teclado_de_temas())
+
+    @rota.message(F.text.func(lambda t: t.strip().lower() in PALAVRAS_DE_MENU))
+    async def palavra_de_menu(m: Message):
+        await m.answer(html.escape(MSG_MENU), reply_markup=teclado_de_temas())
 
     @rota.message(Command("start"))
     async def comando_start(m: Message):
