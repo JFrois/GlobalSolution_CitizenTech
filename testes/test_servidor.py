@@ -175,6 +175,45 @@ class TestPainelRobustez(unittest.TestCase):
         self.assertLess(len(lim._hits), 10)
 
 
+def _tem_fastapi():
+    try:
+        import fastapi  # noqa: F401
+        import httpx  # noqa: F401
+    except ImportError:
+        return False
+    return True
+
+
+@unittest.skipUnless(_tem_fastapi(), "precisa de fastapi e httpx (pip install -r requirements.txt httpx)")
+class TestAppFastAPI(unittest.TestCase):
+    """Sobe o app de verdade (sem rede). Pegou o bug das anotações de criar_app."""
+
+    def setUp(self):
+        from fastapi.testclient import TestClient
+        import ponte
+        self.links = painel.LinksUnicos()
+        app = painel.criar_app(ponte.preparar(base.carregar_base(FIXTURE)), "1:T", "segredo",
+                               self.links, "https://painel.exemplo")
+        self.cliente = TestClient(app, base_url="https://testserver")
+
+    def test_sem_login_e_recusado(self):
+        self.assertEqual(self.cliente.post("/api/perguntar", json={"pergunta": "rg"}).status_code, 401)
+
+    def test_link_unico_login_e_pergunta(self):
+        token = self.links.gerar(42)
+        self.assertEqual(self.cliente.get("/entrar", params={"t": token}).status_code, 200)
+        self.assertEqual(self.cliente.get("/entrar", params={"t": token}).status_code, 401)  # uso único
+        r = self.cliente.post("/api/perguntar", json={"pergunta": "como tirar a segunda via do RG"})
+        self.assertEqual((r.status_code, r.json()["decisao"], r.json()["id"]), (200, "RESPONDER", "DOC-001"))
+        self.assertEqual(r.headers["x-content-type-options"], "nosniff")
+
+    def test_corpo_invalido(self):
+        self.cliente.get("/entrar", params={"t": self.links.gerar(42)})
+        r = self.cliente.post("/api/perguntar", content="{ruim", headers={"content-type": "application/json"})
+        self.assertEqual(r.status_code, 400)
+        self.assertEqual(self.cliente.post("/api/perguntar", json=[1]).json()["decisao"], "INVALIDA")
+
+
 class TestServidor(unittest.TestCase):
     def test_env_faltando_e_listado(self):
         self.assertEqual(servidor.faltando({}), ["TELEGRAM_BOT_TOKEN", "SESSAO_SEGREDO"])
