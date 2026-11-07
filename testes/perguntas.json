@@ -1,0 +1,20 @@
+[
+  {"id": "Q01", "conjunto": "equipe", "tipo": "direta", "pergunta": "Como tirar a segunda via do RG?", "esperado": "DOC-001"},
+  {"id": "Q02", "conjunto": "equipe", "tipo": "direta", "pergunta": "Como ter a carteira de identidade no celular?", "esperado": "DOC-002"},
+  {"id": "Q03", "conjunto": "equipe", "tipo": "direta", "pergunta": "Como pedir segunda via do título de eleitor?", "esperado": "DOC-003"},
+  {"id": "Q04", "conjunto": "equipe", "tipo": "direta", "pergunta": "Meu título foi cancelado, o que faço?", "esperado": "DOC-004"},
+  {"id": "Q05", "conjunto": "equipe", "tipo": "direta", "pergunta": "Como consultar minha situação eleitoral?", "esperado": "DOC-005"},
+  {"id": "Q06", "conjunto": "equipe", "tipo": "direta", "pergunta": "Como acessar o Meu INSS?", "esperado": "SRV-001"},
+  {"id": "Q07", "conjunto": "equipe", "tipo": "direta", "pergunta": "Como me inscrever no CadÚnico?", "esperado": "SRV-004"},
+  {"id": "Q08", "conjunto": "equipe", "tipo": "direta", "pergunta": "Como reclamar de uma empresa no Consumidor.gov.br?", "esperado": "DIR-001"},
+  {"id": "Q09", "conjunto": "equipe", "tipo": "reformulada", "pergunta": "Perdi minha identidade, como faço outra?", "esperado": "DOC-001"},
+  {"id": "Q10", "conjunto": "equipe", "tipo": "reformulada", "pergunta": "Quero marcar perícia do INSS", "esperado": "SRV-002"},
+  {"id": "Q11", "conjunto": "equipe", "tipo": "reformulada", "pergunta": "Não tenho dinheiro para advogado, onde busco ajuda?", "esperado": "DIR-002"},
+  {"id": "Q12", "conjunto": "equipe", "tipo": "fora da base", "pergunta": "Como pagar o IPVA?", "esperado": "SEM_BASE"},
+  {"id": "Q13", "conjunto": "equipe", "tipo": "fora da base", "pergunta": "Como abrir um MEI?", "esperado": "SEM_BASE"},
+  {"id": "Q14", "conjunto": "equipe", "tipo": "fora da base", "pergunta": "Como declarar o imposto de renda?", "esperado": "SEM_BASE"},
+  {"id": "L1", "conjunto": "equipe", "tipo": "limite", "pergunta": "", "esperado": "INVALIDA"},
+  {"id": "L2", "conjunto": "equipe", "tipo": "limite", "pergunta": "documento", "esperado": "PEDIR_ESCOLHA"},
+  {"id": "L3", "conjunto": "equipe", "tipo": "limite", "pergunta": "como tirar passaporte?", "esperado": "SEM_BASE"},
+  {"id": "L4", "conjunto": "equipe", "tipo": "limite", "pergunta": "???", "esperado": "INVALIDA"}
+]
