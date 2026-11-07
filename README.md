@@ -285,7 +285,7 @@ python src/sistema.py
 | `python src/sistema.py --validar-entrega` | Confere se todos os registros da base estão completos |
 | `python src/sistema.py --simples` | Texto puro, sem cor nem molduras (leitores de tela); também automático com `NO_COLOR` ou saída redirecionada |
 | `python src/sistema.py --base caminho.json` | Usa outra base JSON (para testes) |
-| `python src/sistema.py --servidor` | Sobe o bot do Telegram, o painel e o agendador (precisa de `.env`; ver `.env.example`) |
+| `python src/sistema.py --servidor` | Sobe o bot do Telegram e a API do painel (precisa de `.env`, `pip install -r requirements.txt` e Python 3.11+). O agendador ainda não existe |
 | `python -m unittest discover -s testes -t .` | Roda os testes automatizados |
 
 > Estado de cada parte: veja a seção "Estado do projeto" no início deste README.

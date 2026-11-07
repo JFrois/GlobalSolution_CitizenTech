@@ -9,7 +9,7 @@
 
 ---
 
-## Status em 07/11/2026 (branch `feat/nucleo-base-e-busca`)
+## Status em 07/11/2026 (`main` atualizada até o PR #7)
 
 | Código | Situação | Observação |
 |---|---|---|
@@ -17,14 +17,19 @@
 | A4 a A6 | Concluído | Busca, índice × linear, decisão C·A·B, grafo e Dijkstra |
 | A7 | Concluído | Modelos A e B; campo `titulo` acrescentado à spec |
 | A8 | Concluído | Terminal completo; testado em Python 3.9 e 3.14 (não testado em Windows) |
-| A9, A10 | Concluído | `--avaliar` e 94 testes automatizados |
+| A9, A10 | Concluído | `--avaliar` e 117 testes automatizados |
 | A11 | Concluído | `scripts/verificacoes_antigas.py` |
 | B1 | Concluído | `testes/perguntas.json` (19 perguntas), congelado antes das palavras-chave; feito pelo Juan |
-| E2 (redigir as 17 orientações) | **Rascunho feito, falta revisão humana** | Escrito pela IA com as páginas oficiais; cada integrante confere (ver `docs/uso_ia.md`) |
-| B2, B3, B4 a B12 | Pendente | Gemini, comparação A × B (falta a nota de clareza), bot, roteador, tarefas, briefing, usabilidade, perguntas do público |
-| C1 a C* | Pendente | Cofre, painel, VM e deploy |
+| E1 (redigir as 17 orientações) | **Rascunho feito** | Escrito pela IA a partir das páginas oficiais, em 07/11 |
+| E2 (revisão cruzada da base) | **Pendente** | Cada integrante confere as orientações de outro tema (ver `docs/uso_ia.md`) |
+| B4, B5, B6 | Escrito, **não testado de verdade** | `roteador.py`, `telegram_bot.py` e UF existem; nunca rodaram com Telegram nem Gemini reais |
+| C2 | Parcial | Interface de armazenamento em SQLite (`armazenamento.py`); Supabase continua em aberto |
+| C4 | Escrito, **não testado** | `deploy.yml`, `deploy/`; o deploy só liga com a variável `DEPLOY_ATIVO=true` e os secrets |
+| C8, C10 | Parcial | API do painel (`painel.py`, `/api/perguntar`) pronta; faltam o front (`painel/`) e as telas |
+| B2, B3, B7 a B12 | Pendente | Gemini, nota de clareza A × B, tarefas, agendador, briefing, voz/foto/PDF, usabilidade, perguntas do público |
+| C1, C3, C5 a C7, C9 | Pendente | DuckDNS/Caddy, VM, criptografia, cofre, classificador, testes de segurança |
 
-Existe uma segunda implementação em paralelo na branch local `claude/project-implementation-228373` (núcleo próprio mais servidor base). Ela não está no remoto e conflita com esta nos mesmos arquivos; ver a ordem de merge no PR.
+Existe uma implementação paralela arquivada na branch `arquivo/servidor-implementacao-paralela`. **Não fazer merge dela**: conflita com o núcleo da `main`. O que servia dela já entrou pelo PR #5.
 
 ---
 
