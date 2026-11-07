@@ -18,7 +18,7 @@ from aiogram.types import (CallbackQuery, InlineKeyboardButton, InlineKeyboardMa
                            LinkPreviewOptions, Message)
 
 import armazenamento
-import respostas
+import ponte
 import roteador
 
 log = logging.getLogger("citizen.bot")
@@ -150,6 +150,6 @@ def criar_bot(config, base, armazem, links):
     @rota.message()
     async def outros(m: Message):
         # Foto, PDF e voz entram na próxima rodada (cofre e transcrição).
-        await m.answer("Por enquanto só entendo mensagens de texto. " + respostas.NAO_OFICIAL)
+        await m.answer("Por enquanto só entendo mensagens de texto. " + ponte.NAO_OFICIAL)
 
     return bot, dp

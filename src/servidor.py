@@ -55,14 +55,14 @@ def iniciar(caminho_base=None):
 
     import armazenamento
     import base as modulo_base
-    import busca
+    import ponte
     import painel
     import telegram_bot
 
     try:
-        dados = busca.preparar(modulo_base.carregar_base(caminho_base))
+        dados = ponte.preparar(modulo_base.carregar_base(caminho_base))
     except modulo_base.ErroBase as erro:
-        print("Não consegui abrir a base de orientações: " + "; ".join(erro.problemas))
+        print("Não consegui abrir a base de orientações: " + str(erro))
         return 1
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")

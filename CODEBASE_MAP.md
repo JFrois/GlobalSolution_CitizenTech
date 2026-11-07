@@ -1,10 +1,8 @@
 # CODEBASE_MAP
-
 Mapa curto do repositório (atualizar ao criar ou mover módulos).
-
 | Caminho | Papel | Estado (07/11/2026) |
 |---|---|---|
-| `src/sistema.py` | Terminal (padrão), `--avaliar`, `--validar-entrega`; `--servidor` ainda não existe | Pronto |
+| `src/sistema.py` | Terminal (padrão), `--avaliar`, `--validar-entrega`; `--servidor` chama `servidor.py` | Pronto |
 | `src/base.py` | Carga e validação de `data/base.json`; pendências de entrega | Pronto |
 | `src/busca.py` | Normalização, pontuação, índice × linear, decisão C·A·B, grafo, Dijkstra | Pronto |
 | `src/respostas.py` | Modelos A e B, aviso de limitação, mensagens de entrada inválida | Pronto |
@@ -15,4 +13,7 @@ Mapa curto do repositório (atualizar ao criar ou mover módulos).
 | `testes/resultados.csv`, `comparacao_modelos.csv` | Saída de `--avaliar` (versionados com `git add -f`) | Gerados em 07/11 |
 | `scripts/verificacoes_antigas.py` | Lista registros com verificação > 90 dias | Pronto |
 | `docs/` | Spec (fonte de verdade), planejamento, arquitetura, UX, `uso_ia.md` | Atualizados em 07/11 |
-| Onda 2 (`telegram_bot`, `roteador`, `cofre`, `painel`, ...) | Não existem nesta branch | Pendente |
+| `src/ponte.py` | Liga o servidor ao núcleo (preparar, buscar, formatar, UF) | Pronto, testado |
+| `src/roteador.py`, `telegram_bot.py`, `painel.py`, `armazenamento.py`, `servidor.py` | Servidor base: roteador Gemini + regras, bot, API do painel, SQLite, `--servidor` | Escritos; testados só sem Telegram/Gemini/VM reais (as bibliotecas não estão instaladas aqui) |
+| `deploy/`, `.github/workflows/deploy.yml`, `requirements.txt` | Caddy, systemd e deploy por SSH | Não testados em VM |
+| Onda 2 restante (`cofre`, `criptografia`, `classificador`, `tarefas`, `agendador`, `briefing`, front do painel) | Não existem ainda | Pendente |

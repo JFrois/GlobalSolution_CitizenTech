@@ -17,8 +17,7 @@ import secrets
 import time
 from urllib.parse import parse_qsl
 
-import busca
-import respostas
+import ponte
 
 IDADE_MAX_INITDATA = 3600      # segundos: initData mais velho que isso é recusado
 VALIDADE_LINK = 300            # link de uso único vale 5 minutos
@@ -118,17 +117,17 @@ class LimitadorTaxa:
 # ---- Resposta estruturada (sem LLM) ----------------------------------------
 def resposta_estruturada(pergunta, base, uf=None):
     """JSON da aba "Perguntar": só dados da base, o front apenas desenha."""
-    busca.preparar(base)
-    if not isinstance(pergunta, str) or len(pergunta) > respostas.LIMITE_PERGUNTA:
-        return {"decisao": "INVALIDA", "mensagem": respostas.MSG_LONGA}
-    r = busca.buscar(pergunta, base)
+    ponte.preparar(base)
+    if not isinstance(pergunta, str) or len(pergunta) > ponte.LIMITE_PERGUNTA:
+        return {"decisao": "INVALIDA", "mensagem": ponte.MSG_LONGA}
+    r = ponte.buscar(pergunta, base)
     por_id = base["registros_por_id"]
     saida = {"decisao": r["decisao"]}
     if r["decisao"] == "INVALIDA":
-        saida["mensagem"] = respostas.MSG_SEM_PALAVRA if pergunta.strip() else respostas.MSG_VAZIA
+        saida["mensagem"] = ponte.MSG_SEM_PALAVRA if pergunta.strip() else ponte.MSG_VAZIA
     elif r["decisao"] == "SEM_BASE":
-        saida["mensagem"] = respostas.aviso_sem_base(base["temas"])
-        saida["portal"] = respostas.GOV_BR
+        saida["mensagem"] = ponte.aviso_sem_base(base["temas"])
+        saida["portal"] = ponte.GOV_BR
         saida["temas"] = list(base["temas"].values())
     elif r["decisao"] == "PEDIR_ESCOLHA":
         saida["candidatos"] = [{"id": c[0], "titulo": por_id[c[0]]["pergunta"]}
@@ -136,15 +135,15 @@ def resposta_estruturada(pergunta, base, uf=None):
     else:
         rid = r["candidatos"][0][0]
         reg = por_id[rid]
-        link, aviso = respostas.fonte_e_aviso(reg, uf)
+        link, aviso = ponte.fonte_e_aviso(reg, uf)
         saida.update({
-            "id": rid, "titulo": reg["pergunta"], "passos": respostas.passos(reg),
+            "id": rid, "titulo": reg["pergunta"], "passos": ponte.passos(reg),
             "atencao": aviso or None, "fonte": link,
-            "verificado_em": respostas.formatar_data(reg["data_verificacao"]),
+            "verificado_em": ponte.formatar_data(reg["data_verificacao"]),
             "relacionados": [{"id": i, "titulo": por_id[i]["pergunta"]}
-                             for i in busca.relacionados_ordenados(base["grafo"], rid)],
+                             for i in ponte.relacionados(base, rid)],
             "total_orientacoes": len(base["registros"]),
-            "aviso": respostas.NAO_OFICIAL,
+            "aviso": ponte.NAO_OFICIAL,
         })
     return saida
 

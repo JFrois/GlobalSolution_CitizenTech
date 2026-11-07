@@ -5,7 +5,7 @@ Uso:
     python src/sistema.py --simples          texto puro, sem cores nem molduras
     python src/sistema.py --validar-entrega  confere se a base está pronta para entregar
     python src/sistema.py --avaliar          taxa de acerto, tempos e comparação A x B (grava testes/*.csv)
-    python src/sistema.py --servidor         (em construção) bot, painel e agendador
+    python src/sistema.py --servidor         bot e painel (precisa de .env e das bibliotecas do servidor)
 
 Roda só com Python 3.9+, sem .env, sem internet e sem pip install (spec 5.3).
 Telas e textos seguem docs/ux.md, seção 3.
@@ -398,7 +398,7 @@ def _argumentos(argv):
     p.add_argument("--validar-entrega", action="store_true",
                    help="recusa registros ainda não preenchidos ou sem data de verificação")
     p.add_argument("--avaliar", action="store_true", help="taxa de acerto, tempos e comparação A x B; grava CSVs em testes/")
-    p.add_argument("--servidor", action="store_true", help="bot, painel e agendador (em construção)")
+    p.add_argument("--servidor", action="store_true", help="bot e painel (precisa de .env; ver .env.example)")
     p.add_argument("--base", default=None, help="caminho de outro base.json (testes)")
     return p.parse_args(argv)
 
@@ -411,9 +411,9 @@ def principal(argv=None, entrada=input, saida=print) -> int:
         pass
 
     if args.servidor:
-        # TODO(B4): ligar o modo servidor com import tardio (spec 5.3).
-        saida("Este modo ainda não está disponível nesta versão.")
-        return 1
+        # Import tardio: só aqui as bibliotecas da Onda 2 são necessárias (spec 5.3).
+        import servidor
+        return servidor.iniciar(args.base)
 
     try:
         dados = modulo_base.carregar_base(args.base)

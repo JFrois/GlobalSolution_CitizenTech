@@ -20,7 +20,7 @@ import painel  # noqa: E402
 import roteador  # noqa: E402
 import servidor  # noqa: E402
 
-FIXTURE = RAIZ / "testes" / "fixtures" / "base_exemplo.json"
+FIXTURE = None  # None = usa data/base.json (a base real do projeto)
 TOKEN = "123456:TOKEN-DE-TESTE"
 
 
@@ -151,7 +151,7 @@ class TestPainel(unittest.TestCase):
         b = base.carregar_base(FIXTURE)
         for pergunta in ["segunda via rg", "meu inss", "tarifa social", "xyz"]:
             self.assertEqual(painel.resposta_estruturada(pergunta, b)["decisao"],
-                             busca.buscar(pergunta, b)["decisao"])
+                             busca.Buscador(b).buscar(pergunta).decisao)
 
 
 class TestServidor(unittest.TestCase):

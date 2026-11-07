@@ -1,7 +1,7 @@
 """Roteador: escolhe UMA de 4 ferramentas (LLM com function calling + regras).
 
 Princípio (spec §1 e §9): o LLM só ESCOLHE a ferramenta. O conteúdo da
-orientação vem sempre de busca.py + respostas.py. Os argumentos devolvidos pelo
+orientação vem sempre de busca.py + ponte.py. Os argumentos devolvidos pelo
 LLM passam por validação estrita; se algo falhar, o fallback por regras assume,
 então o bot nunca fica mudo. Texto de documentos é dado, nunca instrução.
 
@@ -12,8 +12,7 @@ from __future__ import annotations
 
 import re
 
-import busca
-import respostas
+import ponte
 
 # Cascata de modelos Gemini: tenta na ordem; se um falhar, passa ao próximo.
 # O primeiro é o padrão. TODO (EM ABERTO): confirmar os nomes no plano pago (spec §12).
@@ -72,7 +71,7 @@ def validar_chamada(nome, args):
 
 def fallback_por_regras(texto):
     """Escolha determinística por palavras-chave simples. Padrão: buscar."""
-    palavras = " ".join(busca.tokenizar(texto))
+    palavras = " ".join(ponte.tokenizar(texto))
     if re.search(r"\b(cofre|guardar|guarde|me envie|meus documentos)\b", palavras):
         return {"ferramenta": "cofre_documento", "args": {"acao": "listar"}}
     if re.search(r"\b(lembrete|lembre|tarefa|tarefas)\b", palavras):
@@ -151,26 +150,26 @@ def executar(chamada, base, uf=None):
         # Cofre, tarefas e briefing entram na próxima rodada (roadmap).
         return {"texto": MSG_EM_BREVE, "opcoes": [], "decisao": "EM_BREVE"}
 
-    busca.preparar(base)
+    ponte.preparar(base)
     pergunta = chamada["args"]["pergunta"]
-    r = busca.buscar(pergunta, base)
+    r = ponte.buscar(pergunta, base)
     por_id = base["registros_por_id"]
     if r["decisao"] == "INVALIDA":
-        return {"texto": respostas.MSG_SEM_PALAVRA, "opcoes": [], "decisao": "INVALIDA"}
+        return {"texto": ponte.MSG_SEM_PALAVRA, "opcoes": [], "decisao": "INVALIDA"}
     if r["decisao"] == "SEM_BASE":
-        return {"texto": respostas.aviso_sem_base(base["temas"]), "opcoes": [],
+        return {"texto": ponte.aviso_sem_base(base["temas"]), "opcoes": [],
                 "decisao": "SEM_BASE"}
     if r["decisao"] == "PEDIR_ESCOLHA":
         ids = [c[0] for c in r["candidatos"]]
-        return {"texto": respostas.pedir_escolha([por_id[i] for i in ids]),
+        return {"texto": ponte.pedir_escolha([por_id[i] for i in ids]),
                 "opcoes": ids, "decisao": "PEDIR_ESCOLHA"}
     return resposta_do_assunto(base, r["candidatos"][0][0], uf)
 
 
 def resposta_do_assunto(base, rid, uf=None, modelo="B"):
     """Resposta completa de um assunto (modelo B por padrão no bot)."""
-    busca.preparar(base)
-    ids = busca.relacionados_ordenados(base["grafo"], rid)
+    ponte.preparar(base)
+    ids = ponte.relacionados(base, rid)
     regs = [base["registros_por_id"][i] for i in ids]
-    texto = respostas.formatar(base["registros_por_id"][rid], modelo, regs, uf=uf)
+    texto = ponte.formatar(base["registros_por_id"][rid], modelo, regs, uf=uf)
     return {"texto": texto, "opcoes": ids, "decisao": "RESPONDER", "registro": rid}
