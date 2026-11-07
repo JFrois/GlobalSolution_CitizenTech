@@ -89,6 +89,7 @@ def formatar_telegram(reg: dict, uf=None) -> str:
     verificado = ("verificado em " + formatar_data(reg["data_verificacao"])
                   if reg["data_verificacao"] else formatar_data(""))
     partes += ["", '<b>Fonte:</b> <a href="%s">%s</a> (%s)' % (esc(link, quote=True), esc(dominio), verificado),
+               "", "Quer ver outro assunto? Toque num botão abaixo ou escreva sua dúvida.",
                "", "<i>%s</i>" % esc(NAO_OFICIAL)]
     return "\n".join(partes)
 

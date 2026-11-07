@@ -35,7 +35,7 @@ def rodar(*entradas, estilo=None, argv=("--simples",)):
 class TestFluxo(unittest.TestCase):
     def test_pergunta_direta_mostra_fonte_e_relacionados(self):
         _, texto = rodar("Como tirar a segunda via do RG?", "0")
-        self.assertIn("2ª via da carteira de identidade", texto)
+        self.assertIn("2ª via da identidade", texto)
         self.assertIn("Fonte:", texto)
         self.assertIn("Continue consultando:", texto)
         self.assertIn(sistema.DESPEDIDA, texto)

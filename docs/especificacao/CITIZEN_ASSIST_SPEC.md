@@ -191,7 +191,7 @@ Bibliotecas de Telegram, servidor, Gemini, Supabase e `cryptography` são import
 ```json
 {
   "id": "DOC-001",
-  "titulo": "2ª via da carteira de identidade (CIN/RG)",
+  "titulo": "2ª via da identidade (CIN/RG)",
   "tema": "documentacao",
   "palavras_chave": ["segunda via", "rg", "identidade", "cin", "perdi"],
   "pergunta": "Como solicitar a 2ª via da carteira de identidade (CIN/RG)?",
@@ -204,7 +204,7 @@ Bibliotecas de Telegram, servidor, Gemini, Supabase e `cryptography` são import
   "relacionados": ["DOC-002", "SRV-004", "DIR-004"]
 }
 ```
-- Obrigatórios: `id`, `tema`, `palavras_chave`, `pergunta`, `orientacao`, `referencia`, `data_verificacao`, `relacionados` (pode ser lista vazia). Opcionais: `titulo` (nome curto do assunto, usado nas listas e como título da resposta; se faltar, vale a `pergunta`), `confirmar_antes` (padrão `false`), `abrangencia` (`"nacional"`/`"estadual"`), `referencias_estaduais`.
+- Obrigatórios: `id`, `tema`, `palavras_chave`, `pergunta`, `orientacao`, `referencia`, `data_verificacao`, `relacionados` (pode ser lista vazia). Opcionais: `titulo` (nome curto do assunto, usado nas listas, nos botões do Telegram e como título da resposta; **até 36 caracteres**, para o botão não ficar cortado; se faltar, vale a `pergunta`), `confirmar_antes` (padrão `false`), `abrangencia` (`"nacional"`/`"estadual"`), `referencias_estaduais`.
 - Estrutura do arquivo: `{ "versao": 1, "temas": {"documentacao": "Documentação pessoal", ...}, "sinonimos": { ... }, "registros": [ ... ] }`.
 - `sinonimos` (opcional): dicionário `termo → [variações]`, por exemplo `{"identidade": ["rg", "cin"], "segunda": ["2a"]}`. Fica nos **dados**, não no código, para que a equipe melhore a busca sem mexer nas regras do programa (requisito da GS).
 - **Passos da orientação:** `respostas.py` monta a lista de passos do Modelo B a partir da `orientacao`: se o texto tiver várias linhas (`\n`), cada linha é um passo; se for uma linha só, cada frase é um passo. Nunca se cria passo que não esteja no texto.

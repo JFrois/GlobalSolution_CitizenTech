@@ -243,7 +243,7 @@ class TestBot(unittest.TestCase):
         self.assertFalse(telegram_bot.eh_palavra_de_menu("menu do INSS"))
         # Botões de assunto usam o título curto, não a pergunta inteira.
         botoes = telegram_bot.botoes_assuntos(b, ["DOC-001"])
-        self.assertEqual(botoes.inline_keyboard[0][0].text, "2ª via da carteira de identidade (CIN/RG)")
+        self.assertEqual(botoes.inline_keyboard[0][0].text, "2ª via da identidade (CIN/RG)")
         # A mensagem de "sem base" do Telegram não repete a lista numerada do terminal.
         self.assertNotIn("1  ", telegram_bot.MSG_SEM_BASE)
 

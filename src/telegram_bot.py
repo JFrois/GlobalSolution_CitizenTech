@@ -160,7 +160,8 @@ def criar_bot(config, base, armazem, links):
     async def abrir_tema(c: CallbackQuery):
         tema = c.data[5:]
         if tema in base["ids_por_tema"]:
-            await c.message.answer(html.escape(base["temas"][tema]),
+            await c.message.answer("<b>%s</b>\nToque num assunto ou escreva sua dúvida."
+                                   % html.escape(base["temas"][tema]),
                                    reply_markup=botoes_assuntos(base, base["ids_por_tema"][tema]))
         await c.answer()
 
