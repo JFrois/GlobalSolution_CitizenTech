@@ -59,9 +59,22 @@ class TestRoteador(unittest.TestCase):
         # Pergunta que a base responde sozinha: não gasta Gemini.
         self.assertTrue(roteador.resposta_direta_basta("Como tirar a segunda via do RG?", self.base))
         # Ambígua, sem base ou com ferramenta futura: aí sim a IA pode ajudar.
-        self.assertFalse(roteador.resposta_direta_basta("documento", self.base))
+        # Ambígua e sem palavras também são decididas pela base, sem Gemini.
+        self.assertTrue(roteador.resposta_direta_basta("documento", self.base))
+        self.assertTrue(roteador.resposta_direta_basta("???", self.base))
         self.assertFalse(roteador.resposta_direta_basta("como pagar o IPVA", self.base))
         self.assertFalse(roteador.resposta_direta_basta("me lembre de pagar a conta amanhã", self.base))
+
+    def test_reconciliar_ignora_ferramenta_inventada_pelo_gemini(self):
+        tarefas = {"ferramenta": "gerenciar_tarefas", "args": {"acao": "listar"}}
+        # Gemini escolheu tarefas, mas o texto não fala de tarefa: vale a busca.
+        r = roteador.reconciliar(tarefas, "Como pagar o IPVA?")
+        self.assertEqual(r["ferramenta"], "buscar_orientacao")
+        # Quando o texto pede mesmo lembrete, a escolha do Gemini é mantida.
+        r = roteador.reconciliar(tarefas, "me lembre de pagar a conta amanhã")
+        self.assertEqual(r["ferramenta"], "gerenciar_tarefas")
+        # Sem resposta do Gemini: regras.
+        self.assertEqual(roteador.reconciliar(None, "como pagar o IPVA")["ferramenta"], "buscar_orientacao")
 
     def test_ordem_da_cascata_leve_primeiro_e_sem_modelos_de_imagem_ou_voz(self):
         da_chave = [

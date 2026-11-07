@@ -152,7 +152,11 @@ def criar_bot(config, base, armazem, links):
             mensagem, dados, user_id = ctx
             try:
                 armazem.definir_uf(user_id, dados[3:])
-                await mensagem.answer("Estado salvo: %s. Você pode mudar quando quiser." % dados[3:])
+                texto = "Estado salvo: %s. Você pode mudar quando quiser (/localizacao)." % dados[3:]
+                try:  # troca o teclado de UFs pela confirmação, em vez de deixá-lo na tela
+                    await mensagem.edit_text(texto)
+                except Exception:
+                    await mensagem.answer(texto)
             except ValueError:
                 await mensagem.answer(MSG_ERRO)
         await c.answer()
@@ -239,7 +243,7 @@ def criar_bot(config, base, armazem, links):
                     # Sem o texto da mensagem (spec §13): só o tipo do erro.
                     log.warning("Gemini sem resposta útil (%s); usando regras", type(erro).__name__)
                     chamada = None
-            chamada = chamada or roteador.fallback_por_regras(texto)
+            chamada = roteador.reconciliar(chamada, texto)
             resultado = roteador.executar(chamada, base, armazem.obter_uf(user_id))
             await responder(m, resultado, user_id)
         except Exception:
