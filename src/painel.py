@@ -61,8 +61,11 @@ class LinksUnicos:
         self._validade = validade
 
     def gerar(self, user_id, agora=None):
+        agora = time.time() if agora is None else agora
+        # Descarta links vencidos que ninguém usou, para o dicionário não crescer sem limite.
+        self._tokens = {t: d for t, d in self._tokens.items() if d[1] >= agora}
         token = secrets.token_urlsafe(32)
-        self._tokens[token] = (int(user_id), (time.time() if agora is None else agora) + self._validade)
+        self._tokens[token] = (int(user_id), agora + self._validade)
         return token
 
     def consumir(self, token, agora=None):
@@ -105,6 +108,9 @@ class LimitadorTaxa:
 
     def permitir(self, chave, agora=None):
         agora = time.time() if agora is None else agora
+        if len(self._hits) > 1000:  # limpeza de chaves antigas, para não crescer sem limite
+            self._hits = {c: h for c, h in self._hits.items()
+                          if any(agora - t < self.janela for t in h)}
         recentes = [t for t in self._hits.get(chave, []) if agora - t < self.janela]
         if len(recentes) >= self.maximo:
             self._hits[chave] = recentes
@@ -112,6 +118,13 @@ class LimitadorTaxa:
         recentes.append(agora)
         self._hits[chave] = recentes
         return True
+
+
+def pergunta_do_corpo(corpo):
+    """Extrai a pergunta do JSON recebido; qualquer formato inesperado vira texto vazio."""
+    if isinstance(corpo, dict) and isinstance(corpo.get("pergunta"), str):
+        return corpo["pergunta"]
+    return ""
 
 
 # ---- Resposta estruturada (sem LLM) ----------------------------------------
@@ -195,8 +208,11 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url=""):
         uid = usuario(x_telegram_init_data, sessao)
         if not limitador.permitir(uid):
             raise HTTPException(status_code=429, detail="Muitas perguntas seguidas. Aguarde um instante.")
-        corpo = await request.json()
+        try:
+            corpo = await request.json()
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Pedido inválido.")
         # A pergunta não é gravada nem logada (spec §10.5 e §13).
-        return JSONResponse(resposta_estruturada(corpo.get("pergunta", ""), base))
+        return JSONResponse(resposta_estruturada(pergunta_do_corpo(corpo), base))
 
     return app

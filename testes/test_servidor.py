@@ -154,6 +154,26 @@ class TestPainel(unittest.TestCase):
                              busca.Buscador(b).buscar(pergunta).decisao)
 
 
+class TestPainelRobustez(unittest.TestCase):
+    def test_corpo_inesperado_vira_pergunta_vazia(self):
+        for corpo in (None, [], "texto", {}, {"pergunta": 5}, {"pergunta": None}):
+            self.assertEqual(painel.pergunta_do_corpo(corpo), "")
+        self.assertEqual(painel.pergunta_do_corpo({"pergunta": "oi"}), "oi")
+
+    def test_links_vencidos_sao_descartados(self):
+        links = painel.LinksUnicos(validade=10)
+        antigo = links.gerar(1, agora=0)
+        links.gerar(2, agora=100)
+        self.assertNotIn(antigo, links._tokens)
+
+    def test_limitador_nao_cresce_sem_limite(self):
+        lim = painel.LimitadorTaxa(maximo=1, janela=10)
+        for i in range(1100):
+            lim.permitir(i, agora=0)
+        lim.permitir("novo", agora=1000)
+        self.assertLess(len(lim._hits), 10)
+
+
 class TestServidor(unittest.TestCase):
     def test_env_faltando_e_listado(self):
         self.assertEqual(servidor.faltando({}), ["TELEGRAM_BOT_TOKEN", "SESSAO_SEGREDO"])
