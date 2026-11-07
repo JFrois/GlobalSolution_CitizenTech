@@ -89,6 +89,8 @@ def _validar_registro(reg, posicao: int, temas: dict) -> list:
         erros.append("registro %s: 'data_verificacao' deve estar vazia ou ser AAAA-MM-DD" % nome)
 
     # Campos opcionais.
+    if "titulo" in reg and not _texto_ok(reg["titulo"]):
+        erros.append("registro %s: 'titulo' está vazio" % nome)
     if "confirmar_antes" in reg and not isinstance(reg["confirmar_antes"], bool):
         erros.append("registro %s: 'confirmar_antes' deve ser true ou false" % nome)
     if "abrangencia" in reg and reg["abrangencia"] not in ABRANGENCIAS:

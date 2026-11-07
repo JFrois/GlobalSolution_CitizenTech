@@ -9,6 +9,7 @@
   "registros": [
     {
       "id": "DOC-001",
+      "titulo": "2ª via da carteira de identidade (CIN/RG)",
       "tema": "documentacao",
       "palavras_chave": ["segunda via", "rg", "identidade", "cin", "perdi", "carteira de identidade", "documento"],
       "pergunta": "Como solicitar a 2ª via da carteira de identidade (CIN/RG)?",
@@ -22,6 +23,7 @@
     },
     {
       "id": "DOC-002",
+      "titulo": "CIN digital no app gov.br",
       "tema": "documentacao",
       "palavras_chave": ["cin digital", "identidade digital", "carteira digital", "identidade no celular", "celular", "app gov.br", "aplicativo", "documento"],
       "pergunta": "Como ter a Carteira de Identidade Nacional (CIN) digital no app gov.br?",
@@ -32,6 +34,7 @@
     },
     {
       "id": "DOC-003",
+      "titulo": "2ª via do título de eleitor",
       "tema": "documentacao",
       "palavras_chave": ["segunda via", "titulo de eleitor", "titulo", "eleitor", "perdi", "documento"],
       "pergunta": "Como pedir a 2ª via do título de eleitor?",
@@ -42,6 +45,7 @@
     },
     {
       "id": "DOC-004",
+      "titulo": "Título de eleitor cancelado",
       "tema": "documentacao",
       "palavras_chave": ["titulo cancelado", "cancelado", "regularizar", "titulo", "eleitor", "documento"],
       "pergunta": "Meu título de eleitor foi cancelado: como regularizar?",
@@ -53,6 +57,7 @@
     },
     {
       "id": "DOC-005",
+      "titulo": "Situação eleitoral",
       "tema": "documentacao",
       "palavras_chave": ["situacao eleitoral", "consultar", "regular", "quitacao", "titulo", "eleitor", "documento"],
       "pergunta": "Como consultar minha situação eleitoral?",
@@ -63,6 +68,7 @@
     },
     {
       "id": "SRV-001",
+      "titulo": "Meu INSS e telefone 135",
       "tema": "servicos",
       "palavras_chave": ["meu inss", "inss", "135", "aposentadoria", "beneficio", "previdencia"],
       "pergunta": "Como acessar o Meu INSS e o telefone 135?",
@@ -73,6 +79,7 @@
     },
     {
       "id": "SRV-002",
+      "titulo": "Perícia médica do INSS",
       "tema": "servicos",
       "palavras_chave": ["pericia", "pericia medica", "agendar", "marcar", "inss", "auxilio"],
       "pergunta": "Como agendar a perícia médica do INSS?",
@@ -84,6 +91,7 @@
     },
     {
       "id": "SRV-003",
+      "titulo": "Extrato CNIS e simulação de aposentadoria",
       "tema": "servicos",
       "palavras_chave": ["cnis", "extrato", "simulacao", "aposentadoria", "contribuicao", "inss"],
       "pergunta": "Como tirar o extrato CNIS e simular a aposentadoria?",
@@ -94,6 +102,7 @@
     },
     {
       "id": "SRV-004",
+      "titulo": "Inscrição no CadÚnico",
       "tema": "servicos",
       "palavras_chave": ["cadunico", "cadastro unico", "inscricao", "inscrever", "programas sociais", "bolsa familia"],
       "pergunta": "Como me inscrever no CadÚnico?",
@@ -104,6 +113,7 @@
     },
     {
       "id": "SRV-005",
+      "titulo": "Cartão Nacional de Saúde",
       "tema": "servicos",
       "palavras_chave": ["cartao nacional de saude", "cartao sus", "cns", "saude", "sus"],
       "pergunta": "Como obter o Cartão Nacional de Saúde (cartão do SUS)?",
@@ -114,6 +124,7 @@
     },
     {
       "id": "SRV-006",
+      "titulo": "Meu SUS Digital",
       "tema": "servicos",
       "palavras_chave": ["meu sus digital", "sus digital", "vacinas", "exames", "saude", "sus"],
       "pergunta": "Como usar o Meu SUS Digital?",
@@ -124,6 +135,7 @@
     },
     {
       "id": "DIR-001",
+      "titulo": "Reclamar no Consumidor.gov.br",
       "tema": "direitos",
       "palavras_chave": ["consumidor.gov.br", "consumidor", "reclamar", "reclamacao", "empresa", "produto"],
       "pergunta": "Como reclamar de um produto ou serviço pelo Consumidor.gov.br?",
@@ -134,6 +146,7 @@
     },
     {
       "id": "DIR-002",
+      "titulo": "Defensoria Pública",
       "tema": "direitos",
       "palavras_chave": ["defensoria publica", "defensoria", "advogado", "gratuito", "assistencia juridica"],
       "pergunta": "Como buscar ajuda da Defensoria Pública?",
@@ -144,6 +157,7 @@
     },
     {
       "id": "DIR-003",
+      "titulo": "Disque 100 e Ligue 180",
       "tema": "direitos",
       "palavras_chave": ["disque 100", "ligue 180", "denuncia", "violencia", "direitos humanos", "mulher"],
       "pergunta": "Quando usar o Disque 100 e o Ligue 180?",
@@ -154,6 +168,7 @@
     },
     {
       "id": "DIR-004",
+      "titulo": "Certidão de nascimento gratuita",
       "tema": "direitos",
       "palavras_chave": ["certidao de nascimento", "certidao", "nascimento", "gratuita", "cartorio"],
       "pergunta": "Como conseguir a certidão de nascimento gratuita?",
@@ -165,6 +180,7 @@
     },
     {
       "id": "DIR-005",
+      "titulo": "Juizado Especial Cível",
       "tema": "direitos",
       "palavras_chave": ["juizado especial civel", "juizado", "pequenas causas", "processo", "justica"],
       "pergunta": "Como funciona o Juizado Especial Cível?",
@@ -175,6 +191,7 @@
     },
     {
       "id": "DIR-006",
+      "titulo": "Tarifa Social de Energia Elétrica",
       "tema": "direitos",
       "palavras_chave": ["tarifa social", "energia", "luz", "conta de luz", "desconto"],
       "pergunta": "Como conseguir a Tarifa Social de Energia Elétrica?",
