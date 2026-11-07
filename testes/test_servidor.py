@@ -358,6 +358,12 @@ class TestBot(unittest.TestCase):
         # Botões de assunto usam o título curto, não a pergunta inteira.
         botoes = telegram_bot.botoes_assuntos(b, ["DOC-001"])
         self.assertEqual(botoes.inline_keyboard[0][0].text, "2ª via da identidade (CIN/RG)")
+        # Lista de assuntos de um tema leva um botão para voltar aos temas.
+        com_volta = telegram_bot.botoes_assuntos(b, ["DOC-001"], voltar=True)
+        self.assertEqual(com_volta.inline_keyboard[-1][0].callback_data, "menu:")
+        self.assertEqual(len(telegram_bot.botoes_assuntos(b, ["DOC-001"]).inline_keyboard), 1)
+        # Pergunta ambígua: texto curto, sem a lista numerada (os candidatos vão nos botões).
+        self.assertNotIn("1  ", telegram_bot.MSG_ESCOLHA)
         # A mensagem de "sem base" do Telegram não repete a lista numerada do terminal.
         self.assertNotIn("1  ", telegram_bot.MSG_SEM_BASE)
 
