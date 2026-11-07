@@ -283,10 +283,12 @@ python src/sistema.py
 |---|---|
 | `python src/sistema.py --avaliar` | Roda as perguntas de teste e mostra taxa de acerto e tempo médio |
 | `python src/sistema.py --validar-entrega` | Confere se todos os registros da base estão completos |
+| `python src/sistema.py --simples` | Texto puro, sem cor nem molduras (leitores de tela); também automático com `NO_COLOR` ou saída redirecionada |
+| `python src/sistema.py --base caminho.json` | Usa outra base JSON (para testes) |
 | `python src/sistema.py --servidor` | Sobe o bot do Telegram, o painel e o agendador (precisa de `.env`; ver `.env.example`) |
 | `python -m unittest discover -s testes -t .` | Roda os testes automatizados |
 
-<!-- TODO: ajustar se algum modo mudar durante a implementação (spec §6.1). -->
+> Estado de cada parte: veja a seção "Estado do projeto" no início deste README.
 
 ---
 
