@@ -17,6 +17,7 @@ Mapa curto do repositório (atualizar ao criar ou mover módulos).
 | `cspell.json`, `.vscode/extensions.json` | Corretor ortográfico em pt-BR e extensões recomendadas do VS Code (sem o dicionário português, o cSpell marca todo texto em português) | Pronto |
 | `docs/` | Spec (fonte de verdade), planejamento, arquitetura, UX, `uso_ia.md` | Atualizados em 07/11 |
 | `src/ponte.py` | Liga o servidor ao núcleo (preparar, buscar, formatar, UF) | Pronto, testado |
+| `src/transcricao.py` | Voz -> texto com Whisper local (import tardio, precisa de ffmpeg) | Testado com Whisper falso; falta teste com áudio real |
 | `src/roteador.py`, `telegram_bot.py`, `painel.py`, `armazenamento.py`, `servidor.py` | Servidor base: roteador Gemini + regras, bot, API do painel, SQLite, `--servidor` | Escritos; testados só sem Telegram/Gemini/VM reais (as bibliotecas não estão instaladas aqui) |
 | `deploy/`, `.github/workflows/deploy.yml`, `requirements.txt` | Caddy, systemd e deploy por SSH | Não testados em VM |
 | Onda 2 restante (`cofre`, `criptografia`, `classificador`, `tarefas`, `agendador`, `briefing`, front do painel) | Não existem ainda | Pendente |

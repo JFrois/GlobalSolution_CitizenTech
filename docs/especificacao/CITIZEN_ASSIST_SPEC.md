@@ -21,7 +21,7 @@ Ele existe em duas camadas:
 1. **Núcleo (Onda 1 — é o que a GS avalia):** base de conhecimento, busca por palavras-chave com pontuação, grafo de temas com navegação e Dijkstra, modelos de resposta A e B, tratamento de entradas inválidas, testes e métricas. Roda **no terminal, offline, sem chaves**: `python src/sistema.py`.
 2. **Camada de produto (Onda 2 — diferencial, a GS não avalia):** bot no Telegram multimodal (texto, voz, foto, PDF), roteador com LLM (Gemini, function calling), cofre de documentos criptografado, tarefas e lembretes, briefing matinal e painel web (Telegram Mini App ou navegador).
 
-> **Princípio de projeto:** a resposta ao cidadão **nunca** é gerada livremente pelo LLM. O LLM só (a) decide qual ferramenta chamar, (b) transcreve voz, (c) sugere nome/tipo de documento do cofre. O conteúdo da orientação vem sempre do `base.json`. Isso mantém a taxa de acerto mensurável e evita informação inventada.
+> **Princípio de projeto:** a resposta ao cidadão **nunca** é gerada livremente pelo LLM. O LLM só (a) decide qual ferramenta chamar e (b) sugere nome/tipo de documento do cofre. A voz é transcrita localmente pelo Whisper, sem LLM. O conteúdo da orientação vem sempre do `base.json`. Isso mantém a taxa de acerto mensurável e evita informação inventada.
 
 ---
 
@@ -294,7 +294,7 @@ Dois modelos documentados, comparados nos testes (clareza, consistência, presen
 - **Validar** os argumentos retornados com esquema estrito; argumento inválido → ignorar e cair no fallback.
 - **Fallback por regras** (palavras-chave simples) se o LLM falhar, estourar tempo ou devolver algo inválido. O bot nunca fica mudo.
 - **Segurança contra injeção de prompt:** o LLM não executa nada além de escolher entre as 4 ferramentas; conteúdo de documentos/PDFs/fotos é tratado como **dado**, nunca como instrução.
-- **Voz:** transcrever (Gemini) → tratar como texto. **Foto/PDF:** oferecer "guardar no cofre?" (fluxo §10) — não responder perguntas com base no conteúdo do arquivo.
+- **Voz (decisão de 07/11):** transcrever **localmente com Whisper** (`src/transcricao.py`; modelo `base`, configurável por `WHISPER_MODELO`; exige `ffmpeg`) → mostrar "Entendi: …" → tratar como texto, no mesmo caminho do texto digitado (o Gemini só entra se a base não resolver). O áudio não sai da VM, não é gravado e o texto transcrito não é logado. Limite: 2 min / 10 MB. Sem Whisper ou `ffmpeg`, o bot avisa e pede para escrever. **Foto/PDF:** oferecer "guardar no cofre?" (fluxo §10) — não responder perguntas com base no conteúdo do arquivo.
 
 ---
 

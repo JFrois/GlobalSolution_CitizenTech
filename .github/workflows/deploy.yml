@@ -33,5 +33,10 @@ jobs:
           script: |
             cd ~/citizen-assist
             git pull --ff-only origin main
+            command -v ffmpeg >/dev/null || echo 'AVISO: instale o ffmpeg na VM (sudo apt install ffmpeg) para ativar a voz'
+            # O openai-whisper não compila com o setuptools novo (falta pkg_resources):
+            # instala as ferramentas antigas e o Whisper sem isolamento de build, antes do resto.
+            .venv/bin/pip install -q "setuptools<81" wheel
+            .venv/bin/pip install -q --no-build-isolation openai-whisper==20240930
             .venv/bin/pip install -r requirements.txt
             sudo systemctl restart citizen-assist
