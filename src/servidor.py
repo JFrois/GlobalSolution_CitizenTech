@@ -6,6 +6,7 @@ terminal continua rodando só com Python. Segredos vêm do .env (nunca do Git).
 from __future__ import annotations
 
 import os
+import socket
 import sys
 from pathlib import Path
 
@@ -23,10 +24,24 @@ def ler_env(caminho=None):
             if linha and not linha.startswith("#") and "=" in linha:
                 chave, _, valor = linha.partition("=")
                 config[chave.strip()] = valor.strip().strip('"').strip("'")
-    for chave in list(config) + list(OBRIGATORIAS) + ["GEMINI_API_KEY", "GEMINI_MODELO", "PAINEL_URL"]:
+    for chave in list(config) + list(OBRIGATORIAS) + ["GEMINI_API_KEY", "GEMINI_MODELO", "PAINEL_URL", "PAINEL_PORTA"]:
         if chave in os.environ:
             config[chave] = os.environ[chave]
     return config
+
+
+PORTA_PADRAO = 8000
+
+
+def porta_livre(porta, host="127.0.0.1"):
+    """True se dá para abrir um servidor nessa porta (ninguém está usando)."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  # mesmo modo do uvicorn
+        try:
+            s.bind((host, porta))
+        except OSError:
+            return False
+    return True
 
 
 def faltando(config):
@@ -51,6 +66,18 @@ def iniciar(caminho_base=None):
     except ImportError as erro:
         print("Faltam bibliotecas do modo servidor (%s)." % erro.name)
         print("Instale com: pip install -r requirements.txt")
+        return 1
+
+    try:
+        porta = int(config.get("PAINEL_PORTA") or PORTA_PADRAO)
+    except ValueError:
+        print("PAINEL_PORTA no .env precisa ser um número (ex.: 8000).")
+        return 1
+    if not porta_livre(porta):
+        print("A porta %d já está em uso: provavelmente há outro servidor deste projeto rodando." % porta)
+        print("Feche o outro (Ctrl+C na aba dele) ou veja quem usa a porta: lsof -i :%d" % porta)
+        print("Dois servidores com o mesmo token do bot brigam pelas mensagens.")
+        print("Para usar outra porta, coloque PAINEL_PORTA=8001 no .env.")
         return 1
 
     import armazenamento
@@ -81,7 +108,7 @@ def iniciar(caminho_base=None):
         except Exception as erro:
             logging.getLogger("citizen.bot").warning("set_my_commands falhou (%s)", type(erro).__name__)
         # Painel só em localhost: o Caddy faz o HTTPS na frente (spec §12).
-        servidor_web = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=8000,
+        servidor_web = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=porta,
                                                      log_level="warning"))
         await asyncio.gather(servidor_web.serve(), dp.start_polling(bot))
 
