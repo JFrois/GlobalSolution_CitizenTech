@@ -1,6 +1,6 @@
 # Citizen Assist AI — Documento do projeto/produto, SDD e SDLC
 
-> Documento de processo da equipe (GS 2026.2 · CitizenTech). Complementa `CITIZEN_ASSIST_SPEC.md`, que é a especificação técnica e a **fonte de verdade**. Pode ir para o repositório como `docs/processo_desenvolvimento.md` e servir de base para as seções de arquitetura e impacto do `relatorio.pdf`.
+> Documento de processo da equipe (GS 2026.2 · CitizenTech). Complementa a [especificação](especificacao/CITIZEN_ASSIST_SPEC.md), que é a **fonte de verdade**, e serve de base para as seções de arquitetura e impacto do `relatorio.pdf`.
 
 ---
 
@@ -38,7 +38,7 @@ Integração com órgãos públicos, consulta ao site oficial em tempo real (`co
 ### B.1 O que é, aplicado aqui
 No SDD, a **especificação escrita vem antes do código e governa o código**. Em vez de "pedir código" a uma IA e ajustar depois, a equipe define o *quê* e o *porquê* com precisão, deriva um plano e tarefas pequenas, implementa uma tarefa por vez e **valida o resultado contra a spec**. A spec é um artefato vivo e versionado no Git.
 
-No nosso caso, `CITIZEN_ASSIST_SPEC.md` (copiado para `CLAUDE.md` na raiz do repositório) é lido pelo Claude Code antes de qualquer trabalho. Isso reduz alucinação de requisito, mantém a IA dentro do escopo aprovado e deixa a decisão de produto com os humanos.
+No nosso caso, a spec fica em `docs/especificacao/CITIZEN_ASSIST_SPEC.md` e o `CLAUDE.md` da raiz apenas a **importa** (não há cópia). Assim o Claude Code a lê antes de qualquer trabalho. Isso reduz alucinação de requisito, mantém a IA dentro do escopo aprovado e deixa a decisão de produto com os humanos.
 
 ### B.2 O fluxo SDD da equipe
 
@@ -49,7 +49,7 @@ Especificar ─► Planejar ─► Quebrar em tarefas ─► Implementar ─► 
 
 | Etapa | O que fazemos | Artefato | Onde |
 |---|---|---|---|
-| **1. Especificar** | Requisitos da GS, decisões aprovadas, esquema da base, regras de busca, segurança | `CITIZEN_ASSIST_SPEC.md` | Raiz (como `CLAUDE.md`) |
+| **1. Especificar** | Requisitos da GS, decisões aprovadas, esquema da base, regras de busca, segurança | `CITIZEN_ASSIST_SPEC.md` | `docs/especificacao/` (importada pelo `CLAUDE.md`) |
 | **2. Planejar** | Arquitetura, stack, ordem de implementação por marco | §5, §12 e §16 da spec | Mesma spec |
 | **3. Tarefas** | Cada marco vira tarefas curtas com critério de aceite testável | Issues/Projects do GitHub ou `TASKS.md` | Repositório |
 | **4. Implementar** | Claude Code executa **uma tarefa por vez**, citando a seção da spec que atende | Commits pequenos | Git |
@@ -73,9 +73,9 @@ Especificar ─► Planejar ─► Quebrar em tarefas ─► Implementar ─► 
 | Ler JSON, listar temas, tratar arquivo ausente/vazio/inconsistente | §6.2, §7.1 | `base.py` | Testes automatizados (3 casos de erro) |
 | Busca por pergunta ou menu; várias correspondências | §7.3 | `busca.py` | Perguntas 1–11 |
 | Grafo de temas e navegação com ≥ 3 assuntos | §7.3 (7–9) | `busca.py` | Teste de Dijkstra e de relacionados |
-| ≥ 2 modelos de prompt, comparados | §8 | `respostas.py` | `--avaliar` com A e B |
+| ≥ 2 modelos de prompt, comparados | §8 | `respostas.py` | Rubrica A × B (`comparacao_modelos.csv`) |
 | Aviso de limitação, sem inventar | §7.3, §8 | `busca.py`, `respostas.py` | Perguntas 12–14 e limites L1–L3 |
-| ≥ 12 perguntas, ≥ 3 limites, taxa de acerto e tempo | §14 | `testes/`, `sistema.py --avaliar` | `resultados.csv` |
+| ≥ 12 perguntas, ≥ 3 limites, taxa de acerto e tempo | §14 | `testes/`, `sistema.py --avaliar` | `resultados.csv` (conjuntos equipe e público) |
 | Usabilidade com ≥ 1 usuário | §14.2 | — | `testes/usabilidade.md` |
 | Privacidade e não oficialidade | §13 | todos | Checklist de revisão (§13) |
 | Uso de IA documentado | §15.3 | — | `docs/uso_ia.md` |
@@ -141,12 +141,12 @@ Modelo adotado: **iterativo e incremental, em duas ondas**, com marcos curtos e 
 | Dado sensível no cofre / Gemini | Média | Alta | Plano pago com faturamento ativo, consentimento no upload, texto honesto no README |
 | Integrante indisponível | Média | Média | Frentes com responsáveis e suplentes (a definir) |
 
-### C.5 Papéis (a definir)
+### C.5 Papéis (definidos em 07/11)
 | Frente | Responsável | Suplente |
 |---|---|---|
-| Núcleo e dados (base, busca, testes, métricas) | a definir | a definir |
-| Bot e roteador (Telegram, Gemini, tarefas, briefing) | a definir | a definir |
-| Cofre, painel e infraestrutura (cripto, Mini App, VM, deploy) | a definir | a definir |
+| Núcleo e dados (base, busca, testes, métricas) | A — Juan de Lucas Frois (RM563260) | a definir |
+| Bot e roteador (Telegram, Gemini, tarefas, briefing) | B — Flávia Roberta Pennachin (RM561860) | a definir |
+| Cofre, painel e infraestrutura (cripto, Mini App, VM, deploy) | C — Pedro Valente (RM570394) | a definir |
 
 Mantenedor da VM em último caso: Juan.
 
@@ -166,6 +166,6 @@ Reunião rápida (15 min) a cada 2 dias até 13/11: o que foi entregue, o que bl
 ---
 
 ## Referências internas
-- `CITIZEN_ASSIST_SPEC.md` — especificação técnica completa.
-- `Solicitação GS.md` — enunciado oficial (Projeto "Global Solution").
+- [`docs/especificacao/CITIZEN_ASSIST_SPEC.md`](especificacao/CITIZEN_ASSIST_SPEC.md) — especificação técnica completa.
+- [`docs/Solicitação GS.md`](Solicitação%20GS.md) — enunciado oficial.
 - Repositório modelo da coordenação: https://github.com/equipe1ccon/FIAP-PORTFOLIO-1CCON/tree/master

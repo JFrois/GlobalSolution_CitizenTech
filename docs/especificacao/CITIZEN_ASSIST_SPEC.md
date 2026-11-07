@@ -2,7 +2,11 @@
 
 > **Para o Claude Code:** este arquivo é a **única fonte de verdade** do projeto (o `CLAUDE.md` da raiz apenas o importa; edite sempre este arquivo). Leia-o inteiro antes de escrever código. Tudo o que está aqui foi **aprovado pela equipe**. Onde aparecer **(sugestão)**, é detalhe de implementação que você pode ajustar sem perguntar; onde aparecer **(EM ABERTO)**, não decida sozinho: registre no código como `TODO` e avise o Juan.
 
-- **Equipe:** grupo de 3 alunos da FIAP (mantenedor da VM em último caso: Juan).
+- **Equipe:** grupo de 3 alunos da FIAP (definido em 07/11/2026):
+  - **Integrante A — Juan de Lucas Frois (RM563260):** núcleo e dados.
+  - **Integrante B — Flávia Roberta Pennachin (RM561860):** bot e roteador; testes e comparação A × B.
+  - **Integrante C — Pedro Valente (RM570394):** cofre, painel e infraestrutura.
+  - Mantenedor da VM em último caso: Juan.
 - **Prazo de entrega na FIAP ON:** 19/11/2026. **Código completo até 13/11/2026.** De 14 a 19/11: testes finais, README, relatório PDF, vídeo e envio.
 - **Regra de corte:** o que não estiver testado em 13/11 vira *roadmap* no README/relatório, não entra na demonstração.
 
@@ -23,7 +27,7 @@ Ele existe em duas camadas:
 
 ## 2. Requisitos da Global Solution (o que não pode faltar)
 
-Fonte: "Solicitação GS.md" (no Projeto). Fases 4, 5 e 6 são o foco; fases 1–3 apoiam.
+Fonte: [`docs/Solicitação GS.md`](../Solicitação%20GS.md) (enunciado oficial). Fases 4, 5 e 6 são o foco; fases 1–3 apoiam.
 
 ### 2.1 Dados obrigatórios
 - ≥ **15 registros** em ≥ **3 temas**. Cada registro: identificador, tema, pergunta/palavras-chave, orientação resumida, referência consultada, data de verificação. (Planejado: **17 registros, 3 temas**.)
@@ -88,7 +92,8 @@ Um `.txt` contendo **apenas** dois links: (1) repositório GitHub **público**; 
 7. **Briefing matinal:** tarefas/lembretes do dia + até **3 manchetes por tema** escolhido pelo usuário, vindas de feeds RSS, **rotuladas "não oficial"** e **separadas** da base verificada.
 8. **Base — tema 3:** Consumidor.gov.br, Defensoria Pública, Disque 100/Ligue 180, certidão de nascimento gratuita, Juizado Especial Cível e Tarifa Social de Energia.
 9. **Hospedagem:** VM sempre ligada + **deploy automático** via GitHub Actions. HTTPS gratuito com DuckDNS + Caddy (depende de um teste de 15 min — §12).
-10. **Cronograma:** tudo vai até 13/11; as 3 frentes têm responsáveis **a definir** (§17).
+10. **Cronograma:** tudo vai até 13/11; responsáveis das 3 frentes definidos em 07/11 (ver cabeçalho): A = Juan, B = Flávia, C = Pedro.
+11. **(Aprovada pela equipe em 07/11) Aba "Perguntar" no painel/Mini App** com a **cena da verificação** (§10.5). Motivo: a crítica de design mostrou que o momento que mais encanta (ver a fonte sendo conferida) só existia no vídeo; o chat do Telegram não permite animação nem visual próprio.
 
 ---
 
@@ -113,6 +118,7 @@ agendador.py (APScheduler persistente): lembretes, briefing, exclusão de mensag
 ```
 README.md
 CLAUDE.md                   instruções do Claude Code; importa docs/especificacao/CITIZEN_ASSIST_SPEC.md
+requirements.txt            dependências fixadas do modo --servidor (o terminal não precisa) (extra)
 src/
   sistema.py                consulta no terminal (padrão); --servidor inicia bot, painel e agendador
   base.py                   carrega e valida data/base.json
@@ -130,21 +136,32 @@ src/
 data/
   base.json
 docs/
-  relatorio.pdf  link_video.txt  uso_ia.md
+  relatorio.pdf  link_video.txt  uso_ia.md          entregáveis da GS (Tabela 2)
+  Solicitação GS.md                                  enunciado oficial
+  especificacao/CITIZEN_ASSIST_SPEC.md               esta spec (fonte de verdade)
+  processo_desenvolvimento.md  planejamento.md  arquitetura.md  ux.md
+  design/                                            tokens.css, tokens.json e imagens da identidade (§19)
 painel/                     front-end do painel web (HTML/JS estático)             (extra)
-testes/                     perguntas de teste, script de avaliação, resultados
+testes/                     perguntas (equipe e público), resultados.csv, comparacao_modelos.csv, usabilidade.md, test_*.py
 scripts/                    lista registros com data de verificação antiga         (extra)
 .env.example                só nomes das variáveis, sem valores                    (extra)
 .github/workflows/deploy.yml
 ```
 
 ### 5.2 Stack
-- **Python 3.11+**. Núcleo (`base`, `busca`, `respostas`, `sistema`) usa **só biblioteca padrão** (`json`, `unicodedata`, `heapq`, `time`, `re`, `argparse`).
+- **Python:** o **núcleo** (`base`, `busca`, `respostas`, `sistema` no modo terminal e `--avaliar`) precisa rodar em **Python 3.9 ou superior**, porque não sabemos qual versão o avaliador tem. A **Onda 2** usa **Python 3.11+** (só na VM). Núcleo usa **só biblioteca padrão** (`json`, `unicodedata`, `heapq`, `time`, `re`, `argparse`).
 - **aiogram 3.x** (bot), **APScheduler** com jobstore persistente, **FastAPI/uvicorn** ou equivalente leve para o painel **(sugestão)**, `cryptography` para AES-GCM, `google-genai` para o Gemini, `feedparser` para RSS.
 - **Armazenamento:** Supabase (DB + Storage) **ou equivalente** **(EM ABERTO: confirmar no início)**. Isole atrás de uma interface em `cofre.py`/`tarefas.py` para trocar sem reescrever.
 
 ### 5.3 Regra de import (crítica)
 Bibliotecas de Telegram, servidor, Gemini, Supabase e `cryptography` são importadas **somente dentro do modo `--servidor`** (import tardio). `python src/sistema.py` precisa rodar numa máquina limpa, só com Python, **sem `pip install`, sem `.env`, sem internet**. É isso que o avaliador executa.
+
+### 5.4 Portabilidade do núcleo
+- Compatível com Python 3.9: usar `from __future__ import annotations` nos módulos que anotam tipos com `X | None` ou `list[str]`; não usar `match`/`case`.
+- Se a versão for menor que 3.9, `sistema.py` mostra uma mensagem clara e sai (sem traceback).
+- Caminhos (`data/base.json`, `testes/`) resolvidos a partir de `Path(__file__)`, nunca da pasta atual do terminal.
+- Saída do terminal sem emoji e com linhas de até 80 colunas, para funcionar no console do Windows.
+- **Identidade visual no terminal (decisão de 07/11):** cores ANSI e molduras com caracteres de caixa, **só com a biblioteca padrão**. Cores de 24 bits quando o terminal suporta (`COLORTERM=truecolor`), senão 16 cores aproximadas; no Windows 10+, ativar o modo de cores do console com `ctypes`. **Texto puro automático** quando a saída não é um terminal (`sys.stdout.isatty()` falso: `--avaliar`, testes, arquivo) ou quando existe a variável `NO_COLOR`; opção `--simples` força texto puro, sem cor e sem molduras (leitores de tela). A cor nunca é a única pista: `Atenção:` e `Fonte:` continuam escritos. Cartela de abertura **estática** (sem animação).
 
 ---
 
@@ -157,7 +174,7 @@ Bibliotecas de Telegram, servidor, Gemini, Supabase e `cryptography` são import
 
 ### 6.2 Fluxo do terminal
 1. Carrega e **valida** a base (campos obrigatórios; arquivo ausente, vazio, JSON inválido, ids duplicados, `relacionados` apontando para id inexistente → mensagem clara, sem traceback).
-2. Menu: `1` escolher tema · `2` fazer uma pergunta · `3` ver caminho entre dois assuntos · `4` trocar modelo de resposta (A/B) · `0` sair.
+2. Menu (decisão de 07/11): o usuário **digita a pergunta direto** no menu principal (só dígitos = opção; qualquer outro texto = pergunta). Opções: `1` ver assuntos por tema · `2` ver o caminho entre dois assuntos · `3` formato da resposta (resumido = modelo A; passo a passo = modelo B) · `?` ajuda · `0` sair. Telas, textos e mensagens de erro em [`docs/ux.md`](../ux.md) §3.
 3. Pergunta → busca (§7) → decisão (§7.3) → resposta no modelo A ou B (§8) com **fonte**, **data de verificação**, **aviso de confirmação** (se `confirmar_antes`) e **assuntos relacionados** como próximos passos numerados.
 4. Tratamento: entrada vazia, opção inexistente, texto só com símbolos, pergunta sem correspondência, pergunta ambígua. Mensagens compreensíveis; o programa **nunca** encerra por erro de entrada.
 5. Todo código **comentado em português** (a GS exige).
@@ -183,7 +200,8 @@ Bibliotecas de Telegram, servidor, Gemini, Supabase e `cryptography` são import
 }
 ```
 - Obrigatórios: `id`, `tema`, `palavras_chave`, `pergunta`, `orientacao`, `referencia`, `data_verificacao`, `relacionados` (pode ser lista vazia). Opcionais: `confirmar_antes` (padrão `false`), `abrangencia` (`"nacional"`/`"estadual"`), `referencias_estaduais`.
-- Estrutura do arquivo: `{ "versao": 1, "temas": {"documentacao": "Documentação pessoal", ...}, "registros": [ ... ] }`.
+- Estrutura do arquivo: `{ "versao": 1, "temas": {"documentacao": "Documentação pessoal", ...}, "sinonimos": { ... }, "registros": [ ... ] }`.
+- `sinonimos` (opcional): dicionário `termo → [variações]`, por exemplo `{"identidade": ["rg", "cin"], "segunda": ["2a"]}`. Fica nos **dados**, não no código, para que a equipe melhore a busca sem mexer nas regras do programa (requisito da GS).
 - **Regras de redação:** a orientação é escrita **pelas palavras da equipe**, após abrir e ler a página oficial (não copiar trechos). Sem valores de taxa fixos quando variam. Sempre com `data_verificacao` real.
 - `scripts/` deve listar registros com `data_verificacao` antiga (> 90 dias).
 
@@ -192,17 +210,17 @@ Temas: `documentacao` (Documentação pessoal), `servicos` (Serviços públicos)
 
 | ID | Assunto | Fonte (domínio) | Relacionados | Atenção |
 |---|---|---|---|---|
-| DOC-001 | 2ª via da CIN/RG, **por estado** | portal do estado + gov.br | DOC-002, SRV-004, DIR-004 | `abrangencia: estadual`; taxa varia por UF → **não fixar valor**; detalhar os estados da equipe, demais → link gov.br |
+| DOC-001 | 2ª via da CIN/RG, **por estado** | portal do estado + gov.br | DOC-002, DOC-003, SRV-004, DIR-004 | `abrangencia: estadual`; taxa varia por UF → **não fixar valor**; detalhar os estados da equipe, demais → link gov.br |
 | DOC-002 | CIN digital no app gov.br | gov.br | DOC-001 | |
-| DOC-003 | 2ª via do título de eleitor | tse.jus.br | DOC-004, DOC-005 | |
-| DOC-004 | Título cancelado: como regularizar | tse.jus.br | DOC-003, DOC-005 | Serviços suspensos de 07/05/2026 a 02/11/2026 — **reconferir hoje** |
+| DOC-003 | 2ª via do título de eleitor | tse.jus.br | DOC-001, DOC-004, DOC-005 | Aresta com DOC-001: o atendimento eleitoral pede documento oficial de identidade (**conferir no TSE ao redigir**) |
+| DOC-004 | Título cancelado: como regularizar | tse.jus.br | DOC-003, DOC-005 | Serviços suspensos de 07/05/2026 a 02/11/2026 — a suspensão já terminou; **reconferir a situação atual no TSE antes de redigir** |
 | DOC-005 | Consultar situação eleitoral | tse.jus.br | DOC-003, DOC-004 | |
-| SRV-001 | Meu INSS e telefone 135 | gov.br/inss | SRV-002, SRV-003, SRV-004 | |
+| SRV-001 | Meu INSS e telefone 135 | gov.br/inss | SRV-002, SRV-003, SRV-004, SRV-006 | |
 | SRV-002 | Agendar perícia médica | gov.br/inss | SRV-001 | |
 | SRV-003 | Extrato CNIS e simulação de aposentadoria | gov.br/inss | SRV-001 | |
 | SRV-004 | Inscrição no CadÚnico | gov.br/mds | DOC-001, SRV-001, DIR-006 | |
 | SRV-005 | Cartão Nacional de Saúde | gov.br/saude | SRV-006 | |
-| SRV-006 | Meu SUS Digital | gov.br/saude | SRV-005 | |
+| SRV-006 | Meu SUS Digital | gov.br/saude | SRV-005, SRV-001 | Aresta com SRV-001: os dois serviços digitais usam a mesma conta gov.br (**conferir ao redigir**) |
 | DIR-001 | Reclamar de produto/serviço — Consumidor.gov.br | consumidor.gov.br | DIR-002, DIR-005 | A empresa tem 10 dias para responder |
 | DIR-002 | Defensoria Pública | dpu.def.br + defensorias estaduais | DIR-001, DIR-003, DIR-004, DIR-005 | |
 | DIR-003 | Disque 100 e Ligue 180 | gov.br/mdh e gov.br/mulheres | DIR-002 | **São serviços diferentes**; não misturar |
@@ -210,13 +228,18 @@ Temas: `documentacao` (Documentação pessoal), `servicos` (Serviços públicos)
 | DIR-005 | Juizado Especial Cível | cnj.jus.br | DIR-001, DIR-002 | Até 40 salários mínimos; até 20 sem advogado |
 | DIR-006 | Tarifa Social de Energia Elétrica | aneel.gov.br | SRV-004 | **Conflito de fontes:** inclusão via CadÚnico é automática ou exige pedido à distribuidora? Confirmar na ANEEL antes de redigir |
 
+> **Grafo conexo (decisão de 07/11):** com as arestas DOC-001–DOC-003 e SRV-001–SRV-006, os 17 registros ficam num único componente; não existe mais par de assuntos "sem caminho" na base atual (o caso continua tratado no código, para bases futuras). Ao redigir, a equipe confirma se a justificativa de cada aresta nova está correta na fonte oficial; se não estiver, troca a aresta por outra que faça sentido, mantendo o grafo conexo.
+
 > **Importante:** até aqui só foram lidos *snippets* de busca. A equipe precisa **abrir cada página oficial, ler e escrever a orientação** com a data de verificação. Gere `data/base.json` já com os 17 registros (ids, tema, palavras-chave, pergunta, `relacionados`, `referencia` com o domínio) e o campo `orientacao` marcado `"PREENCHER"` e `data_verificacao` vazia; o `base.py` deve **recusar** registros ainda não preenchidos ao validar em modo de entrega (`--validar-entrega`).
 
 ### 7.3 Algoritmo de busca (`busca.py`)
-1. **Normalização:** minúsculas, remoção de acentos (`unicodedata`), remoção de pontuação, remoção de *stopwords* pt-BR (lista curta própria), tokenização.
+1. **Normalização:** minúsculas, remoção de acentos (`unicodedata`), remoção de pontuação, remoção de *stopwords* pt-BR (lista curta própria), tokenização. **A mesma normalização** é aplicada à pergunta do usuário e aos campos dos registros (`palavras_chave`, `pergunta`, `orientacao`).
+   - *Stopwords* incluem palavras de função e **verbos genéricos** que aparecem em qualquer pergunta (ex.: `como`, `quero`, `preciso`, `fazer`, `tirar`, `onde`, `meu`, `minha`) **(sugestão; documentar a lista final)**.
+   - **Sinônimos:** depois de normalizar, cada token do usuário é expandido com `sinonimos` do `base.json` (ex.: `rg` → também conta como `identidade`). Um token expandido pontua no máximo uma vez por campo.
+   - **Palavras-chave com mais de uma palavra** (ex.: `"segunda via"`): cada token pontua normalmente; se **todos** os tokens da expressão aparecem na pergunta, o registro ganha um **bônus de expressão** (+2) **(sugestão de valor; documentar o usado)**.
 2. **Índice invertido** `palavra → {id: peso}` construído na carga. Também manter a **busca linear** (varredura de todos os registros) para a comparação de desempenho do relatório (Fase 6).
 3. **Pontuação** por registro: soma de pesos dos tokens da pergunta do usuário encontrados em `palavras_chave` (**3**), em `pergunta` (**2**) e em `orientacao` (**1**) **(sugestão de pesos; documentar os usados)**.
-4. **Filtros com De Morgan:** os filtros de tema/exclusão são escritos na forma `not (A or B)` e equivalente `(not A) and (not B)`; mostrar a equivalência no código comentado e no relatório.
+4. **Filtros com De Morgan:** os filtros de tema/exclusão são escritos na forma `not (A or B)` e equivalente `(not A) and (not B)`; mostrar a equivalência no código comentado e no relatório. **Onde o usuário vê o filtro:** (a) no menu `1`, depois de escolher um tema, a pergunta é buscada **só dentro desse tema**; (b) ao montar "Continue consultando", o registro que acabou de ser exibido é excluído. Exemplo: `incluir = not (fora_do_tema or ja_exibido)` ≡ `(not fora_do_tema) and (not ja_exibido)`.
 5. **Várias correspondências:** ordenar por pontuação desc.; desempate por menor `id`.
 6. **Regra de decisão** (variáveis booleanas):
    - `C` = entrada válida (não vazia, ≥ 1 token útil)
@@ -226,7 +249,7 @@ Temas: `documentacao` (Documentação pessoal), `servicos` (Serviços públicos)
    - Esta tabela vira o **mapa de Karnaugh** do relatório. Limiar e margem ficam em constantes no topo do módulo.
 7. **Grafo:** lista de adjacência montada de `relacionados` (tratar como **não direcionado** ao montar, para consistência).
 8. **Dijkstra** (`heapq`): menor caminho entre dois ids; custo da aresta 1 (mesmo tema) ou 2 (temas diferentes) **(sugestão)**. Usado em "ver caminho entre dois assuntos" e para ordenar sugestões de continuidade. Retornar também o caso "sem caminho".
-9. **Navegação:** após cada resposta, listar os relacionados (≥ 3 assuntos encadeáveis no conjunto) como opções numeradas.
+9. **Navegação:** após cada resposta, listar 3 relacionados como opções numeradas, **nos dois modelos** (A e B): os **3 registros mais próximos** pela distância de Dijkstra a partir do registro exibido (vizinhos diretos primeiro; se houver menos de 3, completa com os seguintes mais próximos, porque 6 registros têm só 1 vizinho direto). Quem monta a lista é `busca.py` (ordem) e quem a formata é `respostas.py` (texto), para que a comparação A × B meça só o formato.
 
 ---
 
@@ -234,13 +257,24 @@ Temas: `documentacao` (Documentação pessoal), `servicos` (Serviços públicos)
 
 Dois modelos documentados, comparados nos testes (clareza, consistência, presença de fonte/aviso). No modo terminal são **templates de texto**; no modo `--servidor` o LLM pode reescrever **apenas a forma**, sem alterar fatos, e a saída é validada (precisa conter a `referencia` e não conter URLs fora da base).
 
-**Modelo A — direto/compacto:** papel: "assistente de orientação cidadã não oficial". Formato: 1 parágrafo curto + `Fonte: <url> (verificado em <data>)`. Limite: se `confirmar_antes`, adicionar uma linha de aviso.
+**Modelo A — direto/compacto:** papel: "assistente de orientação cidadã não oficial". Formato: 1 parágrafo curto + `Fonte: <url> (verificado em <data>)` + uma linha `Veja também: 1) … 2) … 3) …` com os relacionados (§7.3, item 9). Limite: se `confirmar_antes`, adicionar uma linha de aviso.
 
 **Modelo B — estruturado em passos:** papel igual + obrigações: (1) título do assunto, (2) lista numerada de passos, (3) `Fonte:` com data, (4) `Atenção:` quando exigir confirmação, (5) `Continue consultando:` com os relacionados, (6) frase fixa de não-oficialidade. Limite: nunca inventar passo que não esteja na `orientacao`.
 
 **Aviso de limitação (sem base):** "Não encontrei orientação verificada sobre isso na minha base. Não sou um canal oficial e não vou inventar instruções. Você pode consultar o portal oficial (https://www.gov.br) ou tentar um destes assuntos: …".
 
-**Comparação:** rodar as 14 perguntas nos dois modelos; critérios objetivos (tem fonte? tem aviso quando devia? tamanho em palavras; nº de passos) + leitura humana de clareza (nota 1–5 pelos 3 integrantes). Justificar o modelo escolhido no relatório. **Default do produto:** o vencedor da comparação **(EM ABERTO até rodar os testes)**.
+**Comparação (o que mede e o que não mede):** A e B são aplicados ao **mesmo** resultado da busca. Por isso a **taxa de acerto e o tempo de consulta são iguais nos dois modelos por construção** e não servem para compará-los; eles medem a **busca** (§14.2). A comparação A × B mede o **formato da resposta**, com uma rubrica aplicada às perguntas que geram resposta:
+
+| Critério | Tipo | Como medir |
+|---|---|---|
+| Tem `Fonte:` com URL e data | objetivo (sim/não) | automático no `--avaliar` |
+| Tem aviso quando `confirmar_antes` | objetivo (sim/não/não se aplica) | automático |
+| Tem relacionados para continuar | objetivo (sim/não) | automático |
+| Tamanho | objetivo (nº de palavras) | automático |
+| Nº de passos | objetivo | automático |
+| Clareza | nota 1–5 | leitura dos 3 integrantes **e** da pessoa do teste de usabilidade, sem saber qual é o modelo (rótulos trocados por X/Y) **(sugestão)** |
+
+`--avaliar` grava os critérios automáticos em `testes/comparacao_modelos.csv` **(sugestão de nome)**; as notas de clareza entram numa coluna preenchida à mão. Justificar o modelo escolhido no relatório. **Default do produto:** o vencedor da comparação **(EM ABERTO até rodar os testes)**.
 
 ---
 
@@ -261,6 +295,7 @@ Dois modelos documentados, comparados nos testes (clareza, consistência, presen
 ## 10. Cofre, criptografia e painel
 
 ### 10.1 Princípios
+- **Por que o cofre não fere a regra da GS de "não coletar dados pessoais desnecessários":** ele é opcional, só guarda o que o próprio usuário decide enviar, cifra antes de armazenar e permite apagar tudo (`/apagar_meus_dados`). O núcleo avaliado não coleta nada. Isso precisa estar explicado no README §8 e no relatório. **Demonstração, vídeo e testes usam somente documentos fictícios.**
 - Dado do cidadão é **sensível**. Toda consulta ao armazenamento é filtrada por `user_id` (id do Telegram validado). Nunca confiar em `user_id` vindo do cliente sem validação do `initData`.
 - A **senha nunca** trafega pelo chat do Telegram nem é gravada no servidor. Senha perdida = documentos perdidos (avisar na criação).
 
@@ -277,10 +312,25 @@ Dois modelos documentados, comparados nos testes (clareza, consistência, presen
 - **Verdade sobre E2E:** enquanto o cofre está desbloqueado, o servidor vê o arquivo ao enviar. **E2E real existe apenas no painel** (decifrar no navegador com WebCrypto). Dizer isso no README e no relatório, sem exagerar.
 
 ### 10.4 Painel web
-- Telas: criar/desbloquear cofre · listar documentos · visualizar · **apagar de verdade** (confirmação, remove arquivo e metadados) · configurar **UF** e **temas do briefing** · horário do briefing.
+- Telas: **perguntar** (cena da verificação, §10.5) · criar/desbloquear cofre · listar documentos · visualizar · **apagar de verdade** (confirmação, remove arquivo e metadados) · configurar **UF** e **temas do briefing** · horário do briefing.
 - **Login no Mini App:** validar `initData` (HMAC com token do bot, checar `auth_date` recente). **Login no navegador:** link de uso único e curta duração gerado por `/painel`.
 - **HTTPS obrigatório** com certificado válido (certificado autoassinado é rejeitado pelo Telegram).
 - Cabeçalhos de segurança, CORS restrito ao domínio do painel, sem `eval`, sem scripts de terceiros desnecessários, rate limit nas rotas de desbloqueio.
+
+### 10.5 Aba "Perguntar" e cena da verificação **(aprovada pela equipe em 07/11)**
+- **O que é:** primeira aba do painel. O cidadão digita a pergunta e vê a resposta "em cena":
+  1. "Consultando 17 orientações verificadas", com os candidatos aparecendo;
+  2. título e passos em sequência;
+  3. o selo **"Fonte conferida"** com a data;
+  4. os próximos assuntos (relacionados, §7.3 item 9).
+
+  Visual e tempos em [`docs/ux.md`](../ux.md) §5 (tela P0) e §9 (movimento).
+- **Funciona sem cofre e sem senha.** Exige só o login do painel (`initData` ou link de uso único), como as outras telas.
+- **Conteúdo 100% da base:** a rota `POST /api/perguntar` chama `busca.buscar()` e devolve os dados do registro em **JSON estruturado** (título, passos, atenção, fonte, data, relacionados, decisão C·A·B). **Sem LLM** nessa rota. O front só desenha; não gera texto.
+- **As 4 saídas da regra de decisão** (§7.3) têm tela própria: resposta (cena completa), pedir escolha (lista dos candidatos), sem base (aviso de limitação + gov.br + temas), entrada inválida (mensagem e exemplos).
+- **Privacidade:** a pergunta **não é gravada** nem logada (§13.2 e §13.4). Rate limit na rota.
+- **Acessibilidade:** com `prefers-reduced-motion`, a resposta aparece pronta, sem animação. A cena inteira dura no máximo ~3,2 s, e o texto pode ser lido assim que aparece.
+- **Regra de corte:** se não estiver testada em 13/11, vira roadmap; a cena continua no vídeo como demonstração.
 
 ---
 
@@ -324,8 +374,16 @@ Dois modelos documentados, comparados nos testes (clareza, consistência, presen
 
 ## 14. Testes, métricas e usabilidade
 
-### 14.1 Perguntas de teste **(sugestão — ajustar à base final)**
-Arquivo `testes/perguntas.json` com `{id, tipo, pergunta, esperado}`; `esperado` = id do registro ou `"SEM_BASE"` / `"PEDIR_ESCOLHA"` / `"INVALIDA"`. Todas **fictícias**, sem dado pessoal.
+### 14.1 Perguntas de teste
+Arquivo `testes/perguntas.json` com `{id, conjunto, tipo, pergunta, esperado}`; `conjunto` = `"equipe"` ou `"publico"`; `esperado` = id do registro ou `"SEM_BASE"` / `"PEDIR_ESCOLHA"` / `"INVALIDA"`. Todas **fictícias**, sem dado pessoal.
+
+**Protocolo contra viés (decisão de 07/11):**
+1. **Conjunto da equipe:** as 14 perguntas abaixo + limites são escritas pela equipe e **congeladas num commit antes** de preencher as `palavras_chave` e os `sinonimos` da base. O histórico do Git prova a ordem. Depois de congeladas, não se muda o texto de uma pergunta para ela acertar.
+2. **Conjunto do público:** depois, a equipe coleta perguntas de pessoas de fora (meta: ≥ 10) **(sugestão)**, de forma **anônima**: só o texto da pergunta, sem nome, e-mail, telefone ou qualquer dado pessoal. Se alguém escrever um dado pessoal no texto, a pergunta é descartada ou anonimizada antes de entrar no repositório. A equipe define o `esperado` de cada uma **antes** de rodar o sistema.
+3. **Medição:** a taxa de acerto do conjunto do público é medida **antes** de qualquer ajuste de pesos, palavras-chave ou sinônimos. Se a equipe ajustar depois, reporta as duas medidas (antes e depois), deixando claro que a segunda já não é independente.
+4. Os dois conjuntos são reportados **separadamente** no README e no relatório; a diferença entre eles é discutida nas limitações.
+
+As 14 perguntas do conjunto da equipe **(ajustar só antes do congelamento)**:
 
 | # | Tipo | Pergunta | Esperado |
 |---|---|---|---|
@@ -347,12 +405,12 @@ Arquivo `testes/perguntas.json` com `{id, tipo, pergunta, esperado}`; `esperado`
 **Testes de limite (≥ 3):** (L1) entrada vazia `""` → INVALIDA; (L2) consulta ambígua `"documento"` → PEDIR_ESCOLHA com candidatos; (L3) tópico sem base `"como tirar passaporte?"` → SEM_BASE com link gov.br e sem inventar passos. Extras úteis: opção de menu inexistente, só símbolos `"???"`, texto muito longo.
 
 ### 14.2 Indicadores
-- **Taxa de acerto** = acertos ÷ total × 100 (exemplo da GS: 10/12 = 83,3%). Calcular separadamente para cada modelo (A e B) e para os tipos (direta/reformulada/fora da base).
-- **Tempo de consulta** = média (e máx.) de `time.perf_counter()` em ms por pergunta; comparar **busca linear × índice invertido**.
-- `--avaliar` grava `testes/resultados.csv` (pergunta, esperado, obtido, acerto/erro, tempo ms, modelo) e imprime o resumo.
-- **Usabilidade:** roteiro de 4–5 tarefas ("achar como fazer 2ª via do título", "pedir algo que não existe", "navegar até um assunto relacionado", …) com ≥ 1 pessoa de fora da equipe; registrar sucesso, tempo e dificuldades em `testes/usabilidade.md`.
+- **Taxa de acerto da busca** = acertos ÷ total × 100 (exemplo da GS: 10/12 = 83,3%). Calcular: geral, por **tipo** (direta/reformulada/fora da base/limite) e por **conjunto** (equipe × público). Não se calcula por modelo (ver §8).
+- **Tempo de consulta** = média (e máx.) de `time.perf_counter()` em ms, repetindo cada consulta várias vezes (ex.: 1 000) para reduzir ruído; comparar **busca linear × índice invertido**. Com só 17 registros a diferença tende a ser pequena; para mostrar o efeito do tamanho da base, repetir a medição com uma base sintética ampliada (ex.: registros copiados até 1 700 e 17 000) **(sugestão)**.
+- `--avaliar` grava `testes/resultados.csv` (conjunto, id, tipo, pergunta, esperado, obtido, acerto/erro, tempo índice ms, tempo linear ms) e `testes/comparacao_modelos.csv` (§8), e imprime o resumo.
+- **Usabilidade:** roteiro de 5 tarefas definido em [`docs/ux.md`](../ux.md) §8 (2ª via do título, abrir relacionado, pergunta sem base, achar assunto pelo menu, trocar o formato) com ≥ 1 pessoa de fora da equipe; registrar sucesso, tempo, erros e pedidos de ajuda em `testes/usabilidade.md`. Ao final, questionário **SUS** (0–100) como indicador de facilidade de uso **(sugestão)**.
 - **Interpretar:** o que acertou/errou e por quê; **≥ 2 melhorias** (ex.: sinônimos/ajuste de pesos, correção ortográfica, ampliar a base); **limitações da avaliação** (poucas perguntas, feitas pela própria equipe, base pequena).
-- **Testes automatizados** (`testes/`, pytest ou `unittest`): validação da base (ausente/vazia/inconsistente), normalização, busca, decisão (4 saídas), Dijkstra, isolamento por `user_id`, cripto (round-trip; senha errada falha), validação do `initData`.
+- **Testes automatizados** (`testes/test_*.py`, com `unittest`; rodar com `python -m unittest discover -s testes -t .`): validação da base (ausente/vazia/inconsistente), normalização, busca, decisão (4 saídas), Dijkstra, isolamento por `user_id`, cripto (round-trip; senha errada falha), validação do `initData`.
 
 ---
 
@@ -380,7 +438,7 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 2. **07–08/11 — Busca e grafo:** `busca.py` (normalização, índice, pontuação, decisão, grafo, Dijkstra), `respostas.py` (A e B), `sistema.py` terminal completo. **Marco 1: o terminal funciona offline com a base preenchida.**
 3. **08–09/11 — Testes do núcleo:** `testes/perguntas.json`, `--avaliar`, resultados CSV, testes automatizados.
 4. **09–10/11 — Servidor base:** `telegram_bot.py`, `roteador.py` (+ fallback), `/localizacao`, `/painel`, `/apagar_meus_dados`. Deploy automático na VM funcionando (workflow + `systemd` + Caddy/HTTPS).
-5. **10–11/11 — Cofre:** `criptografia.py`, `cofre.py`, `classificador.py`, `painel.py` + front `painel/` (Mini App e navegador), desbloqueio temporário, apagar de verdade.
+5. **10–11/11 — Cofre:** `criptografia.py`, `cofre.py`, `classificador.py`, `painel.py` + front `painel/` (Mini App e navegador), desbloqueio temporário, apagar de verdade. Aba "Perguntar" com a cena da verificação (§10.5).
 6. **11–12/11 — Rotinas:** `tarefas.py`, `agendador.py` (lembretes + autodestruição persistente), `briefing.py`, voz/foto/PDF.
 7. **13/11 — Congelar:** rodar toda a suíte, revisar privacidade (§13), limpar logs/segredos, tagar versão. Itens não testados → roadmap.
 
@@ -388,7 +446,7 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 
 ## 17. Pendências em aberto (precisam de decisão humana)
 
-- **Responsáveis pelas 3 frentes** (núcleo/dados, bot+roteador, cofre+painel+infra): *a definir* pela equipe.
+- ~~Responsáveis pelas 3 frentes~~ — **resolvido em 07/11** (ver cabeçalho). Suplentes: a definir.
 - **Quem mantém a VM no ar:** a definir; Juan assume em último caso.
 - **Teste de 15 min do DuckDNS + Caddy** (HTTP-01 com subdomínio DuckDNS) e leitura dos Termos/Privacidade do DuckDNS; se falhar → Cloudflare quick tunnel ou máquina de um integrante.
 - **Confirmar faturamento ativo** do projeto da chave do Gemini no AI Studio.
@@ -396,6 +454,9 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 - Armazenamento: confirmar Supabase ou equivalente.
 - Feeds RSS por tema e fuso horário padrão.
 - Modelo de resposta padrão (A ou B), definido pelos testes.
+- Ferramenta para coletar as perguntas do público de forma anônima (§14.1).
+- ~~Aprovar a aba "Perguntar"~~ — **aprovada pela equipe em 07/11** (§10.5).
+- ~~Identidade visual~~ — **resolvido em 07/11:** direção **Estreia clara** ([`docs/ux.md`](../ux.md) §9). Manual de marca e telas aprovados pela equipe em 07/11.
 
 ---
 
@@ -403,10 +464,28 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 
 - [ ] `python src/sistema.py` roda numa máquina limpa, sem chave e sem internet, sem erros.
 - [ ] 17 registros preenchidos, com fonte e `data_verificacao` reais, 3 temas.
-- [ ] ≥ 12 (planejado 14) testes + ≥ 3 limites executados; taxa de acerto e tempo médio calculados para A e B.
+- [ ] ≥ 12 (planejado 14) testes + ≥ 3 limites executados; taxa de acerto e tempo médio da busca calculados (equipe e público); comparação A × B pela rubrica (§8).
 - [ ] Entrada vazia, opção inexistente, sem correspondência e ambiguidade tratadas com mensagem clara.
 - [ ] Navegação por relacionados (≥ 3 assuntos) e Dijkstra funcionando.
 - [ ] README com as 10 seções; relatório 4–8 páginas; `uso_ia.md`; `link_video.txt`.
 - [ ] Repositório público, sem segredos (verificar histórico do Git).
 - [ ] Vídeo Não Listado; `.txt` com os dois links enviado na FIAP ON.
 - [ ] Onda 2: cofre testado com senha errada, expiração de desbloqueio e isolamento por usuário; ou movida para o roadmap.
+
+---
+
+## 19. Interface e experiência do usuário
+
+Detalhe completo (telas, textos, mensagens, acessibilidade, roteiro de usabilidade) em [`docs/ux.md`](../ux.md). Decisões aprovadas em 07/11:
+
+1. **Três interfaces definidas antes do código:** terminal (Onda 1, avaliado), bot no Telegram e painel web/Mini App (Onda 2).
+2. **Terminal:** cores e molduras da identidade com texto puro como reserva (§5.4); pergunta digitada direto no menu; menu `1` temas · `2` caminho · `3` formato · `?` ajuda · `0` sair; escolha de assuntos sempre **por número**, nunca por id; a última linha de cada tela mostra as teclas válidas; `Ctrl+C` e fim de entrada saem sem traceback.
+3. **Modelos A e B para o cidadão:** aparecem como **"Formato da resposta: resumido ou passo a passo"**. Os nomes A/B ficam no README, no relatório e nos testes.
+4. **Vocabulário único** nas 3 interfaces ("assunto", "tema", "fonte", "verificado em", "cofre", "desbloquear"); ids e termos técnicos nunca aparecem para o usuário.
+5. **Ordem fixa da resposta:** conteúdo → `Atenção:` (se houver) → `Fonte:` com data → assuntos para continuar → frase de não-oficialidade.
+6. **Telegram:** escolhas por botões; áudio mostra a transcrição antes da resposta; UF perguntada só quando a resposta depende do estado; o bot nunca fica mudo.
+7. **Painel:** celular primeiro (uma coluna, até 480 px); no Mini App usa as cores e botões nativos do Telegram; contador visível de bloqueio do cofre; apagar em dois passos.
+8. **Acessibilidade mínima:** contraste WCAG AA, toque ≥ 44 px, texto 16 px, nada indicado só por cor, linguagem simples, terminal com até 80 colunas e sem emoji.
+9. **Identidade visual "Estreia clara" (decisão de 07/11):** base híbrida (leitura em claro, momentos de cinema em escuro), paleta âmbar e ciano, Archivo condensada nos títulos e Atkinson Hyperlegible no texto. Tokens e regras em [`docs/ux.md`](../ux.md) §9; manual de marca completo no link registrado lá.
+10. **Cena da verificação no produto (§10.5):** aba "Perguntar" no painel/Mini App, com o mesmo núcleo do terminal.
+11. **Metas de aprendizado** (medidas no teste de usabilidade): primeira resposta útil em < 1 min; ≥ 4 de 5 tarefas sem ajuda.

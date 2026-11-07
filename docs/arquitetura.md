@@ -60,7 +60,7 @@ flowchart LR
 | Modo | Comando | Usa rede? | Precisa de `.env`? | Bibliotecas externas | Quem usa |
 |---|---|---|---|---|---|
 | Terminal (padrão) | `python src/sistema.py` | Não | Não | Nenhuma | Avaliador e demonstração |
-| Avaliação | `python src/sistema.py --avaliar` | Não | Não | Nenhuma | Equipe (métricas) |
+| Avaliação | `python src/sistema.py --avaliar` | Não | Não | Nenhuma | Equipe (métricas da busca e rubrica A × B) |
 | Validação de entrega | `python src/sistema.py --validar-entrega` | Não | Não | Nenhuma | Equipe, antes de entregar |
 | Servidor | `python src/sistema.py --servidor` | Sim | Sim (só na VM) | aiogram, APScheduler, servidor web, cryptography, google-genai, feedparser | VM de produção |
 
@@ -68,7 +68,7 @@ flowchart LR
 flowchart TD
     Inicio["sistema.py<br/>(argparse)"] --> Q{Qual opção?}
     Q -->|nenhuma| T["Menu do terminal"]
-    Q -->|--avaliar| AV["Roda testes/perguntas.json<br/>grava testes/resultados.csv"]
+    Q -->|--avaliar| AV["Roda testes/perguntas.json<br/>grava resultados.csv e<br/>comparacao_modelos.csv"]
     Q -->|--validar-entrega| VE["Valida a base em modo estrito"]
     Q -->|--servidor| IMP["import tardio das libs da Onda 2"]
     IMP --> S1["telegram_bot"]
@@ -150,7 +150,7 @@ flowchart TB
 | `criptografia.py` | Deriva a chave, cifra e decifra, verificador de senha | Guardar arquivos | C |
 | `cofre.py` | Salva, lista, abre e apaga documentos; chave em memória com TTL | Falar com o Telegram | C |
 | `classificador.py` | Pede ao Gemini tipo e nome sugerido; fallback `documento-AAAAMMDD` | Responder perguntas com base no arquivo | C |
-| `painel.py` + `painel/` | Login (`initData` ou link de uso único), telas do cofre e configurações | Receber a senha pelo Telegram | C |
+| `painel.py` + `painel/` | Login (`initData` ou link de uso único), telas do cofre e configurações; aba "Perguntar" (`POST /api/perguntar` → `busca.buscar()`, JSON estruturado, sem LLM; spec §10.5) | Receber a senha pelo Telegram; gerar texto de resposta; gravar perguntas | C |
 
 ---
 
@@ -230,7 +230,7 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    P["Pergunta do usuário"] --> N["normalizar()<br/>minúsculas · sem acento ·<br/>sem pontuação · sem stopwords"]
+    P["Pergunta do usuário"] --> N["normalizar()<br/>minúsculas · sem acento ·<br/>sem pontuação · sem stopwords ·<br/>+ sinônimos do base.json"]
     N --> T["tokens"]
     T --> I{"método"}
     I -->|índice| IX["consulta o índice invertido<br/>soma pesos por id"]
@@ -240,7 +240,7 @@ flowchart LR
     O --> D["decidir(C, A, B)"]
 ```
 
-**Pesos (sugestão, spec §7.3):** token em `palavras_chave` = 3 · em `pergunta` = 2 · em `orientacao` = 1. `LIMIAR_MINIMO` e `MARGEM` ficam em constantes no topo de `busca.py` e são ajustados com `--avaliar`.
+**Pesos (sugestão, spec §7.3):** token em `palavras_chave` = 3 · em `pergunta` = 2 · em `orientacao` = 1 · bônus de expressão completa (ex.: "segunda via") = +2. `LIMIAR_MINIMO` e `MARGEM` ficam em constantes no topo de `busca.py` e são ajustados com `--avaliar`.
 
 ### 5.4 Regra de decisão (base do mapa de Karnaugh)
 
@@ -270,7 +270,7 @@ Mapa de Karnaugh de `RESPONDER`:
 - **Vértices:** ids dos registros. **Arestas:** campo `relacionados`, tratado como **não direcionado** (spec §7.3, item 7).
 - **Custo (sugestão):** 1 se os dois registros são do mesmo tema; 2 se são de temas diferentes.
 - **Dijkstra** com `heapq` retorna `(custo_total, [id1, id2, ...])` ou `None` quando não há caminho.
-- **Usos:** menu "ver caminho entre dois assuntos" e ordenação dos "Continue consultando" (os mais próximos primeiro).
+- **Usos:** menu "ver caminho entre dois assuntos" e ordenação da lista de relacionados (os mais próximos primeiro), que aparece **nos dois modelos** de resposta (spec §7.3, item 9).
 
 Exemplo com os registros planejados (spec §7.2):
 
@@ -279,14 +279,16 @@ graph LR
     DOC002[DOC-002] --- DOC001[DOC-001]
     DOC001 ---|2| SRV004[SRV-004]
     DOC001 ---|2| DIR004[DIR-004]
-    DOC003[DOC-003] --- DOC004[DOC-004]
+    DOC001 --- DOC003[DOC-003]
+    DOC003 --- DOC004[DOC-004]
     DOC003 --- DOC005[DOC-005]
     DOC004 --- DOC005
     SRV001[SRV-001] --- SRV002[SRV-002]
     SRV001 --- SRV003[SRV-003]
     SRV001 --- SRV004
     SRV004 ---|2| DIR006[DIR-006]
-    SRV005[SRV-005] --- SRV006[SRV-006]
+    SRV001 --- SRV006[SRV-006]
+    SRV005[SRV-005] --- SRV006
     DIR001[DIR-001] --- DIR002[DIR-002]
     DIR001 --- DIR005[DIR-005]
     DIR002 --- DIR003[DIR-003]
@@ -294,7 +296,7 @@ graph LR
     DIR002 --- DIR005
 ```
 
-> Arestas sem número têm custo 1 (mesmo tema). Pelos `relacionados` da spec, `DOC-003/004/005` e `SRV-005/006` formam ilhas separadas. Dijkstra entre ilhas retorna "sem caminho" e a resposta deve deixar isso claro. **(EM ABERTO)**: decidir se a equipe quer ligar essas ilhas ao resto ao redigir a base.
+> Arestas sem número têm custo 1 (mesmo tema). Em 07/11 a equipe decidiu ligar as antigas ilhas (spec §7.2): **DOC-001–DOC-003** (o atendimento eleitoral pede documento de identidade) e **SRV-001–SRV-006** (os dois serviços usam a conta gov.br). Agora os 17 registros formam um único componente. O caso "sem caminho" continua tratado no código, para bases futuras.
 
 ### 5.6 Fluxo de uma consulta no terminal
 
@@ -328,6 +330,9 @@ sequenceDiagram
 ### 5.7 Contratos do núcleo (sugestão de assinaturas)
 
 ```python
+# Todos os módulos do núcleo começam com `from __future__ import annotations`,
+# para que as anotações abaixo funcionem em Python 3.9 (spec §5.4).
+
 # base.py
 class ErroBase(Exception): ...
 def carregar_base(caminho: str, modo_entrega: bool = False) -> dict
@@ -346,6 +351,8 @@ def buscar(pergunta: str, base: dict, metodo: str = "indice",
 def montar_grafo(base: dict) -> dict[str, list[tuple[str, int]]]
 def dijkstra(grafo: dict, origem: str, destino: str) -> tuple[int, list[str]] | None
 def relacionados_ordenados(grafo: dict, origem: str, limite: int = 3) -> list[str]
+    # os `limite` registros mais próximos por Dijkstra, sem a origem
+    # (vizinhos diretos primeiro; completa com os seguintes se faltar)
 
 # respostas.py
 def formatar(registro: dict, modelo: str, relacionados: list[dict],
@@ -639,9 +646,9 @@ Plano completo na spec §14 e no processo §C.3. Mapeamento com a arquitetura:
 | Camada | Teste automatizado | Avaliação |
 |---|---|---|
 | `base.py` | Ausente, vazio, JSON inválido, campo faltando, id duplicado, relacionado inexistente, `PREENCHER` em modo entrega | `--validar-entrega` |
-| `busca.py` | Normalização, pontuação, desempate, as 4 decisões, linear = índice, Dijkstra com e sem caminho | `--avaliar` (14 perguntas + L1–L3) |
-| `respostas.py` | A e B sempre com fonte e data; aviso quando `confirmar_antes` | Comparação A × B |
-| Núcleo isolado | Importa sem pacotes externos (seção 4.2) | Rodar numa máquina limpa |
+| `busca.py` | Normalização, sinônimos, bônus de expressão, pontuação, desempate, as 4 decisões, linear = índice, Dijkstra com e sem caminho, grafo conexo | `--avaliar` (conjuntos equipe e público + L1–L3) |
+| `respostas.py` | A e B sempre com fonte, data e relacionados; aviso quando `confirmar_antes` | Rubrica A × B (spec §8) |
+| Núcleo isolado | Importa sem pacotes externos (seção 4.2) e roda em Python 3.9 | Rodar numa máquina limpa |
 | Onda 2 | Isolamento por `user_id`, round-trip da cripto, senha errada, `initData` inválido, TTL do desbloqueio, fallback do roteador | Revisão humana de segurança |
 
 ---
@@ -671,4 +678,4 @@ Itens da spec §17 com impacto direto no desenho:
 - Faturamento do Gemini (afeta o roteador e o classificador).
 - Feeds RSS e fuso padrão (afeta o briefing e o agendador).
 - Modelo de resposta padrão, A ou B (afeta `respostas.py` e o roteador).
-- Ilhas no grafo de `relacionados` (seção 5.5): decidir ao redigir a base.
+- ~~Ilhas no grafo de `relacionados`~~: resolvido em 07/11 (seção 5.5); falta só conferir as justificativas das arestas novas ao redigir a base.
