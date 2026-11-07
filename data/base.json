@@ -47,7 +47,7 @@
         "perdi",
         "perda",
         "roubo",
-        "documento de identidade"
+        "documento"
       ],
       "pergunta": "Como solicitar a 2ª via da carteira de identidade (CIN/RG)?",
       "orientacao": "PREENCHER",
@@ -74,7 +74,8 @@
         "aplicativo",
         "app",
         "gov.br",
-        "digital"
+        "digital",
+        "documento"
       ],
       "pergunta": "Como ter a CIN digital no app gov.br?",
       "orientacao": "PREENCHER",
@@ -94,7 +95,8 @@
         "eleitoral",
         "segunda via",
         "2a via",
-        "perdi"
+        "perdi",
+        "documento"
       ],
       "pergunta": "Como pedir a 2ª via do título de eleitor?",
       "orientacao": "PREENCHER",
@@ -119,7 +121,8 @@
         "titulo",
         "eleitor",
         "biometria",
-        "justificar"
+        "justificar",
+        "documento"
       ],
       "pergunta": "Meu título foi cancelado: como regularizar?",
       "orientacao": "PREENCHER",
@@ -141,7 +144,8 @@
         "quitacao",
         "eleitor",
         "titulo",
-        "debitos eleitorais"
+        "debitos eleitorais",
+        "documento"
       ],
       "pergunta": "Como consultar minha situação eleitoral?",
       "orientacao": "PREENCHER",
@@ -225,7 +229,6 @@
         "inscricao",
         "bolsa familia",
         "programas sociais",
-        "baixa renda",
         "cras"
       ],
       "pergunta": "Como fazer a inscrição no CadÚnico?",
@@ -311,7 +314,7 @@
         "gratuito",
         "assistencia juridica",
         "defensor",
-        "nao posso pagar"
+        "sem condicoes financeiras"
       ],
       "pergunta": "Como buscar ajuda da Defensoria Pública?",
       "orientacao": "PREENCHER",
@@ -356,7 +359,8 @@
         "cartorio",
         "registro",
         "2a via",
-        "segunda via"
+        "segunda via",
+        "documento"
       ],
       "pergunta": "Como obter a certidão de nascimento gratuita?",
       "orientacao": "PREENCHER",
