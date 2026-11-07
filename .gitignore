@@ -7,3 +7,8 @@ __pycache__/
 venv/
 *.db
 *.sqlite3
+*.sqlite
+*.log
+.pytest_cache/
+.claude/worktrees/
+.claude/settings.local.json

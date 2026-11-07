@@ -46,9 +46,9 @@ _A preencher_
 
 | Nome | RM | Frente no projeto | Perfil |
 |---|---|---|---|
-| _A preencher_ | _RM_ | Núcleo e dados (Integrante A) | <a href="">GitHub/LinkedIn</a> |
-| _A preencher_ | _RM_ | Bot e roteador (Integrante B) | <a href="">GitHub/LinkedIn</a> |
-| _A preencher_ | _RM_ | Cofre, painel e infraestrutura (Integrante C) | <a href="">GitHub/LinkedIn</a> |
+| Juan de Lucas Frois | RM563260 | Núcleo e dados (Integrante A) | <a href="">GitHub/LinkedIn</a> |
+| Flávia Roberta Pennachin | RM561860 | Bot e roteador (Integrante B) | <a href="">GitHub/LinkedIn</a> |
+| Pedro Valente | RM570394 | Cofre, painel e infraestrutura (Integrante C) | <a href="">GitHub/LinkedIn</a> |
 
 ### 👩‍🏫 Professores
 
@@ -151,21 +151,35 @@ _A preencher_
 ## 5. Plano de testes, indicadores e resultados
 
 <!-- Responsável: Integrante B · Prazo: 16/11 (indicadores fechados em 17/11)
-     Escrever: as 14 perguntas + limites L1–L3; taxa de acerto (geral, por modelo e por tipo);
-     tempo médio (linear × índice); teste de usabilidade; interpretação; pelo menos 2 melhorias;
-     limitações da avaliação. Base: spec §14, testes/resultados.csv, testes/usabilidade.md. -->
+     Escrever: as 14 perguntas + limites L1–L3 e o protocolo contra viés (perguntas congeladas antes
+     das palavras-chave; conjunto do público coletado depois, anônimo); taxa de acerto da busca
+     (geral, por tipo e por conjunto); tempo médio (linear × índice); rubrica A × B; teste de
+     usabilidade; interpretação; pelo menos 2 melhorias; limitações da avaliação.
+     Base: spec §8 e §14, testes/resultados.csv, testes/comparacao_modelos.csv, testes/usabilidade.md. -->
 
 ### Plano de testes
 
 _A preencher_
 
-### Indicadores
+### Indicadores da busca
 
-| Indicador | Modelo A | Modelo B |
+<!-- A taxa de acerto e o tempo medem a busca, que é a mesma para os modelos A e B (spec §8).
+     Por isso não há coluna por modelo aqui; a comparação A × B fica na tabela seguinte. -->
+
+| Indicador | Perguntas da equipe | Perguntas do público |
 |---|---|---|
-| Taxa de acerto | _%_ | _%_ |
+| Taxa de acerto | _%_ | _%_ (antes de ajustes) |
 | Tempo médio (índice invertido) | _ms_ | _ms_ |
 | Tempo médio (busca linear) | _ms_ | _ms_ |
+
+### Comparação dos modelos A e B
+
+| Critério (spec §8) | Modelo A | Modelo B |
+|---|---|---|
+| Respostas com fonte e data | _x/y_ | _x/y_ |
+| Aviso presente quando necessário | _x/y_ | _x/y_ |
+| Tamanho médio (palavras) | _n_ | _n_ |
+| Nota média de clareza (1–5) | _n_ | _n_ |
 
 ### Teste de usabilidade
 
@@ -184,7 +198,7 @@ _A preencher_
 
 ### Pré-requisitos
 
-- Python 3.11 ou superior.
+- Python 3.9 ou superior para o modo terminal (o modo `--servidor` usa Python 3.11+).
 - Nenhuma biblioteca externa, chave de API ou conexão com a internet é necessária para o modo terminal.
 
 ### Passo a passo
@@ -202,7 +216,7 @@ python src/sistema.py
 | `python src/sistema.py --avaliar` | Roda as perguntas de teste e mostra taxa de acerto e tempo médio |
 | `python src/sistema.py --validar-entrega` | Confere se todos os registros da base estão completos |
 | `python src/sistema.py --servidor` | Sobe o bot do Telegram, o painel e o agendador (precisa de `.env`; ver `.env.example`) |
-| `python -m unittest` | Roda os testes automatizados |
+| `python -m unittest discover -s testes -t .` | Roda os testes automatizados |
 
 <!-- TODO: ajustar se algum modo mudar durante a implementação (spec §6.1). -->
 
@@ -297,6 +311,7 @@ GlobalSolution_CitizenTech/
 ├── README.md                 este arquivo
 ├── CLAUDE.md                 instruções para o Claude Code (importa a spec)
 ├── .env.example              nomes das variáveis do modo servidor, sem valores
+├── requirements.txt          dependências do modo servidor (o terminal não precisa)
 ├── data/
 │   └── base.json             base de conhecimento verificada
 ├── docs/
@@ -305,6 +320,8 @@ GlobalSolution_CitizenTech/
 │   ├── processo_desenvolvimento.md  processo SDD e ciclo de vida
 │   ├── planejamento.md       divisão de atividades e prazos
 │   ├── arquitetura.md        arquitetura, fluxos e decisões
+│   ├── ux.md                 interfaces, textos, acessibilidade e roteiro de usabilidade
+│   ├── design/               identidade visual: tokens.css, tokens.json e imagens das telas
 │   ├── uso_ia.md             registro do uso de IA
 │   ├── relatorio.pdf         relatório final (4 a 8 páginas)
 │   └── link_video.txt        link do vídeo no YouTube
