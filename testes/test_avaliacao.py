@@ -76,7 +76,7 @@ class TestAvaliacao(unittest.TestCase):
 
     def test_avaliar_grava_os_dois_csv(self):
         with tempfile.TemporaryDirectory() as pasta:
-            resumo = avaliacao.avaliar(self.dados, pasta=pasta, escala=False)
+            resumo = avaliacao.avaliar(self.dados, pasta=pasta, escala=False, repeticoes=1)
             with open(Path(pasta) / "resultados.csv", encoding="utf-8", newline="") as f:
                 linhas = list(csv.DictReader(f))
             with open(Path(pasta) / "comparacao_modelos.csv", encoding="utf-8", newline="") as f:

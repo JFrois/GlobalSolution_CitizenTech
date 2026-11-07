@@ -26,7 +26,9 @@ PASTA_TESTES = Path(__file__).resolve().parent.parent / "testes"
 # Repetições por consulta: muitas na base real (para reduzir ruído) e menos
 # nas bases sintéticas ampliadas, que são mais lentas.
 REPETICOES = 1000
-REPETICOES_AMPLIADA = 20
+REPETICOES_AMPLIADA = 3
+# Nas bases ampliadas usamos só algumas perguntas (a medição já é lenta).
+PERGUNTAS_NA_ESCALA = 5
 TAMANHOS_AMPLIADOS = (1700, 17000)
 
 CAB_RESULTADOS = ["conjunto", "id", "tipo", "pergunta", "esperado", "obtido",
@@ -106,14 +108,15 @@ def ampliar_base(dados: dict, tamanho: int) -> dict:
 
 
 def medir_escala(dados: dict, perguntas: list, tamanhos=TAMANHOS_AMPLIADOS,
-                 repeticoes: int = REPETICOES_AMPLIADA) -> list:
+                 repeticoes: int = REPETICOES_AMPLIADA,
+                 repeticoes_base: int = 200) -> list:
     """Tempo médio por consulta (ms) de cada método em bases de vários tamanhos."""
     medidas = []
-    textos = [p["pergunta"] for p in perguntas if p["pergunta"].strip()]
+    textos = [p["pergunta"] for p in perguntas if p["pergunta"].strip()][:PERGUNTAS_NA_ESCALA]
     for tamanho in (len(dados["registros"]),) + tuple(tamanhos):
         base_n = dados if tamanho == len(dados["registros"]) else ampliar_base(dados, tamanho)
         buscador = busca.Buscador(base_n)
-        reps = REPETICOES if tamanho == len(dados["registros"]) else repeticoes
+        reps = repeticoes_base if tamanho == len(dados["registros"]) else repeticoes
         indice = sum(_tempo_medio_ms(buscador, t, "indice", reps) for t in textos) / len(textos)
         linear = sum(_tempo_medio_ms(buscador, t, "linear", reps) for t in textos) / len(textos)
         medidas.append({"registros": tamanho, "indice_ms": indice, "linear_ms": linear})
@@ -125,13 +128,15 @@ def medir_escala(dados: dict, perguntas: list, tamanhos=TAMANHOS_AMPLIADOS,
 # --------------------------------------------------------------------------
 
 _DATA = re.compile(r"\d{2}/\d{2}/\d{4}")
+# A URL longa pode ir para a linha de baixo, então aceitamos "Fonte:" e espaço ou quebra.
+_FONTE = re.compile(r"Fonte:\s+http")
 
 
 def criterios_do_formato(texto: str, reg: dict) -> dict:
     """Critérios objetivos da rubrica para um texto de resposta pronto."""
     exige_aviso = bool(reg.get("confirmar_antes")) or reg.get("abrangencia") == "estadual"
     return {
-        "tem_fonte_com_data": "sim" if ("Fonte: http" in texto and _DATA.search(texto)) else "nao",
+        "tem_fonte_com_data": "sim" if (_FONTE.search(texto) and _DATA.search(texto)) else "nao",
         "tem_aviso": ("sim" if "Atenção:" in texto else "nao") if exige_aviso else "n/a",
         "tem_relacionados": "sim" if ("Veja também:" in texto or "Continue consultando:" in texto) else "nao",
         "palavras": len(texto.split()),
@@ -218,12 +223,13 @@ def resumo(linhas: list, comparacao: list, escala: list) -> str:
     return "\n".join(out)
 
 
-def avaliar(dados: dict, pasta=None, perguntas_arq=None, escala: bool = True) -> str:
+def avaliar(dados: dict, pasta=None, perguntas_arq=None, escala: bool = True,
+            repeticoes: int = REPETICOES) -> str:
     """Roda tudo, grava os dois CSVs e devolve o resumo."""
     pasta = Path(pasta) if pasta else PASTA_TESTES
     perguntas = carregar_perguntas(perguntas_arq)
     buscador = busca.Buscador(dados)
-    linhas = avaliar_busca(buscador, perguntas)
+    linhas = avaliar_busca(buscador, perguntas, repeticoes)
     comparacao = comparar_modelos(buscador, perguntas)
     medidas = medir_escala(dados, perguntas) if escala else []
     gravar_csv(pasta / "resultados.csv", CAB_RESULTADOS, linhas)

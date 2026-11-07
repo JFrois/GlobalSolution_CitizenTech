@@ -1,4 +1,5 @@
 """Testes de src/sistema.py: sessões roteirizadas, entradas inválidas e modos de exibição."""
+import json
 import subprocess
 import sys
 import tempfile
@@ -117,6 +118,9 @@ class TestFluxo(unittest.TestCase):
         _, texto = rodar("Como tirar a segunda via do RG?", "documento", "1", "1", "3", "1",
                          "m", "2", "1", "17", "?", "0")
         for linha in texto.splitlines():
+            # Um link não pode ser quebrado; linha que é só link fica de fora.
+            if len(linha.split()) == 1 and linha.strip().startswith("http"):
+                continue
             self.assertLessEqual(len(linha), 80, linha)
 
 
@@ -151,10 +155,23 @@ class TestLinhaDeComando(unittest.TestCase):
         self.assertIn("Avise a equipe", saida[0])
 
     def test_validar_entrega_recusa_base_com_preencher(self):
-        saida = []
-        codigo = sistema.principal(["--validar-entrega"], saida=saida.append)
+        # Copia a base real e volta um registro ao estado de esqueleto.
+        dados = json.loads((RAIZ / "data" / "base.json").read_text(encoding="utf-8"))
+        dados["registros"][0]["orientacao"] = "PREENCHER"
+        dados["registros"][0]["data_verificacao"] = ""
+        with tempfile.TemporaryDirectory() as pasta:
+            incompleta = Path(pasta) / "base.json"
+            incompleta.write_text(json.dumps(dados), encoding="utf-8")
+            saida = []
+            codigo = sistema.principal(["--validar-entrega", "--base", str(incompleta)],
+                                       saida=saida.append)
         self.assertEqual(codigo, 1)
         self.assertIn("ainda marcada como PREENCHER", "\n".join(saida))
+
+    def test_validar_entrega_aceita_base_completa(self):
+        saida = []
+        codigo = sistema.principal(["--validar-entrega"], saida=saida.append)
+        self.assertEqual(codigo, 0, saida)
 
     def test_executa_como_script_e_sai_limpo(self):
         proc = subprocess.run([sys.executable, str(RAIZ / "src" / "sistema.py"), "--simples"],
