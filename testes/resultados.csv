@@ -1,20 +1,20 @@
 conjunto,id,tipo,pergunta,esperado,obtido,resultado,tempo_indice_ms,tempo_linear_ms
-equipe,E01,direta,Como tirar a segunda via do RG?,DOC-001,DOC-001,acerto,0.0072,0.8634
-equipe,E02,direta,Como ter a carteira de identidade no celular?,DOC-002,DOC-002,acerto,0.0081,0.8728
-equipe,E03,direta,Como pedir segunda via do título de eleitor?,DOC-003,DOC-003,acerto,0.0101,0.8919
-equipe,E04,direta,"Meu título foi cancelado, o que faço?",DOC-004,DOC-004,acerto,0.0065,0.8598
-equipe,E05,direta,Como consultar minha situação eleitoral?,DOC-005,DOC-005,acerto,0.0075,0.8756
-equipe,E06,direta,Como acessar o Meu INSS?,SRV-001,SRV-001,acerto,0.0056,0.8617
-equipe,E07,direta,Como me inscrever no CadÚnico?,SRV-004,SRV-004,acerto,0.0049,0.8439
-equipe,E08,direta,Como reclamar de uma empresa no Consumidor.gov.br?,DIR-001,DIR-001,acerto,0.0063,0.8668
-equipe,E09,reformulada,"Perdi minha identidade, como faço outra?",DOC-001,DOC-001,acerto,0.0073,0.8786
-equipe,E10,reformulada,Quero marcar perícia do INSS,SRV-002,SRV-002,acerto,0.0070,0.8785
-equipe,E11,reformulada,"Não tenho dinheiro para advogado, onde busco ajuda?",DIR-002,DIR-002,acerto,0.0061,0.8550
-equipe,E12,fora da base,Como pagar o IPVA?,SEM_BASE,SEM_BASE,acerto,0.0038,0.8486
-equipe,E13,fora da base,Como abrir um MEI?,SEM_BASE,SEM_BASE,acerto,0.0032,0.8360
-equipe,E14,fora da base,Como declarar o imposto de renda?,SEM_BASE,SEM_BASE,acerto,0.0058,0.8614
-equipe,L1,limite,,INVALIDA,INVALIDA,acerto,0.0008,0.0008
-equipe,L2,limite,documento,PEDIR_ESCOLHA,PEDIR_ESCOLHA,acerto,0.0056,0.8884
-equipe,L3,limite,como tirar passaporte?,SEM_BASE,SEM_BASE,acerto,0.0027,0.8261
-equipe,L4,limite,???,INVALIDA,INVALIDA,acerto,0.0010,0.0009
-equipe,L5,limite,quero saber sobre o campeonato de futebol da cidade e também sobre a previsão do tempo para o fim de semana e a receita de bolo de cenoura com cobertura de chocolate que minha tia faz e o horário do ônibus que passa perto de casa e o preço da gasolina no posto da esquina e o filme que estreou no cinema ontem à noite,SEM_BASE,SEM_BASE,acerto,0.0297,0.9494
+equipe,E01,direta,Como tirar a segunda via do RG?,DOC-001,DOC-001,acerto,0.0063,0.8385
+equipe,E02,direta,Como ter a carteira de identidade no celular?,DOC-002,DOC-002,acerto,0.0081,0.9078
+equipe,E03,direta,Como pedir segunda via do título de eleitor?,DOC-003,DOC-003,acerto,0.0109,1.0156
+equipe,E04,direta,"Meu título foi cancelado, o que faço?",DOC-004,DOC-004,acerto,0.0076,1.0199
+equipe,E05,direta,Como consultar minha situação eleitoral?,DOC-005,DOC-005,acerto,0.0087,1.0310
+equipe,E06,direta,Como acessar o Meu INSS?,SRV-001,SRV-001,acerto,0.0067,1.0089
+equipe,E07,direta,Como me inscrever no CadÚnico?,SRV-004,SRV-004,acerto,0.0058,0.9497
+equipe,E08,direta,Como reclamar de uma empresa no Consumidor.gov.br?,DIR-001,DIR-001,acerto,0.0074,1.0218
+equipe,E09,reformulada,"Perdi minha identidade, como faço outra?",DOC-001,DOC-001,acerto,0.0093,1.0682
+equipe,E10,reformulada,Quero marcar perícia do INSS,SRV-002,SRV-002,acerto,0.0083,1.0451
+equipe,E11,reformulada,"Não tenho dinheiro para advogado, onde busco ajuda?",DIR-002,DIR-002,acerto,0.0075,0.9652
+equipe,E12,fora da base,Como pagar o IPVA?,SEM_BASE,SEM_BASE,acerto,0.0151,0.9643
+equipe,E13,fora da base,Como abrir um MEI?,SEM_BASE,SEM_BASE,acerto,0.0145,0.9466
+equipe,E14,fora da base,Como declarar o imposto de renda?,SEM_BASE,SEM_BASE,acerto,0.3699,2.2939
+equipe,L1,limite,,INVALIDA,INVALIDA,acerto,0.0009,0.0009
+equipe,L2,limite,documento,PEDIR_ESCOLHA,PEDIR_ESCOLHA,acerto,0.0062,0.9914
+equipe,L3,limite,como tirar passaporte?,SEM_BASE,SEM_BASE,acerto,0.3215,1.2563
+equipe,L4,limite,???,INVALIDA,INVALIDA,acerto,0.0011,0.0011
+equipe,L5,limite,quero saber sobre o campeonato de futebol da cidade e também sobre a previsão do tempo para o fim de semana e a receita de bolo de cenoura com cobertura de chocolate que minha tia faz e o horário do ônibus que passa perto de casa e o preço da gasolina no posto da esquina e o filme que estreou no cinema ontem à noite,SEM_BASE,SEM_BASE,acerto,6.4099,8.8781

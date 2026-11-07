@@ -131,6 +131,37 @@ class TestBaseReal(unittest.TestCase):
         self.assertEqual((r.decisao, r.candidatos), (busca.RESPONDER, ["DOC-001"]))
 
 
+class TestCorrecaoDeDigitacao(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.s = busca.Buscador(base.carregar_base())
+
+    def test_erro_de_digitacao_e_corrigido(self):
+        r = self.s.buscar("docuumento")
+        self.assertEqual(r.decisao, busca.PEDIR_ESCOLHA)
+        self.assertEqual(r.corrigidos, {"docuumento": "documento"})
+
+    def test_indice_e_linear_dao_o_mesmo_resultado(self):
+        a = self.s.buscar("docuumento", metodo="indice")
+        b = self.s.buscar("docuumento", metodo="linear")
+        self.assertEqual((a.decisao, a.candidatos), (b.decisao, b.candidatos))
+
+    def test_fora_da_base_continua_sem_base(self):
+        for pergunta in ("como pagar o IPVA", "como abrir um MEI", "como tirar passaporte?",
+                         "qwertyuiop asdfghjkl"):
+            r = self.s.buscar(pergunta)
+            self.assertEqual(r.decisao, busca.SEM_BASE, pergunta)
+            self.assertEqual(r.corrigidos, {})
+
+    def test_quem_ja_responde_nao_e_alterado(self):
+        r = self.s.buscar("como tirar a segunda via do RG?")
+        self.assertEqual(r.decisao, busca.RESPONDER)
+        self.assertEqual(r.corrigidos, {})
+
+    def test_palavra_curta_nao_e_corrigida(self):
+        self.assertEqual(self.s._corrigir(["ipva", "mei"]), {})
+
+
 class TestGrafo(unittest.TestCase):
     def setUp(self):
         self.regs = [

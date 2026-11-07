@@ -17,6 +17,7 @@ Visão geral (spec 7.3):
 """
 from __future__ import annotations
 
+import difflib
 import heapq
 import re
 import unicodedata
@@ -48,6 +49,12 @@ MARGEM = 2
 
 # Quantos candidatos mostrar quando a pergunta é ambígua.
 MAX_CANDIDATOS = 3
+
+# Correção de digitação (só quando a busca normal não acha nada: SEM_BASE).
+# Palavra fora do vocabulário da base, com pelo menos TAM_MIN_CORRECAO letras, é trocada
+# pela palavra mais parecida (difflib), se a semelhança for >= LIMIAR_SEMELHANCA.
+TAM_MIN_CORRECAO = 5
+LIMIAR_SEMELHANCA = 0.8
 
 # Custo da aresta do grafo: mesmo tema ou temas diferentes (spec 7.3, item 8).
 CUSTO_MESMO_TEMA = 1
@@ -143,6 +150,7 @@ class Resultado:
     ranking: list = field(default_factory=list)      # [(id, pontos)] do maior ao menor
     candidatos: list = field(default_factory=list)   # ids a mostrar (1 ou até 3)
     tokens: list = field(default_factory=list)       # tokens úteis da pergunta
+    corrigidos: dict = field(default_factory=dict)   # {digitado: corrigido}, se houve correção
 
 
 # --------------------------------------------------------------------------
@@ -260,10 +268,23 @@ class Buscador:
         metodo: "indice" (padrão) ou "linear"; o resultado é o mesmo.
         """
         tokens = list(dict.fromkeys(normalizar(pergunta or "")))  # sem repetir, mantém a ordem
-        c = len(tokens) >= 1
-        if not c:
+        if not tokens:
             return Resultado(decisao=decidir(False, False, False), tokens=tokens)
 
+        resultado = self._pontuar(tokens, tema, excluir, metodo)
+        if resultado.decisao == SEM_BASE:
+            # Última tentativa: talvez a pessoa errou a digitação ("docuumento").
+            corrigidos = self._corrigir(tokens)
+            if corrigidos:
+                novos = [corrigidos.get(t, t) for t in tokens]
+                segunda = self._pontuar(novos, tema, excluir, metodo)
+                if segunda.decisao != SEM_BASE:
+                    segunda.corrigidos = corrigidos
+                    return segunda
+        return resultado
+
+    def _pontuar(self, tokens: list, tema, excluir, metodo: str) -> Resultado:
+        """Pontua, ordena e decide para uma lista de tokens já normalizados."""
         equivalentes = self._equivalentes(tokens)
         if metodo == "linear":
             bruto = self._ranking_linear(equivalentes)
@@ -281,6 +302,7 @@ class Buscador:
         # Várias correspondências: maior pontuação primeiro; empate pelo menor id.
         ranking.sort(key=lambda par: (-par[1], par[0]))
 
+        c = len(tokens) >= 1
         melhor = ranking[0][1] if ranking else 0
         segundo = ranking[1][1] if len(ranking) > 1 else 0
         a = melhor >= LIMIAR_MINIMO
@@ -294,6 +316,21 @@ class Buscador:
         else:
             candidatos = []
         return Resultado(decisao=decisao, ranking=ranking, candidatos=candidatos, tokens=tokens)
+
+    def _corrigir(self, tokens: list) -> dict:
+        """{token digitado: palavra parecida da base} para palavras fora do vocabulário.
+
+        Só corrige palavra com TAM_MIN_CORRECAO letras ou mais e que não seja sinônimo
+        conhecido. Palavras curtas (ipva, mei) ficam como estão: errariam demais."""
+        vocabulario = [p for p in self.indice if len(p) >= TAM_MIN_CORRECAO]
+        trocas = {}
+        for t in tokens:
+            if len(t) < TAM_MIN_CORRECAO or t in self.indice or t in self.grupos:
+                continue
+            parecidas = difflib.get_close_matches(t, vocabulario, n=1, cutoff=LIMIAR_SEMELHANCA)
+            if parecidas:
+                trocas[t] = parecidas[0]
+        return trocas
 
     # ---- grafo -----------------------------------------------------------
 
