@@ -38,7 +38,7 @@ def main() -> int:
         for m in cliente.models.list():
             acoes = getattr(m, "supported_actions", None) or []
             if "generateContent" in acoes and "gemini" in (m.name or ""):
-                nomes.append(m.name.replace("models/", ""))
+                nomes.append((m.name or "").replace("models/", ""))
         for nome in sorted(nomes):
             print("  " + nome)
         if not nomes:

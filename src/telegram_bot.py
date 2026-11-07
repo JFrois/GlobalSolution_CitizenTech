@@ -43,6 +43,16 @@ COMANDOS = (("menu", "Ver os assuntos por tema"),
 PALAVRAS_DE_MENU = {"menu", "temas", "assuntos", "ajuda", "inicio", "início", "começar", "comecar"}
 
 
+def contexto_do_botao(c):
+    """(mensagem, dados, user_id) de um toque em botão, ou None se não der para responder.
+
+    O Telegram pode mandar um botão de mensagem antiga ("inacessível") ou sem dados;
+    nesses casos só confirmamos o toque."""
+    if not isinstance(c.message, Message) or c.data is None:
+        return None
+    return c.message, c.data, c.from_user.id
+
+
 def eh_palavra_de_menu(texto):
     """True se a mensagem é só uma palavra de menu. Mensagem sem texto (voz, foto) é False."""
     return bool(texto) and texto.strip().lower() in PALAVRAS_DE_MENU
@@ -116,11 +126,14 @@ def criar_bot(config, base, armazem, links):
 
     @rota.callback_query(F.data.startswith("uf:"))
     async def escolheu_uf(c: CallbackQuery):
-        try:
-            armazem.definir_uf(c.from_user.id, c.data[3:])
-            await c.message.answer("Estado salvo: %s. Você pode mudar quando quiser." % c.data[3:])
-        except ValueError:
-            await c.message.answer(MSG_ERRO)
+        ctx = contexto_do_botao(c)
+        if ctx:
+            mensagem, dados, user_id = ctx
+            try:
+                armazem.definir_uf(user_id, dados[3:])
+                await mensagem.answer("Estado salvo: %s. Você pode mudar quando quiser." % dados[3:])
+            except ValueError:
+                await mensagem.answer(MSG_ERRO)
         await c.answer()
 
     @rota.message(Command("painel"))
@@ -128,6 +141,8 @@ def criar_bot(config, base, armazem, links):
         url = config.get("PAINEL_URL", "").rstrip("/")
         if not url:
             await m.answer("O painel ainda não está configurado.")
+            return
+        if m.from_user is None:  # mensagem sem remetente (ex.: canal): não há para quem gerar o link
             return
         token = links.gerar(m.from_user.id)
         await m.answer(html.escape("Seu link de acesso (vale 5 minutos e só funciona uma vez):\n%s/entrar?t=%s"
@@ -141,48 +156,60 @@ def criar_bot(config, base, armazem, links):
 
     @rota.callback_query(F.data.startswith("apagar:"))
     async def confirmou_apagar(c: CallbackQuery):
-        if c.data == "apagar:sim":
-            armazem.apagar_usuario(c.from_user.id)  # TODO: apagar também o cofre (Onda 2)
-            await c.message.answer("Pronto. Seus dados foram apagados.")
-        else:
-            await c.message.answer("Tudo certo, nada foi apagado.")
+        ctx = contexto_do_botao(c)
+        if ctx:
+            mensagem, dados, user_id = ctx
+            if dados == "apagar:sim":
+                armazem.apagar_usuario(user_id)  # TODO: apagar também o cofre (Onda 2)
+                await mensagem.answer("Pronto. Seus dados foram apagados.")
+            else:
+                await mensagem.answer("Tudo certo, nada foi apagado.")
         await c.answer()
 
     @rota.callback_query(F.data.startswith("ab:"))
     async def abrir_assunto(c: CallbackQuery):
-        rid = c.data[3:]
-        if rid in base["registros_por_id"]:
-            resultado = roteador.resposta_do_assunto(base, rid, armazem.obter_uf(c.from_user.id))
-            await responder(c.message, resultado, c.from_user.id)
+        ctx = contexto_do_botao(c)
+        if ctx:
+            mensagem, dados, user_id = ctx
+            rid = dados[3:]
+            if rid in base["registros_por_id"]:
+                resultado = roteador.resposta_do_assunto(base, rid, armazem.obter_uf(user_id))
+                await responder(mensagem, resultado, user_id)
         await c.answer()
 
     @rota.callback_query(F.data.startswith("tema:"))
     async def abrir_tema(c: CallbackQuery):
-        tema = c.data[5:]
-        if tema in base["ids_por_tema"]:
-            await c.message.answer("<b>%s</b>\nToque num assunto ou escreva sua dúvida."
-                                   % html.escape(base["temas"][tema]),
-                                   reply_markup=botoes_assuntos(base, base["ids_por_tema"][tema]))
+        ctx = contexto_do_botao(c)
+        if ctx:
+            mensagem, dados, _ = ctx
+            tema = dados[5:]
+            if tema in base["ids_por_tema"]:
+                await mensagem.answer("<b>%s</b>\nToque num assunto ou escreva sua dúvida."
+                                      % html.escape(base["temas"][tema]),
+                                      reply_markup=botoes_assuntos(base, base["ids_por_tema"][tema]))
         await c.answer()
 
     @rota.message(F.text)
     async def texto_livre(m: Message):
+        if m.from_user is None or not m.text:  # sem remetente ou sem texto: nada a responder
+            return
+        user_id, texto = m.from_user.id, m.text
         try:
             chamada = None
             if chave_gemini:
                 # O Gemini roda em outra thread, com tempo limite; se falhar, usa regras.
                 try:
                     nome, args = await asyncio.wait_for(
-                        asyncio.to_thread(roteador.chamar_gemini, m.text, chave_gemini, modelos),
+                        asyncio.to_thread(roteador.chamar_gemini, texto, chave_gemini, modelos),
                         timeout=roteador.TEMPO_LIMITE_LLM)
                     chamada = roteador.validar_chamada(nome, args)
                 except Exception as erro:
                     # Sem o texto da mensagem (spec §13): só o tipo do erro.
                     log.warning("Gemini sem resposta útil (%s); usando regras", type(erro).__name__)
                     chamada = None
-            chamada = chamada or roteador.fallback_por_regras(m.text)
-            resultado = roteador.executar(chamada, base, armazem.obter_uf(m.from_user.id))
-            await responder(m, resultado, m.from_user.id)
+            chamada = chamada or roteador.fallback_por_regras(texto)
+            resultado = roteador.executar(chamada, base, armazem.obter_uf(user_id))
+            await responder(m, resultado, user_id)
         except Exception:
             log.exception("falha ao responder")  # sem o texto da mensagem
             await m.answer(MSG_ERRO)

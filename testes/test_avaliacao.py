@@ -18,6 +18,7 @@ import busca  # noqa: E402
 def carregar_script():
     espec = importlib.util.spec_from_file_location(
         "verificacoes_antigas", RAIZ / "scripts" / "verificacoes_antigas.py")
+    assert espec is not None and espec.loader is not None
     modulo = importlib.util.module_from_spec(espec)
     espec.loader.exec_module(modulo)
     return modulo

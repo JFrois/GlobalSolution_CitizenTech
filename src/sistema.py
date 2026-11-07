@@ -136,7 +136,7 @@ class Sessao:
         self.ordem = [r["id"] for t in self.ids_dos_temas
                       for r in sorted(dados["registros"], key=lambda x: x["id"])
                       if r["tema"] == t]
-        self.tela = None
+        self.tela = Tela("menu", [], "", None)  # tela inicial; tela_menu() a redesenha
 
     # ---- saída -----------------------------------------------------------
 
@@ -406,7 +406,7 @@ def _argumentos(argv):
 def principal(argv=None, entrada=input, saida=print) -> int:
     args = _argumentos(argv)
     try:
-        sys.stdout.reconfigure(encoding="utf-8")  # acentos no console do Windows
+        getattr(sys.stdout, "reconfigure")(encoding="utf-8")  # acentos no console do Windows
     except (AttributeError, ValueError):
         pass
 
