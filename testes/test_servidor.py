@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import logging
 import subprocess
 import tempfile
 import sys
@@ -37,7 +38,11 @@ def init_data(user_id, auth_date, token=TOKEN, adulterar=False):
 
 
 class TestRoteador(unittest.TestCase):
+    def tearDown(self):
+        logging.disable(logging.NOTSET)
+
     def setUp(self):
+        logging.disable(logging.CRITICAL)  # a cascata registra avisos; não poluir a saída dos testes
         self.base = base.carregar_base(FIXTURE)
 
     def test_llm_valido_e_usado(self):
@@ -58,9 +63,93 @@ class TestRoteador(unittest.TestCase):
         self.assertFalse(roteador.resposta_direta_basta("como pagar o IPVA", self.base))
         self.assertFalse(roteador.resposta_direta_basta("me lembre de pagar a conta amanhã", self.base))
 
-    def test_cascata_so_tem_modelos_que_a_chave_enxerga(self):
-        self.assertGreaterEqual(len(roteador.MODELOS_GEMINI), 3)
-        self.assertEqual(len(set(roteador.MODELOS_GEMINI)), len(roteador.MODELOS_GEMINI))
+    def test_ordem_da_cascata_leve_primeiro_e_sem_modelos_de_imagem_ou_voz(self):
+        da_chave = [
+            "models/gemini-2.5-pro", "models/gemini-2.5-flash", "models/gemini-2.5-flash-image",
+            "models/gemini-2.5-flash-lite", "models/gemini-2.5-flash-preview-tts",
+            "models/gemini-3-flash-preview", "models/gemini-3.5-transcribe",
+            "models/gemini-3.8-flash", "models/gemini-4-argon", "models/gemini-flash-latest",
+            "models/gemini-flash-lite-latest", "models/gemini-pro-latest",
+            "models/gemini-2.5-computer-use-preview-10-2025", "models/gemini-omni-1.1-flash",
+            "models/gemini-robotics-er-2-preview", "models/gemini-nano-banana-2.1"]
+        ordem = roteador.ordenar_modelos(da_chave)
+        self.assertEqual(ordem[:2], ["gemini-flash-lite-latest", "gemini-2.5-flash-lite"])
+        self.assertEqual(ordem[2], "gemini-flash-latest")  # grupo flash: "latest" primeiro
+        self.assertLess(ordem.index("gemini-2.5-flash"), ordem.index("gemini-3-flash-preview"))
+        self.assertLess(ordem.index("gemini-3.8-flash"), ordem.index("gemini-2.5-pro"))  # flash antes de pro
+        self.assertEqual(ordem[-1], "gemini-4-argon")  # sem 'flash' nem 'pro': grupo 3
+        for fora in ("image", "tts", "transcribe", "computer-use", "robotics", "omni", "nano-banana"):
+            self.assertFalse([m for m in ordem if fora in m], fora)
+
+    def test_pausa_por_tipo_de_erro(self):
+        class Erro(Exception):
+            def __init__(self, code):
+                self.code = code
+        self.assertEqual(roteador.pausa_depois_de_falhar(Erro(429)), 600)
+        self.assertEqual(roteador.pausa_depois_de_falhar(Erro(404)), 3600)
+        self.assertEqual(roteador.pausa_depois_de_falhar(Erro(503)), 120)
+        self.assertEqual(roteador.pausa_depois_de_falhar(TimeoutError()), 120)
+
+    def test_cascata_passa_pelos_modelos_ate_um_responder(self):
+        roteador._de_fora.clear()
+        chamados = []
+
+        def tentar(modelo):
+            chamados.append(modelo)
+            if modelo != "c":
+                raise RuntimeError("falhou")
+            return ("buscar_orientacao", {"pergunta": "x"})
+
+        self.assertEqual(roteador.percorrer(["a", "b", "c", "d"], tentar)[0], "buscar_orientacao")
+        self.assertEqual(chamados, ["a", "b", "c"])  # parou no primeiro que respondeu
+
+    def test_modelo_que_falhou_fica_de_fora_por_um_tempo(self):
+        roteador._de_fora.clear()
+        relogio = [1000.0]
+        chamados = []
+
+        def tentar(modelo):
+            chamados.append(modelo)
+            if modelo == "a":
+                raise RuntimeError("sem cota")
+            return "ok"
+
+        agora = lambda: relogio[0]  # noqa: E731
+        roteador.percorrer(["a", "b"], tentar, agora=agora)
+        roteador.percorrer(["a", "b"], tentar, agora=agora)
+        self.assertEqual(chamados, ["a", "b", "b"])  # na 2ª vez o "a" foi pulado
+        relogio[0] += 200  # passa a pausa de 120 s
+        roteador.percorrer(["a", "b"], tentar, agora=agora)
+        self.assertEqual(chamados[-2:], ["a", "b"])  # o "a" voltou a ser tentado
+        roteador._de_fora.clear()
+
+    def test_todos_falham_levanta_erro_e_prazo_para_a_cascata(self):
+        roteador._de_fora.clear()
+        with self.assertRaises(RuntimeError):
+            roteador.percorrer(["a", "b"], lambda m: (_ for _ in ()).throw(RuntimeError(m)))
+        roteador._de_fora.clear()
+        relogio = [0.0]
+
+        def lenta(modelo):
+            relogio[0] += 20  # cada tentativa "demora" 20 s
+            raise RuntimeError(modelo)
+
+        chamados = []
+        with self.assertRaises(RuntimeError):
+            roteador.percorrer(["a", "b", "c", "d"], lambda m: (chamados.append(m), lenta(m)),
+                               agora=lambda: relogio[0], prazo_s=25)
+        self.assertEqual(chamados, ["a", "b"])  # estourou os 25 s: não tenta c nem d
+        roteador._de_fora.clear()
+
+    def test_lista_de_reserva_quando_a_chave_nao_lista(self):
+        class Cliente:
+            class models:
+                @staticmethod
+                def list():
+                    raise RuntimeError("sem rede")
+        roteador._lista_em_cache.update(valida_ate=0.0, nomes=[])
+        self.assertEqual(roteador.modelos_da_chave(Cliente()), list(roteador.MODELOS_GEMINI))
+        roteador._lista_em_cache.update(valida_ate=0.0, nomes=[])
 
     def test_argumento_invalido_e_ignorado(self):
         for nome, args in [("buscar_orientacao", {}),
