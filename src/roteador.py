@@ -20,8 +20,10 @@ import ponte
 MODELOS_GEMINI = ("gemini-4-argon", "gemini-3.1-pro-preview", "gemini-3.8-flash")
 MODELO_GEMINI = MODELOS_GEMINI[0]
 log = logging.getLogger("citizen.llm")
-TEMPO_LIMITE_LLM = 10  # segundos no total; usado por quem chama (telegram_bot)
-TEMPO_POR_MODELO_MS = 3000  # cada tentativa tem o próprio limite, para um modelo lento não travar a cascata
+TEMPO_LIMITE_LLM = 15  # segundos no total; usado por quem chama (telegram_bot)
+# Cada tentativa tem o próprio limite. Erro 429 volta em menos de 1 s, então só o modelo
+# lento gasta esse tempo; 6 s bastam para o function calling de um modelo flash.
+TEMPO_POR_MODELO_MS = 6000
 
 FERRAMENTAS = ("buscar_orientacao", "cofre_documento", "gerenciar_tarefas", "briefing_matinal")
 
@@ -182,5 +184,8 @@ def resposta_do_assunto(base, rid, uf=None, modelo="B"):
     ponte.preparar(base)
     ids = ponte.relacionados(base, rid)
     regs = [base["registros_por_id"][i] for i in ids]
-    texto = ponte.formatar(base["registros_por_id"][rid], modelo, regs, uf=uf)
-    return {"texto": texto, "opcoes": ids, "decisao": "RESPONDER", "registro": rid}
+    reg = base["registros_por_id"][rid]
+    texto = ponte.formatar(reg, modelo, regs, uf=uf)
+    # "html" é a versão para o Telegram (negrito, link); "texto" serve ao terminal e aos testes.
+    return {"texto": texto, "html": ponte.formatar_telegram(reg, uf=uf), "opcoes": ids,
+            "decisao": "RESPONDER", "registro": rid}

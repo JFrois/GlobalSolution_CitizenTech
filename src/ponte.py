@@ -8,6 +8,9 @@ orientação (a resposta nunca vem do LLM).
 """
 from __future__ import annotations
 
+import html
+from urllib.parse import urlparse
+
 import busca
 import respostas
 
@@ -67,6 +70,26 @@ def passos(reg: dict) -> list:
 def pedir_escolha(regs: list) -> str:
     por_id = {r["id"]: r for r in regs}
     return respostas.pedir_escolha(list(por_id), por_id)
+
+
+def formatar_telegram(reg: dict, uf=None) -> str:
+    """Resposta em HTML do Telegram: título em negrito, passos numerados, aviso, fonte
+    com link e a frase de não-oficialidade. Sem molduras nem quebra em 80 colunas (a
+    tela do celular é estreita). Os assuntos para continuar vão em botões, não no texto.
+    Todo texto vindo da base passa por html.escape."""
+    esc = html.escape
+    link, _ = fonte_e_aviso(reg, uf)
+    partes = ["<b>%s</b>" % esc(respostas.titulo_do(reg)), ""]
+    partes += ["%d. %s" % (i, esc(p)) for i, p in enumerate(passos(reg), start=1)]
+    aviso = respostas.texto_do_aviso(reg)
+    if aviso:
+        partes += ["", "<b>Atenção:</b> " + esc(aviso.replace("Atenção: ", "", 1))]
+    dominio = urlparse(link).netloc.replace("www.", "") or link
+    verificado = ("verificado em " + formatar_data(reg["data_verificacao"])
+                  if reg["data_verificacao"] else formatar_data(""))
+    partes += ["", '<b>Fonte:</b> <a href="%s">%s</a> (%s)' % (esc(link, quote=True), esc(dominio), verificado),
+               "", "<i>%s</i>" % esc(NAO_OFICIAL)]
+    return "\n".join(partes)
 
 
 def formatar(reg: dict, modelo: str, regs: list, uf=None) -> str:
