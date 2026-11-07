@@ -20,7 +20,8 @@ import ponte
 MODELOS_GEMINI = ("gemini-4-argon", "gemini-3.1-pro-preview", "gemini-3.8-flash")
 MODELO_GEMINI = MODELOS_GEMINI[0]
 log = logging.getLogger("citizen.llm")
-TEMPO_LIMITE_LLM = 8  # segundos; usado por quem chama (telegram_bot)
+TEMPO_LIMITE_LLM = 10  # segundos no total; usado por quem chama (telegram_bot)
+TEMPO_POR_MODELO_MS = 3000  # cada tentativa tem o próprio limite, para um modelo lento não travar a cascata
 
 FERRAMENTAS = ("buscar_orientacao", "cofre_documento", "gerenciar_tarefas", "briefing_matinal")
 
@@ -127,7 +128,8 @@ def chamar_gemini(texto, api_key, modelos=None):
                  {"acao": types.Schema(type="STRING", enum=["agora", "configurar"]),
                   "temas": types.Schema(type="ARRAY", items=texto_s), "hora": texto_s}, ["acao"]),
     ]
-    cliente = genai.Client(api_key=api_key)
+    cliente = genai.Client(api_key=api_key,
+                           http_options=types.HttpOptions(timeout=TEMPO_POR_MODELO_MS))
     config = types.GenerateContentConfig(
         tools=[types.Tool(function_declarations=declaracoes)],
         tool_config=types.ToolConfig(
@@ -137,6 +139,7 @@ def chamar_gemini(texto, api_key, modelos=None):
     ultimo_erro = None
     for modelo in (modelos or MODELOS_GEMINI):
         try:
+            log.info("Gemini: tentando o modelo %s", modelo)
             resposta = cliente.models.generate_content(model=modelo, contents=texto, config=config)
             chamada = resposta.candidates[0].content.parts[0].function_call
             # Log sem o texto da mensagem (spec §13): só o modelo e a ferramenta escolhida.
