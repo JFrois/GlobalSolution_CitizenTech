@@ -8,8 +8,10 @@ As funções puras (sem FastAPI) usam só a biblioteca padrão e são testadas s
 rede. O FastAPI é importado dentro de `criar_app` (import tardio, spec §5.3).
 A pergunta enviada em /api/perguntar NÃO é gravada nem logada (spec §13).
 """
-from __future__ import annotations
 
+# Atenção: este módulo NÃO usa "from __future__ import annotations". O FastAPI lê as
+# anotações das rotas (Request, Response...) em tempo de execução; como esses tipos são
+# importados dentro de criar_app, anotações em texto não seriam resolvidas.
 import hashlib
 import hmac
 import json

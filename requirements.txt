@@ -1,5 +1,6 @@
 # Dependências do modo --servidor (Onda 2). O modo terminal NAO precisa de nada disto.
-# Versões fixadas (spec §13, item 8). Confirmar a instalação na VM com Python 3.11+.
+# Versões fixadas (spec §13, item 8). Use Python 3.11, 3.12 ou 3.13: no 3.14 o pydantic-core 2.23 não compila.
+# Para rodar os testes do app FastAPI também: pip install httpx (sem ele, esses testes são pulados).
 aiogram==3.13.1
 fastapi==0.115.0
 uvicorn==0.30.6
