@@ -10,7 +10,8 @@ permissions:
   contents: read
 jobs:
   testes:
-    runs-on: ubuntu-latest
+    # O núcleo precisa rodar em Python 3.9 (spec 5.2); o ubuntu-latest já não traz a 3.9.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -19,7 +20,9 @@ jobs:
       - run: python -m unittest discover -s testes -t .
   deploy:
     needs: testes
-    if: github.event_name == 'push'   # PR só roda os testes; o deploy é só no push na main
+    # PR só roda os testes. O deploy só roda no push na main E depois que a VM existir:
+    # crie a variável de repositório DEPLOY_ATIVO=true (Settings > Variables) junto dos secrets.
+    if: github.event_name == 'push' && vars.DEPLOY_ATIVO == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: appleboy/ssh-action@v1.0.3
