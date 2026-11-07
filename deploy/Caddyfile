@@ -1,0 +1,5 @@
+# HTTPS gratuito com DuckDNS + Caddy (HTTP-01; portas 80 e 443 abertas).
+# TODO (EM ABERTO, spec §12): trocar pelo subdomínio real após o teste de 15 min.
+seubot.duckdns.org {
+	reverse_proxy localhost:8000
+}

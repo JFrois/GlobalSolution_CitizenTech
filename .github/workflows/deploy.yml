@@ -1,0 +1,29 @@
+# Deploy automático: a cada push na main, atualiza a VM por SSH (spec §12).
+# Secrets necessários no GitHub: HOST, USER, KEY (chave SSH dedicada ao deploy).
+name: deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      - run: python -m unittest discover -s testes -t .
+  deploy:
+    needs: testes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.KEY }}
+          script: |
+            cd ~/citizen-assist
+            git pull --ff-only origin main
+            .venv/bin/pip install -r requirements.txt
+            sudo systemctl restart citizen-assist
