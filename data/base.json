@@ -1,0 +1,188 @@
+{
+  "versao": 1,
+  "temas": {
+    "documentacao": "Documentação pessoal",
+    "servicos": "Serviços públicos",
+    "direitos": "Direitos e orientações comunitárias"
+  },
+  "sinonimos": {},
+  "registros": [
+    {
+      "id": "DOC-001",
+      "tema": "documentacao",
+      "palavras_chave": ["segunda via", "rg", "identidade", "cin", "perdi", "carteira de identidade"],
+      "pergunta": "Como solicitar a 2ª via da carteira de identidade (CIN/RG)?",
+      "orientacao": "PREENCHER",
+      "confirmar_antes": true,
+      "abrangencia": "estadual",
+      "referencia": "https://www.gov.br",
+      "referencias_estaduais": {},
+      "data_verificacao": "",
+      "relacionados": ["DOC-002", "DOC-003", "SRV-004", "DIR-004"]
+    },
+    {
+      "id": "DOC-002",
+      "tema": "documentacao",
+      "palavras_chave": ["cin digital", "identidade digital", "celular", "app gov.br", "aplicativo"],
+      "pergunta": "Como ter a Carteira de Identidade Nacional (CIN) digital no app gov.br?",
+      "orientacao": "PREENCHER",
+      "referencia": "https://www.gov.br",
+      "data_verificacao": "",
+      "relacionados": ["DOC-001"]
+    },
+    {
+      "id": "DOC-003",
+      "tema": "documentacao",
+      "palavras_chave": ["segunda via", "titulo de eleitor", "titulo", "eleitor", "perdi"],
+      "pergunta": "Como pedir a 2ª via do título de eleitor?",
+      "orientacao": "PREENCHER",
+      "referencia": "https://www.tse.jus.br",
+      "data_verificacao": "",
+      "relacionados": ["DOC-001", "DOC-004", "DOC-005"]
+    },
+    {
+      "id": "DOC-004",
+      "tema": "documentacao",
+      "palavras_chave": ["titulo cancelado", "cancelado", "regularizar", "titulo", "eleitor"],
+      "pergunta": "Meu título de eleitor foi cancelado: como regularizar?",
+      "orientacao": "PREENCHER",
+      "confirmar_antes": true,
+      "referencia": "https://www.tse.jus.br",
+      "data_verificacao": "",
+      "relacionados": ["DOC-003", "DOC-005"]
+    },
+    {
+      "id": "DOC-005",
+      "tema": "documentacao",
+      "palavras_chave": ["situacao eleitoral", "consultar", "regular", "quitacao", "titulo", "eleitor"],
+      "pergunta": "Como consultar minha situação eleitoral?",
+      "orientacao": "PREENCHER",
+      "referencia": "https://www.tse.jus.br",
+      "data_verificacao": "",
+      "relacionados": ["DOC-003", "DOC-004"]
+    },
+    {
+      "id": "SRV-001",
+      "tema": "servicos",
+      "palavras_chave": ["meu inss", "inss", "135", "aposentadoria", "beneficio", "previdencia"],
+      "pergunta": "Como acessar o Meu INSS e o telefone 135?",
+      "orientacao": "PREENCHER",
+      "referencia": "https://www.gov.br/inss",
+      "data_verificacao": "",
+      "relacionados": ["SRV-002", "SRV-003", "SRV-004", "SRV-006"]
+    },
+    {
+      "id": "SRV-002",
+      "tema": "servicos",
+      "palavras_chave": ["pericia", "pericia medica", "agendar", "marcar", "inss", "auxilio"],
+      "pergunta": "Como agendar a perícia médica do INSS?",
+      "orientacao": "PREENCHER",
+      "confirmar_antes": true,
+      "referencia": "https://www.gov.br/inss",
+      "data_verificacao": "",
+      "relacionados": ["SRV-001"]
+    },
+    {
+      "id": "SRV-003",
+      "tema": "servicos",
+      "palavras_chave": ["cnis", "extrato", "simulacao", "aposentadoria", "contribuicao", "inss"],
+      "pergunta": "Como tirar o extrato CNIS e simular a aposentadoria?",
+      "orientacao": "PREENCHER",
+      "referencia": "https://www.gov.br/inss",
+      "data_verificacao": "",
+      "relacionados": ["SRV-001"]
+    },
+    {
+      "id": "SRV-004",
+      "tema": "servicos",
+      "palavras_chave": ["cadunico", "cadastro unico", "inscricao", "inscrever", "programas sociais", "bolsa familia"],
+      "pergunta": "Como me inscrever no CadÚnico?",
+      "orientacao": "PREENCHER",
+      "referencia": "https://www.gov.br/mds",
+      "data_verificacao": "",
+      "relacionados": ["DOC-001", "SRV-001", "DIR-006"]
+    },
+    {
+      "id": "SRV-005",
+      "tema": "servicos",
+      "palavras_chave": ["cartao nacional de saude", "cartao sus", "cns", "saude", "sus"],
+      "pergunta": "Como obter o Cartão Nacional de Saúde (cartão do SUS)?",
+      "orientacao": "PREENCHER",
+      "referencia": "https://www.gov.br/saude",
+      "data_verificacao": "",
+      "relacionados": ["SRV-006"]
+    },
+    {
+      "id": "SRV-006",
+      "tema": "servicos",
+      "palavras_chave": ["meu sus digital", "sus digital", "vacinas", "exames", "saude", "sus"],
+      "pergunta": "Como usar o Meu SUS Digital?",
+      "orientacao": "PREENCHER",
+      "referencia": "https://www.gov.br/saude",
+      "data_verificacao": "",
+      "relacionados": ["SRV-005", "SRV-001"]
+    },
+    {
+      "id": "DIR-001",
+      "tema": "direitos",
+      "palavras_chave": ["consumidor.gov.br", "consumidor", "reclamar", "reclamacao", "empresa", "produto"],
+      "pergunta": "Como reclamar de um produto ou serviço pelo Consumidor.gov.br?",
+      "orientacao": "PREENCHER",
+      "referencia": "https://www.consumidor.gov.br",
+      "data_verificacao": "",
+      "relacionados": ["DIR-002", "DIR-005"]
+    },
+    {
+      "id": "DIR-002",
+      "tema": "direitos",
+      "palavras_chave": ["defensoria publica", "defensoria", "advogado", "gratuito", "assistencia juridica"],
+      "pergunta": "Como buscar ajuda da Defensoria Pública?",
+      "orientacao": "PREENCHER",
+      "referencia": "https://www.dpu.def.br",
+      "data_verificacao": "",
+      "relacionados": ["DIR-001", "DIR-003", "DIR-004", "DIR-005"]
+    },
+    {
+      "id": "DIR-003",
+      "tema": "direitos",
+      "palavras_chave": ["disque 100", "ligue 180", "denuncia", "violencia", "direitos humanos", "mulher"],
+      "pergunta": "Quando usar o Disque 100 e o Ligue 180?",
+      "orientacao": "PREENCHER",
+      "referencia": "https://www.gov.br/mdh",
+      "data_verificacao": "",
+      "relacionados": ["DIR-002"]
+    },
+    {
+      "id": "DIR-004",
+      "tema": "direitos",
+      "palavras_chave": ["certidao de nascimento", "certidao", "nascimento", "gratuita", "cartorio"],
+      "pergunta": "Como conseguir a certidão de nascimento gratuita?",
+      "orientacao": "PREENCHER",
+      "confirmar_antes": true,
+      "referencia": "https://www.cnj.jus.br",
+      "data_verificacao": "",
+      "relacionados": ["DIR-002", "DOC-001"]
+    },
+    {
+      "id": "DIR-005",
+      "tema": "direitos",
+      "palavras_chave": ["juizado especial civel", "juizado", "pequenas causas", "processo", "justica"],
+      "pergunta": "Como funciona o Juizado Especial Cível?",
+      "orientacao": "PREENCHER",
+      "referencia": "https://www.cnj.jus.br",
+      "data_verificacao": "",
+      "relacionados": ["DIR-001", "DIR-002"]
+    },
+    {
+      "id": "DIR-006",
+      "tema": "direitos",
+      "palavras_chave": ["tarifa social", "energia", "luz", "conta de luz", "desconto", "baixa renda"],
+      "pergunta": "Como conseguir a Tarifa Social de Energia Elétrica?",
+      "orientacao": "PREENCHER",
+      "confirmar_antes": true,
+      "referencia": "https://www.gov.br/aneel",
+      "data_verificacao": "",
+      "relacionados": ["SRV-004"]
+    }
+  ]
+}
