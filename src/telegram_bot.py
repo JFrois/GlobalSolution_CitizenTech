@@ -57,6 +57,17 @@ def contexto_do_botao(c):
     return c.message, c.data, c.from_user.id
 
 
+async def _trocar_aviso(aviso, m, texto):
+    """Troca o texto do aviso "Recebi seu áudio" pelo resultado; se não der, manda mensagem nova."""
+    try:
+        if aviso is not None:
+            await aviso.edit_text(texto)
+            return
+    except Exception:
+        pass
+    await m.answer(texto)
+
+
 def eh_palavra_de_menu(texto):
     """True se a mensagem é só uma palavra de menu. Mensagem sem texto (voz, foto) é False."""
     return bool(texto) and texto.strip().lower() in PALAVRAS_DE_MENU
@@ -68,6 +79,7 @@ MSG_VOZ_INDISPONIVEL = ("Ainda não consigo ouvir áudios neste servidor. "
                         "Escreva sua dúvida com palavras.")
 MSG_VOZ_FALHOU = ("Não consegui entender esse áudio. Tente de novo, falando mais perto, "
                   "ou escreva sua dúvida.")
+MSG_VOZ_RECEBIDA = "Recebi seu áudio. Estou transcrevendo, só um instante..."
 TEMPO_LIMITE_VOZ_S = 90   # o Whisper em CPU pode demorar; passou disso, avisa e segue
 
 
@@ -250,8 +262,11 @@ def criar_bot(config, base, armazem, links):
             log.warning("Voz indisponível: %s", motivo)  # motivo técnico só no log
             await m.answer(MSG_VOZ_INDISPONIVEL)
             return
+        # Aviso imediato: o usuário sabe que o áudio chegou enquanto transcrevemos.
+        aviso = None
         try:
             await m.bot.send_chat_action(m.chat.id, "typing")
+            aviso = await m.answer(MSG_VOZ_RECEBIDA)
         except Exception:
             pass
         pasta = tempfile.mkdtemp(prefix="citizen-voz-")
@@ -263,12 +278,12 @@ def criar_bot(config, base, armazem, links):
                 timeout=TEMPO_LIMITE_VOZ_S)
         except Exception as erro:
             log.warning("Falha na transcrição (%s)", type(erro).__name__)  # sem o conteúdo
-            await m.answer(MSG_VOZ_FALHOU)
+            await _trocar_aviso(aviso, m, MSG_VOZ_FALHOU)
             return
         finally:
             shutil.rmtree(pasta, ignore_errors=True)  # o áudio não fica no disco
         # Mostra o que foi entendido antes de responder (spec §19.6).
-        await m.answer("Entendi: <i>%s</i>" % html.escape(texto))
+        await _trocar_aviso(aviso, m, "Entendi: <i>%s</i>" % html.escape(texto))
         await processar_texto(m, m.from_user.id, texto)
 
     @rota.message()
