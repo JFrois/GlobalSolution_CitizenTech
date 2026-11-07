@@ -348,6 +348,21 @@ class TestBot(unittest.TestCase):
         # A mensagem de "sem base" do Telegram não repete a lista numerada do terminal.
         self.assertNotIn("1  ", telegram_bot.MSG_SEM_BASE)
 
+    def test_aviso_de_audio_recebido_vira_o_resultado(self):
+        import asyncio
+        from unittest import mock
+
+        import telegram_bot
+        aviso, m = mock.AsyncMock(), mock.AsyncMock()
+        asyncio.run(telegram_bot._trocar_aviso(aviso, m, "Entendi: x"))
+        aviso.edit_text.assert_awaited_once_with("Entendi: x")
+        m.answer.assert_not_awaited()
+        # Se não der para editar (ou não houve aviso), manda mensagem nova: nunca fica mudo.
+        aviso.edit_text.side_effect = RuntimeError("mensagem antiga")
+        asyncio.run(telegram_bot._trocar_aviso(aviso, m, "Entendi: y"))
+        asyncio.run(telegram_bot._trocar_aviso(None, m, "Entendi: z"))
+        self.assertEqual(m.answer.await_count, 2)
+
 
 class TestServidor(unittest.TestCase):
     def test_env_faltando_e_listado(self):

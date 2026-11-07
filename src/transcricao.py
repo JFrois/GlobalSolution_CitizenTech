@@ -18,6 +18,11 @@ log = logging.getLogger("citizen.voz")
 MODELO_PADRAO = "base"
 MODELOS_VALIDOS = ("tiny", "base", "small", "medium")
 IDIOMA = "pt"
+# Dica de vocabulário: o Whisper `base` ouviu "segundo aviado" no lugar de "segunda via".
+# Com esta frase de contexto ele acerta os termos do projeto (medido em 07/11, ver uso_ia.md).
+VOCABULARIO = ("Perguntas sobre documentos e serviços públicos: segunda via do RG, CIN, "
+               "título de eleitor, CadÚnico, Meu INSS, CNIS, Consumidor.gov.br, "
+               "Defensoria Pública, Disque 100, Ligue 180.")
 DURACAO_MAXIMA_S = 120      # áudio mais longo que isso é recusado antes de transcrever
 TAMANHO_MAXIMO_B = 10 * 1024 * 1024
 
@@ -67,7 +72,8 @@ def transcrever(caminho, nome_modelo=MODELO_PADRAO):
         with _trava:
             modelo = _carregar(nome_modelo)
             # fp16=False: em CPU o Whisper avisa e cai para fp32 de qualquer jeito.
-            saida = modelo.transcribe(str(caminho), language=IDIOMA, fp16=False)
+            saida = modelo.transcribe(str(caminho), language=IDIOMA, fp16=False,
+                                     initial_prompt=VOCABULARIO)
     except ErroTranscricao:
         raise
     except Exception as erro:

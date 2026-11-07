@@ -54,6 +54,8 @@ class TestTranscricao(unittest.TestCase):
         self.assertEqual(texto, "como tirar a segunda via do RG")
         _, kwargs = modelo.transcribe.call_args
         self.assertEqual(kwargs["language"], "pt")
+        # Vocabulário do projeto como dica: evita "segundo aviado" no lugar de "segunda via".
+        self.assertIn("segunda via do RG", kwargs["initial_prompt"])
 
     def test_modelo_e_carregado_uma_vez(self):
         modulo, _ = whisper_falso()
