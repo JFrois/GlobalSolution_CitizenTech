@@ -1,0 +1,11 @@
+{
+  "version": "0.2",
+  "language": "en,pt-BR",
+  "ignorePaths": [".venv/**", ".git/**", "*.csv", "*.svg", "*.png", "docs/design/tokens.*", "requirements.txt"],
+  "words": [
+    "aiogram", "argon", "Caddy", "Caddyfile", "CadÚnico", "CIN", "CNIS", "CRAS", "CNS", "DPU", "TSE", "INSS", "ANEEL", "BPC",
+    "DuckDNS", "fastapi", "uvicorn", "pydantic", "Supabase", "systemd", "venv", "heapq", "Dijkstra", "Karnaugh",
+    "unittest", "getattr", "ponte", "Estreia", "Atkinson", "Hyperlegible", "gemini", "genai", "initData", "Pylance",
+    "BotFather", "setuserpic", "gov", "mdh", "jus", "def", "dpu", "mds", "cnj", "SUS", "GLOBAL", "SOLUTION"
+  ]
+}

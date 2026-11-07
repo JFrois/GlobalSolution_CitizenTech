@@ -114,28 +114,29 @@ def chamar_gemini(texto, api_key, modelos=None):
     def declarar(nome, descricao, props, obrigatorios):
         return types.FunctionDeclaration(
             name=nome, description=descricao,
-            parameters=types.Schema(type="OBJECT", properties=props, required=obrigatorios))
+            parameters=types.Schema(type=types.Type.OBJECT, properties=props, required=obrigatorios))
 
-    texto_s = types.Schema(type="STRING")
+    texto_s = types.Schema(type=types.Type.STRING)
     declaracoes = [
         declarar("buscar_orientacao", "Dúvida sobre documentos, serviços públicos ou direitos.",
                  {"pergunta": texto_s}, ["pergunta"]),
         declarar("cofre_documento", "Guardar, listar ou pedir de volta um documento do cofre.",
-                 {"acao": types.Schema(type="STRING", enum=["enviar", "listar", "abrir"]),
+                 {"acao": types.Schema(type=types.Type.STRING, enum=["enviar", "listar", "abrir"]),
                   "nome": texto_s}, ["acao"]),
         declarar("gerenciar_tarefas", "Criar, listar ou concluir tarefas e lembretes.",
-                 {"acao": types.Schema(type="STRING", enum=["criar", "listar", "concluir"]),
+                 {"acao": types.Schema(type=types.Type.STRING, enum=["criar", "listar", "concluir"]),
                   "titulo": texto_s, "quando": texto_s}, ["acao"]),
         declarar("briefing_matinal", "Ver ou configurar o resumo matinal.",
-                 {"acao": types.Schema(type="STRING", enum=["agora", "configurar"]),
-                  "temas": types.Schema(type="ARRAY", items=texto_s), "hora": texto_s}, ["acao"]),
+                 {"acao": types.Schema(type=types.Type.STRING, enum=["agora", "configurar"]),
+                  "temas": types.Schema(type=types.Type.ARRAY, items=texto_s), "hora": texto_s}, ["acao"]),
     ]
     cliente = genai.Client(api_key=api_key,
                            http_options=types.HttpOptions(timeout=TEMPO_POR_MODELO_MS))
     config = types.GenerateContentConfig(
         tools=[types.Tool(function_declarations=declaracoes)],
         tool_config=types.ToolConfig(
-            function_calling_config=types.FunctionCallingConfig(mode="ANY")),
+            function_calling_config=types.FunctionCallingConfig(
+                mode=types.FunctionCallingConfigMode.ANY)),
         # Só queremos saber qual ferramenta escolher; não deixar o SDK executar nada sozinho.
         automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True, maximum_remote_calls=None))
     ultimo_erro = None
@@ -143,7 +144,12 @@ def chamar_gemini(texto, api_key, modelos=None):
         try:
             log.info("Gemini: tentando o modelo %s", modelo)
             resposta = cliente.models.generate_content(model=modelo, contents=texto, config=config)
-            chamada = resposta.candidates[0].content.parts[0].function_call
+            candidatos = resposta.candidates or []
+            conteudo = candidatos[0].content if candidatos else None
+            partes = (conteudo.parts if conteudo else None) or []
+            chamada = partes[0].function_call if partes else None
+            if chamada is None or not chamada.name:
+                raise ValueError("resposta sem chamada de função")
             # Log sem o texto da mensagem (spec §13): só o modelo e a ferramenta escolhida.
             log.info("Gemini: o modelo %s respondeu (ferramenta %s)", modelo, chamada.name)
             return chamada.name, dict(chamada.args or {})
@@ -151,7 +157,8 @@ def chamar_gemini(texto, api_key, modelos=None):
             ultimo_erro = erro
             log.warning("Gemini: o modelo %s falhou (%s %s)", modelo, type(erro).__name__,
                         getattr(erro, "code", ""))
-    raise ultimo_erro  # todos falharam: quem chama cai no fallback por regras
+    # Todos falharam: quem chama cai no fallback por regras.
+    raise ultimo_erro or RuntimeError("nenhum modelo Gemini configurado")
 
 
 def executar(chamada, base, uf=None):
