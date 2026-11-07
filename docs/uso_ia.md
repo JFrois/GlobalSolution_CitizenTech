@@ -47,6 +47,16 @@ Uma linha por uso relevante. **Resultado**: aceito, aceito com ajustes ou rejeit
 | 06/11 | Juan | Claude Code | Criar o documento de arquitetura (`docs/arquitetura.md`) a partir da spec §5 | Aceito, aguardando revisão da equipe | A IA apontou uma questão para a equipe: pelos `relacionados` da spec, DOC-003/004/005 e SRV-005/006 ficam isolados no grafo (marcado como EM ABERTO). Falta revisão humana de cada seção |
 | 06/11 | Juan | Claude Code | Comparar o repositório com o modelo da coordenação e criar o esqueleto do README e este arquivo | Aceito, aguardando revisão da equipe | README conferido com o modelo GLOBAL-SOLUTION do repositório da coordenação e com as 10 seções do enunciado |
 
+| 07/11 | Juan | Claude Code | Auditar o repositório contra o enunciado da GS (checklist, inconsistências, correções) | Aceito | Achados conferidos com o enunciado e com o estado real do repositório (sem código ainda; `python src/sistema.py` falhava) |
+| 07/11 | Juan | Claude Code | Aplicar as decisões da equipe na spec e nos documentos: responsáveis A/B/C, comparação A × B por rubrica, navegação nos dois modelos, Python 3.9 no núcleo, sinônimos e expressões, grafo conexo, protocolo das perguntas de teste | Aceito, aguardando revisão da equipe | As decisões (responsáveis, ligar as ilhas, criar perguntas antes e coletar do público depois) vieram da equipe; a IA propôs as arestas DOC-001–DOC-003 e SRV-001–SRV-006, que precisam ser conferidas nas fontes oficiais (atividade E2) |
+
+| 07/11 | Juan | Claude Code | Definir a UI das 3 interfaces (terminal, Telegram, painel) em `docs/ux.md` e spec §19, e montar wireframes clicáveis | Aceito; aprovado pela equipe em 07/11 | Decisões de escopo tomadas pela equipe (3 interfaces, pergunta direto no menu, "Formato da resposta"); a IA propôs telas e textos, que cada responsável revisa na atividade E11. Exemplos de orientação no protótipo são texto de exemplo, não conteúdo da base |
+
+| 07/11 | Juan | Claude Code | Pesquisar identidades visuais a partir de templates do Lovable e manuais de marca do Adobe Stock, propor direções e montar o manual de marca | Aceito; aprovado pela equipe em 07/11 | A equipe escolheu a base (híbrida), as referências e a direção final (Estreia clara). Rejeitado: comprar template pago ou usar app React do Lovable (conflita com a spec). Contraste de todas as cores conferido por script (WCAG AA); referências usadas só como inspiração, sem copiar layouts, imagens ou marcas |
+
+| 07/11 | Juan | Claude Code | Desenhar as telas na Estreia clara, fazer a crítica de design e corrigir os problemas encontrados | Aceito; aprovado pela equipe em 07/11 | Contraste medido por script (bordas de campos falhavam em 3:1 e foram corrigidas); aba ativa ganhou marcação além da cor; alvos de toque ajustados para 44 px |
+| 07/11 | Juan | Claude Code | Propor na spec a aba "Perguntar" no Mini App com a cena da verificação (§10.5) | Aceito; aprovado pela equipe em 07/11 | A ideia veio da crítica de design e foi aceita pelo Juan; a proposta mantém as regras da spec (resposta só da base, sem LLM nessa rota, pergunta não gravada, "reduzir movimento") |
+
 <!-- Modelo para novas linhas:
 | DD/MM | Nome | Ferramenta | Pedido resumido (sem dados pessoais) | Aceito / Ajustado / Rejeitado | Como foi conferido |
 -->

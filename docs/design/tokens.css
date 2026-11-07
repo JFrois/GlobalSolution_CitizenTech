@@ -1,0 +1,83 @@
+/*
+ * Citizen Assist AI — tokens da identidade "Estreia clara"
+ * Fonte: manual de marca (docs/design/README.md) e docs/ux.md §9.
+ *
+ * Como usar no painel (painel/):
+ *   <link rel="stylesheet" href="tokens.css">
+ *   - Telas de leitura usam os tokens do :root (modo claro).
+ *   - Momentos de cinema (desbloquear o cofre, cena da verificação)
+ *     usam o atributo data-tema="cinema" no contêiner da tela.
+ *   - No Mini App, as cores do Telegram (--tg-theme-*) podem substituir
+ *     fundo e texto; a primária continua sendo --cor-acao.
+ *
+ * Todos os pares de texto passam no contraste WCAG AA (≥ 4,5:1);
+ * bordas de campos passam no mínimo de 3:1 para componentes.
+ */
+
+:root {
+  /* Cores — dia a dia (claro) */
+  --cor-fundo: #F5F6F8;          /* fundo das telas */
+  --cor-superficie: #FFFFFF;     /* cartões */
+  --cor-texto: #0B0D12;          /* títulos e texto · 18,0:1 */
+  --cor-apoio: #4D5463;          /* legendas e rótulos · 7,0:1 */
+  --cor-ambar: #8A5300;          /* números de passo e destaques · 5,9:1 */
+  --cor-ciano: #0E6E7A;          /* links e "Fonte:" · 5,5:1 */
+  --cor-atencao: #B0391B;        /* "Atenção:" · 5,6:1 */
+  --cor-acao: #F5B544;           /* botão principal (texto --cor-acao-texto) */
+  --cor-acao-texto: #0B0D12;     /* texto no botão principal · 10,7:1 */
+  --cor-borda: #7A8290;          /* bordas de campos e botões secundários · 3,6:1 */
+  --cor-ambar-suave: #FFF4DC;    /* fundo de ícone âmbar */
+  --cor-ciano-suave: #E1F2F4;    /* fundo de ícone informativo */
+  --cor-faixa: #000000;          /* faixas de cinema (só no modo cinema) */
+
+  /* Tipografia (Google Fonts, licença OFL) */
+  --fonte-titulo: "Archivo", "Arial Narrow", sans-serif;   /* peso 800, largura 66–72% */
+  --fonte-texto: "Atkinson Hyperlegible", system-ui, sans-serif;
+  --fonte-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --largura-titulo: 70%;         /* font-stretch dos títulos */
+  --tamanho-cartela: 72px;       /* abertura e cenas */
+  --tamanho-titulo: 40px;
+  --tamanho-subtitulo: 22px;
+  --tamanho-texto: 17px;         /* nunca menor que 16px em texto corrido */
+  --tamanho-rotulo: 13px;        /* rótulos em caixa alta, espaçamento 0.16em */
+  --entrelinha-texto: 1.5;
+
+  /* Espaços e cantos */
+  --espaco-1: 4px;
+  --espaco-2: 8px;
+  --espaco-3: 12px;
+  --espaco-4: 16px;
+  --espaco-5: 24px;
+  --espaco-6: 32px;
+  --canto-p: 8px;
+  --canto-m: 12px;
+  --canto-g: 16px;
+  --alvo-toque: 44px;            /* altura mínima de botões e campos */
+
+  /* Movimento: só opacidade e posição */
+  --mov-rapido: 150ms;           /* toque, foco, seleção */
+  --mov-medio: 300ms;            /* entrada de cartões e passos (sequência de 150ms) */
+  --mov-cena: 450ms;             /* selo "Fonte conferida" */
+  --mov-curva: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Momentos de cinema (escuro, com faixas pretas no topo e na base) */
+[data-tema="cinema"] {
+  --cor-fundo: #0B0D12;          /* noite */
+  --cor-superficie: #151922;
+  --cor-texto: #F2EEE6;          /* 16,8:1 */
+  --cor-apoio: #A9AFBC;          /* 8,8:1 */
+  --cor-ambar: #F5B544;          /* 10,7:1 */
+  --cor-ciano: #6FD3E0;          /* 11,2:1 */
+  --cor-atencao: #FF8A6B;        /* 8,4:1 */
+  --cor-borda: #6B7690;          /* 3,9:1 */
+}
+
+/* Quem pede "reduzir movimento" vê tudo pronto, sem animação */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --mov-rapido: 0ms;
+    --mov-medio: 0ms;
+    --mov-cena: 0ms;
+  }
+}
