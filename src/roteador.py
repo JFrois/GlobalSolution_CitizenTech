@@ -243,14 +243,29 @@ def chamar_gemini(texto, api_key, preferido=None):
 
 
 def resposta_direta_basta(texto, base):
-    """True quando a base responde sozinha, sem precisar do Gemini.
+    """True quando a base decide sozinha, sem precisar do Gemini.
 
     Vale se as regras simples mandam para a busca (nada de cofre, tarefa ou briefing) e a
-    busca determinística acha UM assunto com folga (decisão RESPONDER). O Gemini só entra
-    quando a pergunta é ambígua ou não casou: economiza cota e evita esperar a rede."""
+    busca determinística já tem uma saída útil: responder, pedir a escolha entre candidatos
+    ("documento") ou recusar entrada sem palavras ("???"). Nesses casos a IA não acrescenta
+    nada e só atrasa. O Gemini fica para o que não casou com a base (SEM_BASE)."""
     if fallback_por_regras(texto)["ferramenta"] != "buscar_orientacao":
         return False
-    return ponte.buscar(texto, base)["decisao"] == "RESPONDER"
+    return ponte.buscar(texto, base)["decisao"] in ("RESPONDER", "PEDIR_ESCOLHA", "INVALIDA")
+
+
+def reconciliar(chamada_llm, texto):
+    """Confere a escolha do Gemini com as regras simples.
+
+    Se o Gemini escolheu uma ferramenta que ainda não existe (cofre, tarefas, briefing) mas
+    nada no texto indica isso (as regras mandam para a busca), vale a busca. Senão a pessoa
+    que perguntou "Como pagar o IPVA?" recebia "função não disponível"."""
+    regras = fallback_por_regras(texto)
+    if chamada_llm is None:
+        return regras
+    if chamada_llm["ferramenta"] != "buscar_orientacao" and regras["ferramenta"] == "buscar_orientacao":
+        return regras
+    return chamada_llm
 
 
 def executar(chamada, base, uf=None):
