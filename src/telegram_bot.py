@@ -138,7 +138,9 @@ def criar_bot(config, base, armazem, links):
                         asyncio.to_thread(roteador.chamar_gemini, m.text, chave_gemini, modelos),
                         timeout=roteador.TEMPO_LIMITE_LLM)
                     chamada = roteador.validar_chamada(nome, args)
-                except Exception:
+                except Exception as erro:
+                    # Sem o texto da mensagem (spec §13): só o tipo do erro.
+                    log.warning("Gemini sem resposta útil (%s); usando regras", type(erro).__name__)
                     chamada = None
             chamada = chamada or roteador.fallback_por_regras(m.text)
             resultado = roteador.executar(chamada, base, armazem.obter_uf(m.from_user.id))

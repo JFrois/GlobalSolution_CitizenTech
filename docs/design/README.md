@@ -13,6 +13,12 @@ Conceito: **cinema a serviço da confiança**. A leitura do dia a dia acontece e
 | [`tokens.json`](tokens.json) | Os mesmos valores em JSON, mais as cores do terminal e as regras do símbolo | Juan (cores ANSI do terminal) e quem gerar gráficos do relatório |
 | `imagens/` | Imagens exportadas do manual de marca e das telas (PNG), para o README, o relatório e o vídeo | Todos |
 
+## Foto de perfil do bot
+
+`imagens/avatar-bot.png` (1024 × 1024) e `imagens/avatar-bot.svg` (vetor). Segue a regra do símbolo: fundo âmbar `#F5B544` e símbolo `#0B0D12` (anel da lente com o sinal de conferido), sem o arco de luz. O símbolo fica dentro do círculo central, então o recorte redondo do Telegram não corta nada.
+
+Para usar: no @BotFather, `/setuserpic`, escolha o bot e envie o `avatar-bot.png`.
+
 ## Resumo da identidade
 
 | | Claro (dia a dia) | Cinema (escuro) |
