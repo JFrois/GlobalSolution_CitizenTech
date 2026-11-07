@@ -41,7 +41,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 - Modelos de resposta A e B, aviso de limitação e mensagens de entrada inválida (`src/respostas.py`).
 - Terminal completo (`python src/sistema.py`), com cores e texto puro de reserva, `--validar-entrega` e `--avaliar` (`src/sistema.py`, `src/avaliacao.py`).
 - Perguntas de teste da equipe congeladas antes das palavras-chave; resultados em `testes/resultados.csv` e `testes/comparacao_modelos.csv`.
-- 132 testes automatizados (`python -m unittest discover -s testes -t .`), passando em Python 3.9 e 3.14.
+- 133 testes automatizados (`python -m unittest discover -s testes -t .`), passando em Python 3.9 e 3.14.
 
 **Rascunho, precisa de revisão humana:**
 
@@ -225,7 +225,7 @@ Sem base suficiente, o assistente diz que não encontrou orientação verificada
 
 São 19 perguntas em `testes/perguntas.json`: 8 diretas, 3 reformuladas, 3 fora da base e 5 de limite (entrada vazia, consulta ambígua "documento", tópico sem base, só símbolos e texto longo). Todas são fictícias, sem dado pessoal. As perguntas da equipe foram **congeladas num commit antes** de preencher as palavras-chave (histórico do Git). O conjunto do público (≥ 10 perguntas anônimas) será coletado depois e medido **antes** de qualquer ajuste.
 
-Testes automatizados: `python -m unittest discover -s testes -t .` (132 testes: base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal e avaliação).
+Testes automatizados: `python -m unittest discover -s testes -t .` (133 testes: base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal e avaliação).
 
 ### Indicadores da busca
 

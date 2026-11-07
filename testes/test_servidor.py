@@ -354,6 +354,15 @@ class TestServidor(unittest.TestCase):
         self.assertEqual(servidor.faltando({}), ["TELEGRAM_BOT_TOKEN", "SESSAO_SEGREDO"])
         self.assertEqual(servidor.faltando({"TELEGRAM_BOT_TOKEN": "x", "SESSAO_SEGREDO": "y"}), [])
 
+    def test_porta_em_uso_e_detectada(self):
+        import socket
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as ocupada:
+            ocupada.bind(("127.0.0.1", 0))
+            ocupada.listen(1)
+            porta = ocupada.getsockname()[1]
+            self.assertFalse(servidor.porta_livre(porta))
+        self.assertTrue(servidor.porta_livre(porta))  # depois de fechar, volta a ficar livre
+
     def test_modo_servidor_sem_env_mostra_mensagem_clara(self):
         # Pasta temporária como HOME e cwd: não deixa lixo (ex.: Library/) dentro de testes/.
         with tempfile.TemporaryDirectory() as pasta:
