@@ -1,0 +1,25 @@
+{
+  "versao": 1,
+  "observacao": "Conjunto da equipe, congelado antes de preencher palavras_chave e sinonimos em data/base.json (spec 14.1). Todas as perguntas sao ficticias, sem dado pessoal. Nao altere o texto de uma pergunta para ela acertar.",
+  "perguntas": [
+    {"id": "E01", "conjunto": "equipe", "tipo": "direta", "pergunta": "Como tirar a segunda via do RG?", "esperado": "DOC-001"},
+    {"id": "E02", "conjunto": "equipe", "tipo": "direta", "pergunta": "Como ter a carteira de identidade no celular?", "esperado": "DOC-002"},
+    {"id": "E03", "conjunto": "equipe", "tipo": "direta", "pergunta": "Como pedir segunda via do título de eleitor?", "esperado": "DOC-003"},
+    {"id": "E04", "conjunto": "equipe", "tipo": "direta", "pergunta": "Meu título foi cancelado, o que faço?", "esperado": "DOC-004"},
+    {"id": "E05", "conjunto": "equipe", "tipo": "direta", "pergunta": "Como consultar minha situação eleitoral?", "esperado": "DOC-005"},
+    {"id": "E06", "conjunto": "equipe", "tipo": "direta", "pergunta": "Como acessar o Meu INSS?", "esperado": "SRV-001"},
+    {"id": "E07", "conjunto": "equipe", "tipo": "direta", "pergunta": "Como me inscrever no CadÚnico?", "esperado": "SRV-004"},
+    {"id": "E08", "conjunto": "equipe", "tipo": "direta", "pergunta": "Como reclamar de uma empresa no Consumidor.gov.br?", "esperado": "DIR-001"},
+    {"id": "E09", "conjunto": "equipe", "tipo": "reformulada", "pergunta": "Perdi minha identidade, como faço outra?", "esperado": "DOC-001"},
+    {"id": "E10", "conjunto": "equipe", "tipo": "reformulada", "pergunta": "Quero marcar perícia do INSS", "esperado": "SRV-002"},
+    {"id": "E11", "conjunto": "equipe", "tipo": "reformulada", "pergunta": "Não tenho dinheiro para advogado, onde busco ajuda?", "esperado": "DIR-002"},
+    {"id": "E12", "conjunto": "equipe", "tipo": "fora da base", "pergunta": "Como pagar o IPVA?", "esperado": "SEM_BASE"},
+    {"id": "E13", "conjunto": "equipe", "tipo": "fora da base", "pergunta": "Como abrir um MEI?", "esperado": "SEM_BASE"},
+    {"id": "E14", "conjunto": "equipe", "tipo": "fora da base", "pergunta": "Como declarar o imposto de renda?", "esperado": "SEM_BASE"},
+    {"id": "L1", "conjunto": "equipe", "tipo": "limite", "pergunta": "", "esperado": "INVALIDA"},
+    {"id": "L2", "conjunto": "equipe", "tipo": "limite", "pergunta": "documento", "esperado": "PEDIR_ESCOLHA"},
+    {"id": "L3", "conjunto": "equipe", "tipo": "limite", "pergunta": "como tirar passaporte?", "esperado": "SEM_BASE"},
+    {"id": "L4", "conjunto": "equipe", "tipo": "limite", "pergunta": "???", "esperado": "INVALIDA"},
+    {"id": "L5", "conjunto": "equipe", "tipo": "limite", "pergunta": "quero saber sobre o campeonato de futebol da cidade e também sobre a previsão do tempo para o fim de semana e a receita de bolo de cenoura com cobertura de chocolate que minha tia faz e o horário do ônibus que passa perto de casa e o preço da gasolina no posto da esquina e o filme que estreou no cinema ontem à noite", "esperado": "SEM_BASE"}
+  ]
+}

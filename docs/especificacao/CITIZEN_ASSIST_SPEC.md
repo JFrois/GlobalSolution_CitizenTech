@@ -187,6 +187,7 @@ Bibliotecas de Telegram, servidor, Gemini, Supabase e `cryptography` são import
 ```json
 {
   "id": "DOC-001",
+  "titulo": "2ª via da carteira de identidade (CIN/RG)",
   "tema": "documentacao",
   "palavras_chave": ["segunda via", "rg", "identidade", "cin", "perdi"],
   "pergunta": "Como solicitar a 2ª via da carteira de identidade (CIN/RG)?",
@@ -199,9 +200,10 @@ Bibliotecas de Telegram, servidor, Gemini, Supabase e `cryptography` são import
   "relacionados": ["DOC-002", "SRV-004", "DIR-004"]
 }
 ```
-- Obrigatórios: `id`, `tema`, `palavras_chave`, `pergunta`, `orientacao`, `referencia`, `data_verificacao`, `relacionados` (pode ser lista vazia). Opcionais: `confirmar_antes` (padrão `false`), `abrangencia` (`"nacional"`/`"estadual"`), `referencias_estaduais`.
+- Obrigatórios: `id`, `tema`, `palavras_chave`, `pergunta`, `orientacao`, `referencia`, `data_verificacao`, `relacionados` (pode ser lista vazia). Opcionais: `titulo` (nome curto do assunto, usado nas listas e como título da resposta; se faltar, vale a `pergunta`), `confirmar_antes` (padrão `false`), `abrangencia` (`"nacional"`/`"estadual"`), `referencias_estaduais`.
 - Estrutura do arquivo: `{ "versao": 1, "temas": {"documentacao": "Documentação pessoal", ...}, "sinonimos": { ... }, "registros": [ ... ] }`.
 - `sinonimos` (opcional): dicionário `termo → [variações]`, por exemplo `{"identidade": ["rg", "cin"], "segunda": ["2a"]}`. Fica nos **dados**, não no código, para que a equipe melhore a busca sem mexer nas regras do programa (requisito da GS).
+- **Passos da orientação:** `respostas.py` monta a lista de passos do Modelo B a partir da `orientacao`: se o texto tiver várias linhas (`\n`), cada linha é um passo; se for uma linha só, cada frase é um passo. Nunca se cria passo que não esteja no texto.
 - **Regras de redação:** a orientação é escrita **pelas palavras da equipe**, após abrir e ler a página oficial (não copiar trechos). Sem valores de taxa fixos quando variam. Sempre com `data_verificacao` real.
 - `scripts/` deve listar registros com `data_verificacao` antiga (> 90 dias).
 
@@ -450,7 +452,7 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 - **Quem mantém a VM no ar:** a definir; Juan assume em último caso.
 - **Teste de 15 min do DuckDNS + Caddy** (HTTP-01 com subdomínio DuckDNS) e leitura dos Termos/Privacidade do DuckDNS; se falhar → Cloudflare quick tunnel ou máquina de um integrante.
 - **Confirmar faturamento ativo** do projeto da chave do Gemini no AI Studio.
-- **Redigir as 17 orientações** a partir das páginas oficiais (com data) — em especial DOC-001 (UFs da equipe), DOC-004 (reconferir suspensões do TSE), DIR-006 (conflito de fontes) e DIR-004/DIR-005 (limites).
+- **Revisar as 17 orientações** (rascunho feito em 07/11 a partir das páginas oficiais, falta conferência humana) — em especial DOC-001 (UFs da equipe), DOC-004 (reconferir suspensões do TSE), DIR-006 (conflito de fontes) e DIR-004/DIR-005 (limites).
 - Armazenamento: confirmar Supabase ou equivalente.
 - Feeds RSS por tema e fuso horário padrão.
 - Modelo de resposta padrão (A ou B), definido pelos testes.
@@ -462,11 +464,11 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 
 ## 18. Definição de pronto (checklist final)
 
-- [ ] `python src/sistema.py` roda numa máquina limpa, sem chave e sem internet, sem erros.
-- [ ] 17 registros preenchidos, com fonte e `data_verificacao` reais, 3 temas.
-- [ ] ≥ 12 (planejado 14) testes + ≥ 3 limites executados; taxa de acerto e tempo médio da busca calculados (equipe e público); comparação A × B pela rubrica (§8).
-- [ ] Entrada vazia, opção inexistente, sem correspondência e ambiguidade tratadas com mensagem clara.
-- [ ] Navegação por relacionados (≥ 3 assuntos) e Dijkstra funcionando.
+- [ ] `python src/sistema.py` roda numa máquina limpa, sem chave e sem internet, sem erros. (07/11: roda em Python 3.9 e 3.14 sem dependências; falta conferir numa máquina limpa e no Windows)
+- [ ] 17 registros preenchidos, com fonte e `data_verificacao` reais, 3 temas. (07/11: rascunho escrito pela IA com as páginas oficiais; falta a revisão humana de cada um)
+- [ ] ≥ 12 (planejado 14) testes + ≥ 3 limites executados; taxa de acerto e tempo médio da busca calculados (equipe e público); comparação A × B pela rubrica (§8). (07/11: equipe feito, 19/19; faltam o conjunto do público e a nota de clareza)
+- [x] Entrada vazia, opção inexistente, sem correspondência e ambiguidade tratadas com mensagem clara. (07/11: testado)
+- [x] Navegação por relacionados (≥ 3 assuntos) e Dijkstra funcionando. (07/11: testado)
 - [ ] README com as 10 seções; relatório 4–8 páginas; `uso_ia.md`; `link_video.txt`.
 - [ ] Repositório público, sem segredos (verificar histórico do Git).
 - [ ] Vídeo Não Listado; `.txt` com os dois links enviado na FIAP ON.

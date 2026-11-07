@@ -9,6 +9,25 @@
 
 ---
 
+## Status em 07/11/2026 (branch `feat/nucleo-base-e-busca`)
+
+| Código | Situação | Observação |
+|---|---|---|
+| A1 a A3 | Concluído | Base com 17 registros, `base.py` e `--validar-entrega` |
+| A4 a A6 | Concluído | Busca, índice × linear, decisão C·A·B, grafo e Dijkstra |
+| A7 | Concluído | Modelos A e B; campo `titulo` acrescentado à spec |
+| A8 | Concluído | Terminal completo; testado em Python 3.9 e 3.14 (não testado em Windows) |
+| A9, A10 | Concluído | `--avaliar` e 94 testes automatizados |
+| A11 | Concluído | `scripts/verificacoes_antigas.py` |
+| B1 | Concluído | `testes/perguntas.json` (19 perguntas), congelado antes das palavras-chave; feito pelo Juan |
+| E2 (redigir as 17 orientações) | **Rascunho feito, falta revisão humana** | Escrito pela IA com as páginas oficiais; cada integrante confere (ver `docs/uso_ia.md`) |
+| B2, B3, B4 a B12 | Pendente | Gemini, comparação A × B (falta a nota de clareza), bot, roteador, tarefas, briefing, usabilidade, perguntas do público |
+| C1 a C* | Pendente | Cofre, painel, VM e deploy |
+
+Existe uma segunda implementação em paralelo na branch local `claude/project-implementation-228373` (núcleo próprio mais servidor base). Ela não está no remoto e conflita com esta nos mesmos arquivos; ver a ordem de merge no PR.
+
+---
+
 ## 1. As três frentes
 
 | Integrante | Frente (processo §C.5) | Resumo | Onda |
