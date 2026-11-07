@@ -13,6 +13,7 @@ import logging
 
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
 from aiogram.filters import Command
 from aiogram.types import (CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup,
                            LinkPreviewOptions, Message)
@@ -45,7 +46,8 @@ def botoes_assuntos(base, ids):
 def criar_bot(config, base, armazem, links):
     """Cria Bot e Dispatcher com todos os handlers. `config` traz as variáveis do .env."""
     bot = Bot(token=config["TELEGRAM_BOT_TOKEN"],
-              default=DefaultBotProperties(link_preview=LinkPreviewOptions(is_disabled=True)))
+              default=DefaultBotProperties(parse_mode=ParseMode.HTML,
+                                        link_preview=LinkPreviewOptions(is_disabled=True)))
     dp = Dispatcher()
     rota = Router()
     dp.include_router(rota)
@@ -56,8 +58,9 @@ def criar_bot(config, base, armazem, links):
                if modelo_env else roteador.MODELOS_GEMINI)
 
     async def responder(mensagem, resultado, user_id):
-        # html.escape: o texto vem da base, mas o Telegram interpreta HTML.
-        texto = html.escape(resultado["texto"])
+        # O bot usa parse_mode HTML. A resposta de um assunto já vem em HTML escapado
+        # (ponte.formatar_telegram); os demais textos passam por html.escape.
+        texto = resultado.get("html") or html.escape(resultado["texto"])
         markup = botoes_assuntos(base, resultado["opcoes"]) if resultado["opcoes"] else None
         if resultado["decisao"] == "SEM_BASE":
             markup = teclado([[(nome, "tema:" + tid)] for tid, nome in base["temas"].items()])
@@ -93,8 +96,8 @@ def criar_bot(config, base, armazem, links):
             await m.answer("O painel ainda não está configurado.")
             return
         token = links.gerar(m.from_user.id)
-        await m.answer("Seu link de acesso (vale 5 minutos e só funciona uma vez):\n%s/entrar?t=%s"
-                       % (url, token))
+        await m.answer(html.escape("Seu link de acesso (vale 5 minutos e só funciona uma vez):\n%s/entrar?t=%s"
+                                   % (url, token)))
 
     @rota.message(Command("apagar_meus_dados"))
     async def comando_apagar(m: Message):

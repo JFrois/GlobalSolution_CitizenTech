@@ -77,13 +77,19 @@ def linha_fonte(reg: dict) -> str:
     return _quebrar("Fonte: %s %s" % (reg["referencia"], verificado), recuo="  ")
 
 
-def aviso_do(reg: dict) -> str:
-    """Aviso de 'confirmar antes'; vazio quando não se aplica."""
+def texto_do_aviso(reg: dict) -> str:
+    """Texto do aviso de 'confirmar antes', sem quebra de linha; vazio se não se aplica."""
     if reg.get("abrangencia") == "estadual":
-        return _quebrar(AVISO_ESTADUAL)
+        return AVISO_ESTADUAL
     if reg.get("confirmar_antes"):
-        return _quebrar(AVISO_CONFIRMAR)
+        return AVISO_CONFIRMAR
     return ""
+
+
+def aviso_do(reg: dict) -> str:
+    """Aviso de 'confirmar antes' já quebrado em linhas de até 80 colunas."""
+    texto = texto_do_aviso(reg)
+    return _quebrar(texto) if texto else ""
 
 
 def dividir_passos(orientacao: str) -> list:
