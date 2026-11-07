@@ -32,28 +32,37 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 
 > Global Solution 2026.2 · Desafio CitizenTech
 
-## Estado do projeto (atualizado em 07/11/2026)
+## Estado do projeto (atualizado em 07/11/2026, `main` até o PR #23)
 
 **Concluído e testado (Onda 1, núcleo avaliado):**
 
 - Base com 17 registros em 3 temas, validada por `src/base.py` (arquivo ausente, vazio, JSON inválido, campos, ids duplicados e relacionados inexistentes).
-- Busca por palavras-chave com pontuação, sinônimos, índice invertido e busca linear (mesmo resultado), regra de decisão com 4 saídas, grafo de temas e Dijkstra (`src/busca.py`).
+- Busca por palavras-chave com pontuação, sinônimos, índice invertido e busca linear (mesmo resultado), regra de decisão com 4 saídas, grafo de temas e Dijkstra (`src/busca.py`). **Novo:** quando nada casa, a busca tenta corrigir erro de digitação (spec §7.3, item 5b).
 - Modelos de resposta A e B, aviso de limitação e mensagens de entrada inválida (`src/respostas.py`).
-- Terminal completo (`python src/sistema.py`), com cores e texto puro de reserva, `--validar-entrega` e `--avaliar` (`src/sistema.py`, `src/avaliacao.py`).
-- Perguntas de teste da equipe congeladas antes das palavras-chave; resultados em `testes/resultados.csv` e `testes/comparacao_modelos.csv`.
-- 133 testes automatizados (`python -m unittest discover -s testes -t .`), passando em Python 3.9 e 3.14.
+- Terminal completo (`python src/sistema.py`), com cores e texto puro de reserva, `--validar-entrega` e `--avaliar`.
+- Perguntas de teste da equipe congeladas antes das palavras-chave: **19/19 (100%)**; resultados em `testes/resultados.csv` e `testes/comparacao_modelos.csv`.
+- 147 testes automatizados (`python -m unittest discover -s testes -t .`). O CI roda no Python 3.9.
+
+**Concluído e testado no Telegram real (Onda 2, camada de produto), em 07/11:**
+
+- Bot `@CitizenAssistAIBot` rodando localmente: `/start`, `/menu` (temas, assuntos e "Voltar aos temas"), perguntas por texto para os 17 assuntos, pergunta ambígua (candidatos em botões), entrada inválida, fora da base, erro de digitação, `/localizacao` (UF), `/apagar_meus_dados` (confirmação), botões de assuntos relacionados.
+- **Voz:** o áudio é transcrito localmente pelo Whisper (`src/transcricao.py`), o bot avisa "Recebi seu áudio…" e depois mostra "Entendi: …". Testado com um áudio real em português.
+- Roteador com cascata de modelos do Gemini: a IA só entra quando a base não resolve (fora da base) ou há pedido de cofre/tarefa/briefing; botões, perguntas respondidas e ambíguas **nunca** chamam a IA.
+- Cofre, tarefas e briefing respondem "função ainda não está disponível" (ainda não existem).
 
 **Rascunho, precisa de revisão humana:**
 
 - As 17 orientações de `data/base.json` foram redigidas pela IA a partir das páginas oficiais lidas em 07/11/2026. Cada orientação precisa ser conferida por um integrante (atividade E2 do planejamento). Pontos de atenção em `docs/uso_ia.md`.
 
-**Pendente:**
+**Pendente (quem faz o quê está em [`docs/planejamento.md`](docs/planejamento.md), seção "Onde parou"):**
 
-- Perguntas do público (≥ 10, anônimas) e a taxa de acerto delas antes de qualquer ajuste.
-- Teste de usabilidade com pessoa de fora (`testes/usabilidade.md`) e nota de clareza A × B; só depois se escolhe o formato padrão (hoje o passo a passo é provisório).
-- Estados da equipe para a 2ª via da CIN (`referencias_estaduais` de DOC-001).
-- Onda 2: o servidor base (roteador, bot, API do painel, deploy) existe mas não foi testado com Telegram, Gemini nem VM reais. Faltam cofre, criptografia, tarefas, agendador, briefing e o front do painel.
+- Revisão humana das 17 orientações e links por estado da 2ª via da CIN (`referencias_estaduais` de DOC-001; hoje todos os estados caem no link `gov.br`).
+- Perguntas do público (≥ 10, anônimas) e a taxa de acerto delas **antes** de qualquer ajuste da busca; teste de usabilidade com pessoa de fora (`testes/usabilidade.md`); nota de clareza A × B. Só depois se escolhe o formato padrão (hoje o passo a passo é provisório).
+- Onda 2 restante: cofre, criptografia, classificador, tarefas, agendador, briefing, foto/PDF, front do painel (`/painel` responde "não está configurado" sem `PAINEL_URL`), VM, DuckDNS/Caddy e deploy automático (nunca testados).
+- Foto e PDF no bot (hoje o bot responde "Por enquanto só entendo mensagens de texto"); botão "Sim, apagar tudo" não foi exercitado no Telegram real.
+- Melhorias conhecidas: respostas da IA chegam fora de ordem quando a pergunta cai no Gemini; a mensagem "função não disponível" é igual para cofre, tarefas e briefing.
 - Textos das seções 1, 2, 8, 9 e 10 deste README, relatório PDF (`docs/relatorio.pdf`), vídeo e `docs/link_video.txt`.
+- Antes de colocar na VM: gerar **novo** token do bot e **nova** chave do Gemini (os de teste foram compartilhados fora do `.env`) e conferir o histórico do Git.
 
 ---
 
@@ -285,8 +294,34 @@ python src/sistema.py
 | `python src/sistema.py --validar-entrega` | Confere se todos os registros da base estão completos |
 | `python src/sistema.py --simples` | Texto puro, sem cor nem molduras (leitores de tela); também automático com `NO_COLOR` ou saída redirecionada |
 | `python src/sistema.py --base caminho.json` | Usa outra base JSON (para testes) |
-| `python src/sistema.py --servidor` | Sobe o bot do Telegram e a API do painel (precisa de `.env`, `pip install -r requirements.txt` e Python 3.11+). O agendador ainda não existe |
+| `python src/sistema.py --servidor` | Sobe o bot do Telegram e a API do painel (precisa de `.env` e do ambiente descrito abaixo). O agendador ainda não existe |
 | `python -m unittest discover -s testes -t .` | Roda os testes automatizados |
+
+### Rodar o bot (modo `--servidor`)
+
+Use **Python 3.11 a 3.13** (no 3.14 o `pydantic-core` não compila). Exemplo no macOS:
+
+```bash
+python3.12 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+# Voz (Whisper local): precisa do ffmpeg no sistema e de dois passos, nesta ordem
+brew install ffmpeg            # Linux: sudo apt install ffmpeg
+pip install "setuptools<81" wheel && pip install --no-build-isolation openai-whisper==20240930
+cp .env.example .env           # preencha TELEGRAM_BOT_TOKEN e, se quiser IA, GEMINI_API_KEY
+python src/sistema.py --servidor
+```
+
+Variáveis do `.env` (nomes em `.env.example`; **nunca** commitar o `.env`):
+
+| Variável | Para quê |
+|---|---|
+| `TELEGRAM_BOT_TOKEN` | Obrigatória. Token do @BotFather |
+| `GEMINI_API_KEY` | Opcional. Sem ela o bot usa só as regras (sem IA) |
+| `GEMINI_MODELO` | Opcional. Deixe vazio: o bot percorre os modelos que a chave enxerga |
+| `WHISPER_MODELO` | Opcional (`tiny`, `base`, `small`, `medium`). Padrão `base` |
+| `PAINEL_URL`, `PAINEL_PORTA` | Painel web. Sem `PAINEL_URL`, `/painel` responde "não está configurado". Porta padrão 8000 |
+
+`python scripts/testar_gemini.py` confere a chave e lista os modelos. Se a porta 8000 estiver ocupada, o servidor avisa e sai (`lsof -i :8000` mostra o processo).
 
 > Estado de cada parte: veja a seção "Estado do projeto" no início deste README.
 

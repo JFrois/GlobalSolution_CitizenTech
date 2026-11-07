@@ -143,7 +143,8 @@ flowchart TB
 | `respostas.py` | Templates A e B, aviso de limitação, pedido de escolha, link por UF | Decidir qual registro responder | A |
 | `sistema.py` | Argumentos, menu do terminal, `--avaliar`, `--validar-entrega`, subida do servidor | Regras de busca | A |
 | `telegram_bot.py` | Recebe mensagens, identifica `user_id`, comandos, botões | Decidir intenção (é do roteador) | B |
-| `roteador.py` | Escolhe 1 de 4 ferramentas via Gemini; valida argumentos; fallback por regras | Gerar o texto da orientação | B |
+| `roteador.py` | Escolhe 1 de 4 ferramentas via Gemini (cascata de modelos); valida argumentos; fallback por regras; `resposta_direta_basta` decide quando a IA nem entra; `reconciliar` descarta ferramenta que o texto não pede | Gerar o texto da orientação | B |
+| `transcricao.py` | Voz para texto com Whisper local (import tardio, modelo por `WHISPER_MODELO`, dica de vocabulário); nunca loga o texto transcrito | Decidir intenção; enviar áudio a serviço externo | B |
 | `tarefas.py` | CRUD de tarefas e lembretes por `user_id` | Disparar alertas (é do agendador) | B |
 | `agendador.py` | Lembretes, briefing diário, autodestruição; executa jobs vencidos na subida | Lógica de negócio das tarefas | B |
 | `briefing.py` | Junta tarefas do dia + até 3 manchetes por tema, rotuladas "não oficial" | Misturar notícias com a base | B |
