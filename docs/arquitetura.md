@@ -193,11 +193,11 @@ erDiagram
 
 | Estrutura | Tipo Python | Uso |
 |---|---|---|
-| `registros_por_id` | `dict[str, dict]` | Acesso direto por id (O(1)) |
-| `ids_por_tema` | `dict[str, list[str]]` | Menu "escolher tema" |
-| `indice` | `dict[str, dict[str, int]]` (palavra → {id: peso}) | Busca por índice invertido |
+| `por_id` | `dict[str, dict]` | Acesso direto por id (O(1)); o servidor também a vê como `registros_por_id` (`ponte.py`) |
+| `ids_por_tema` | `dict[str, list[str]]` | Menu "escolher tema" (montado por `ponte.preparar` no servidor; o terminal filtra por tema na hora) |
+| `indice` | `dict[str, dict[str, int]]` (palavra → {id: máscara de campos}) | Busca por índice invertido; o peso vem de `PESO_CAMPO` (3, 2 e 1) |
 | `registros` | `list[dict]` | Busca linear (comparação da Fase 6) |
-| `grafo` | `dict[str, list[tuple[str, int]]]` (id → [(vizinho, custo)]) | Navegação e Dijkstra |
+| `grafo` | `dict[str, set[str]]` (id → vizinhos); o custo da aresta (1 ou 2) é calculado pelos temas | Navegação e Dijkstra |
 
 ### 5.2 Validação da base
 
@@ -308,13 +308,13 @@ sequenceDiagram
     participant R as respostas.py
 
     U->>S: digita "perdi minha identidade"
-    S->>B: buscar(texto, base)
+    S->>B: Buscador.buscar(texto)
     B->>B: normalizar → pontuar → ordenar
     B->>B: decidir(C, A, B)
     alt RESPONDER
         B-->>S: decisão + registro DOC-001
-        S->>B: relacionados_ordenados("DOC-001")
-        S->>R: formatar(registro, modelo, relacionados)
+        S->>B: sugestoes("DOC-001")
+        S->>R: montar_resposta(modelo, registro, sugestoes, por_id)
         R-->>S: texto com Fonte, data e Atenção
         S-->>U: resposta + "Continue consultando: 1) ... 2) ... 3) ..."
     else PEDIR_ESCOLHA
@@ -327,41 +327,45 @@ sequenceDiagram
     end
 ```
 
-### 5.7 Contratos do núcleo (sugestão de assinaturas)
+### 5.7 Contratos do núcleo (como está implementado)
 
 ```python
 # Todos os módulos do núcleo começam com `from __future__ import annotations`,
-# para que as anotações abaixo funcionem em Python 3.9 (spec §5.4).
+# para que as anotações funcionem em Python 3.9 (spec §5.4).
 
 # base.py
 class ErroBase(Exception): ...
-def carregar_base(caminho: str, modo_entrega: bool = False) -> dict
-    # retorna {"versao", "temas", "registros", "registros_por_id", "ids_por_tema"}
-    # lança ErroBase com a lista de problemas encontrados
+def carregar_base(caminho=None) -> dict
+    # retorna {"versao", "temas", "sinonimos", "registros", "por_id"}
+    # lança ErroBase com a mensagem já pronta para o usuário
+def validar_base(dados) -> list[str]          # lista de problemas (vazia = ok)
+def pendencias_de_entrega(base: dict) -> list[str]   # PREENCHER ou sem data
 
 # busca.py
-LIMIAR_MINIMO: int
-MARGEM: int
+LIMIAR_MINIMO = 3; MARGEM = 2
 def normalizar(texto: str) -> list[str]
-def construir_indice(registros: list[dict]) -> dict[str, dict[str, int]]
-def buscar(pergunta: str, base: dict, metodo: str = "indice",
-           temas_excluidos: set[str] | None = None) -> dict
-    # {"decisao": "RESPONDER" | "PEDIR_ESCOLHA" | "SEM_BASE" | "INVALIDA",
-    #  "candidatos": [(id, pontuacao), ...]}   # no máximo 3
-def montar_grafo(base: dict) -> dict[str, list[tuple[str, int]]]
-def dijkstra(grafo: dict, origem: str, destino: str) -> tuple[int, list[str]] | None
-def relacionados_ordenados(grafo: dict, origem: str, limite: int = 3) -> list[str]
-    # os `limite` registros mais próximos por Dijkstra, sem a origem
-    # (vizinhos diretos primeiro; completa com os seguintes se faltar)
+def decidir(c: bool, a: bool, b: bool) -> str   # INVALIDA | RESPONDER | PEDIR_ESCOLHA | SEM_BASE
+class Buscador:
+    def __init__(self, base: dict)               # monta índice e grafo uma vez
+    def buscar(self, pergunta, tema=None, excluir=(), metodo="indice") -> Resultado
+        # Resultado(decisao, ranking=[(id, pontos)], candidatos=[id], tokens)
+    def caminho(self, origem, destino) -> tuple[int, list[str]] | None
+    def sugestoes(self, origem, quantidade=3, excluir=()) -> list[str]
+def montar_grafo(registros) -> dict[str, set[str]]
+def dijkstra(grafo, temas, origem) -> tuple[dict, dict]
 
 # respostas.py
-def formatar(registro: dict, modelo: str, relacionados: list[dict],
-             uf: str | None = None) -> str
-def pedir_escolha(candidatos: list[dict]) -> str
+def montar_resposta(modelo: str, reg: dict, sugestoes: list[str], por_id: dict) -> str
+def pedir_escolha(candidatos: list[str], por_id: dict) -> str
 def aviso_sem_base(temas: dict[str, str]) -> str
+def dividir_passos(orientacao: str) -> list[str]
+
+# ponte.py (só o servidor usa; liga bot, roteador e painel ao núcleo)
+def preparar(base) -> dict;  def buscar(pergunta, base) -> dict
+def relacionados(base, rid) -> list[str];  def formatar(reg, modelo, regs, uf=None) -> str
 ```
 
-O roteador (Onda 2) chama **as mesmas funções**: `buscar_orientacao(pergunta)` é um invólucro de `buscar()` + `formatar(..., modelo="B")`.
+O roteador (Onda 2) chama **as mesmas funções**: `buscar_orientacao(pergunta)` é um invólucro de `ponte.buscar()` + `ponte.formatar(..., modelo="B")`.
 
 ---
 

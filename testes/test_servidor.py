@@ -5,6 +5,7 @@ import hashlib
 import hmac
 import json
 import subprocess
+import tempfile
 import sys
 import time
 import unittest
@@ -180,9 +181,11 @@ class TestServidor(unittest.TestCase):
         self.assertEqual(servidor.faltando({"TELEGRAM_BOT_TOKEN": "x", "SESSAO_SEGREDO": "y"}), [])
 
     def test_modo_servidor_sem_env_mostra_mensagem_clara(self):
-        r = subprocess.run([sys.executable, str(RAIZ / "src" / "sistema.py"), "--servidor"],
-                           capture_output=True, text=True, encoding="utf-8",
-                           env={"PATH": "", "HOME": str(RAIZ / "testes")}, cwd=str(RAIZ / "testes"))
+        # Pasta temporária como HOME e cwd: não deixa lixo (ex.: Library/) dentro de testes/.
+        with tempfile.TemporaryDirectory() as pasta:
+            r = subprocess.run([sys.executable, str(RAIZ / "src" / "sistema.py"), "--servidor"],
+                               capture_output=True, text=True, encoding="utf-8",
+                               env={"PATH": "", "HOME": pasta}, cwd=pasta)
         self.assertEqual(r.returncode, 1)
         self.assertIn("faltam no .env", r.stdout)
         self.assertNotIn("Traceback", r.stdout + r.stderr)

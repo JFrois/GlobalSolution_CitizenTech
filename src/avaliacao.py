@@ -179,7 +179,7 @@ def gravar_csv(caminho: Path, cabecalho: list, linhas: list) -> None:
             escritor.writerow(l)
 
 
-def resumo(linhas: list, comparacao: list, escala: list) -> str:
+def resumo(linhas: list, comparacao: list, escala: list, repeticoes: int = REPETICOES) -> str:
     """Texto do resumo impresso no terminal (ASCII, até 80 colunas)."""
     out = []
     ac, tot, pct = taxa(linhas)
@@ -198,7 +198,7 @@ def resumo(linhas: list, comparacao: list, escala: list) -> str:
     ti = [l["tempo_indice_ms"] for l in linhas]
     tl = [l["tempo_linear_ms"] for l in linhas]
     out.append("")
-    out.append("TEMPO DE CONSULTA (ms, media de %d repeticoes por pergunta)" % REPETICOES)
+    out.append("TEMPO DE CONSULTA (ms, media de %d repeticoes por pergunta)" % repeticoes)
     out.append("  indice invertido: media %.4f  max %.4f" % (sum(ti) / len(ti), max(ti)))
     out.append("  busca linear:     media %.4f  max %.4f" % (sum(tl) / len(tl), max(tl)))
     if escala:
@@ -234,4 +234,4 @@ def avaliar(dados: dict, pasta=None, perguntas_arq=None, escala: bool = True,
     medidas = medir_escala(dados, perguntas) if escala else []
     gravar_csv(pasta / "resultados.csv", CAB_RESULTADOS, linhas)
     gravar_csv(pasta / "comparacao_modelos.csv", CAB_COMPARACAO, comparacao)
-    return resumo(linhas, comparacao, medidas)
+    return resumo(linhas, comparacao, medidas, repeticoes)

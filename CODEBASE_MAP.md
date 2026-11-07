@@ -10,6 +10,7 @@ Mapa curto do repositório (atualizar ao criar ou mover módulos).
 | `data/base.json` | 17 registros, 3 temas, sinônimos (vazio) | Orientações em rascunho (sem revisão humana) |
 | `testes/perguntas.json` | 19 perguntas do conjunto `equipe` | Congelado; conjunto `publico` pendente |
 | `testes/test_*.py` | 117 testes (`python -m unittest discover -s testes -t .`) | Passando |
+| `testes/usabilidade.md` | Modelo do teste de usabilidade (T1 a T5, clareza, SUS) | Modelo vazio; teste pendente |
 | `testes/resultados.csv`, `comparacao_modelos.csv` | Saída de `--avaliar` (versionados com `git add -f`) | Gerados em 07/11 |
 | `scripts/verificacoes_antigas.py` | Lista registros com verificação > 90 dias | Pronto |
 | `docs/` | Spec (fonte de verdade), planejamento, arquitetura, UX, `uso_ia.md` | Atualizados em 07/11 |
