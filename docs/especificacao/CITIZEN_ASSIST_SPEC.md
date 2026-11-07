@@ -452,7 +452,7 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 - **Quem mantém a VM no ar:** a definir; Juan assume em último caso.
 - **Teste de 15 min do DuckDNS + Caddy** (HTTP-01 com subdomínio DuckDNS) e leitura dos Termos/Privacidade do DuckDNS; se falhar → Cloudflare quick tunnel ou máquina de um integrante.
 - **Confirmar faturamento ativo** do projeto da chave do Gemini no AI Studio.
-- **Redigir as 17 orientações** a partir das páginas oficiais (com data) — em especial DOC-001 (UFs da equipe), DOC-004 (reconferir suspensões do TSE), DIR-006 (conflito de fontes) e DIR-004/DIR-005 (limites).
+- **Revisar as 17 orientações** (rascunho feito em 07/11 a partir das páginas oficiais, falta conferência humana) — em especial DOC-001 (UFs da equipe), DOC-004 (reconferir suspensões do TSE), DIR-006 (conflito de fontes) e DIR-004/DIR-005 (limites).
 - Armazenamento: confirmar Supabase ou equivalente.
 - Feeds RSS por tema e fuso horário padrão.
 - Modelo de resposta padrão (A ou B), definido pelos testes.
@@ -464,11 +464,11 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 
 ## 18. Definição de pronto (checklist final)
 
-- [ ] `python src/sistema.py` roda numa máquina limpa, sem chave e sem internet, sem erros.
-- [ ] 17 registros preenchidos, com fonte e `data_verificacao` reais, 3 temas.
-- [ ] ≥ 12 (planejado 14) testes + ≥ 3 limites executados; taxa de acerto e tempo médio da busca calculados (equipe e público); comparação A × B pela rubrica (§8).
-- [ ] Entrada vazia, opção inexistente, sem correspondência e ambiguidade tratadas com mensagem clara.
-- [ ] Navegação por relacionados (≥ 3 assuntos) e Dijkstra funcionando.
+- [ ] `python src/sistema.py` roda numa máquina limpa, sem chave e sem internet, sem erros. (07/11: roda em Python 3.9 e 3.14 sem dependências; falta conferir numa máquina limpa e no Windows)
+- [ ] 17 registros preenchidos, com fonte e `data_verificacao` reais, 3 temas. (07/11: rascunho escrito pela IA com as páginas oficiais; falta a revisão humana de cada um)
+- [ ] ≥ 12 (planejado 14) testes + ≥ 3 limites executados; taxa de acerto e tempo médio da busca calculados (equipe e público); comparação A × B pela rubrica (§8). (07/11: equipe feito, 19/19; faltam o conjunto do público e a nota de clareza)
+- [x] Entrada vazia, opção inexistente, sem correspondência e ambiguidade tratadas com mensagem clara. (07/11: testado)
+- [x] Navegação por relacionados (≥ 3 assuntos) e Dijkstra funcionando. (07/11: testado)
 - [ ] README com as 10 seções; relatório 4–8 páginas; `uso_ia.md`; `link_video.txt`.
 - [ ] Repositório público, sem segredos (verificar histórico do Git).
 - [ ] Vídeo Não Listado; `.txt` com os dois links enviado na FIAP ON.
