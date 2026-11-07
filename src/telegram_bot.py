@@ -196,7 +196,10 @@ def criar_bot(config, base, armazem, links):
         user_id, texto = m.from_user.id, m.text
         try:
             chamada = None
-            if chave_gemini:
+            # Botões nunca chamam IA. No texto livre, a IA só entra se a base não resolveu sozinha.
+            if chave_gemini and roteador.resposta_direta_basta(texto, base):
+                log.info("Resposta direta da base (sem Gemini)")
+            elif chave_gemini:
                 # O Gemini roda em outra thread, com tempo limite; se falhar, usa regras.
                 try:
                     nome, args = await asyncio.wait_for(

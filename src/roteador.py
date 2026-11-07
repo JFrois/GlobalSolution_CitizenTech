@@ -15,9 +15,14 @@ import re
 
 import ponte
 
-# Cascata de modelos Gemini: tenta na ordem; se um falhar, passa ao próximo.
-# O primeiro é o padrão. TODO (EM ABERTO): confirmar os nomes no plano pago (spec §12).
-MODELOS_GEMINI = ("gemini-4-argon", "gemini-3.1-pro-preview", "gemini-3.8-flash")
+# Cascata de modelos Gemini: tenta na ordem; se um falhar (cota 429, sobrecarga 503, tempo
+# esgotado), passa ao próximo. A tarefa é só escolher uma de 4 ferramentas, então os modelos
+# leves e rápidos vêm primeiro; "-latest" são apelidos que o Google mantém apontando para o
+# modelo atual. Nomes conferidos em 07/11/2026 com scripts/testar_gemini.py (a lista que a
+# chave enxerga). Em teste, gemini-3.8-flash dava 503 e gemini-4-argon e gemini-3.1-pro-preview
+# davam 429 (sem cota); por isso ficaram fora da cascata padrão. Dá para trocar com GEMINI_MODELO.
+MODELOS_GEMINI = ("gemini-flash-lite-latest", "gemini-flash-latest",
+                  "gemini-2.5-flash-lite", "gemini-2.5-flash")
 MODELO_GEMINI = MODELOS_GEMINI[0]
 log = logging.getLogger("citizen.llm")
 TEMPO_LIMITE_LLM = 15  # segundos no total; usado por quem chama (telegram_bot)
@@ -159,6 +164,17 @@ def chamar_gemini(texto, api_key, modelos=None):
                         getattr(erro, "code", ""))
     # Todos falharam: quem chama cai no fallback por regras.
     raise ultimo_erro or RuntimeError("nenhum modelo Gemini configurado")
+
+
+def resposta_direta_basta(texto, base):
+    """True quando a base responde sozinha, sem precisar do Gemini.
+
+    Vale se as regras simples mandam para a busca (nada de cofre, tarefa ou briefing) e a
+    busca determinística acha UM assunto com folga (decisão RESPONDER). O Gemini só entra
+    quando a pergunta é ambígua ou não casou: economiza cota e evita esperar a rede."""
+    if fallback_por_regras(texto)["ferramenta"] != "buscar_orientacao":
+        return False
+    return ponte.buscar(texto, base)["decisao"] == "RESPONDER"
 
 
 def executar(chamada, base, uf=None):

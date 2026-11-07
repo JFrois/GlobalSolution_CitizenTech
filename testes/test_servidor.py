@@ -50,6 +50,18 @@ class TestRoteador(unittest.TestCase):
         chamada = roteador.rotear("como tirar a segunda via do RG?", llm=quebrado)
         self.assertEqual(chamada["ferramenta"], "buscar_orientacao")
 
+    def test_ia_so_quando_a_base_nao_resolve(self):
+        # Pergunta que a base responde sozinha: não gasta Gemini.
+        self.assertTrue(roteador.resposta_direta_basta("Como tirar a segunda via do RG?", self.base))
+        # Ambígua, sem base ou com ferramenta futura: aí sim a IA pode ajudar.
+        self.assertFalse(roteador.resposta_direta_basta("documento", self.base))
+        self.assertFalse(roteador.resposta_direta_basta("como pagar o IPVA", self.base))
+        self.assertFalse(roteador.resposta_direta_basta("me lembre de pagar a conta amanhã", self.base))
+
+    def test_cascata_so_tem_modelos_que_a_chave_enxerga(self):
+        self.assertGreaterEqual(len(roteador.MODELOS_GEMINI), 3)
+        self.assertEqual(len(set(roteador.MODELOS_GEMINI)), len(roteador.MODELOS_GEMINI))
+
     def test_argumento_invalido_e_ignorado(self):
         for nome, args in [("buscar_orientacao", {}),
                            ("cofre_documento", {"acao": "apagar_tudo"}),
