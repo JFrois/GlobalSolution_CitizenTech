@@ -133,6 +133,10 @@ src/
   tarefas.py                lembretes e alertas                                    (extra)
   briefing.py               manchetes por tema e resumo matinal                    (extra)
   agendador.py              alertas, briefing e exclusão de mensagens              (extra)
+  avaliacao.py              --avaliar: acerto, tempo, CSVs e comparação A x B
+  servidor.py               modo --servidor: lê .env e sobe bot e painel           (extra)
+  ponte.py                  liga o servidor ao núcleo (busca.py e respostas.py)    (extra)
+  armazenamento.py          interface de armazenamento (SQLite local; Supabase = EM ABERTO) (extra)
 data/
   base.json
 docs/

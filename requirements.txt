@@ -1,0 +1,9 @@
+# Dependências do modo --servidor (Onda 2). O modo terminal NAO precisa de nada disto.
+# Versões fixadas (spec §13, item 8). Confirmar a instalação na VM com Python 3.11+.
+aiogram==3.13.1
+fastapi==0.115.0
+uvicorn==0.30.6
+cryptography==43.0.1
+google-genai==1.2.0
+APScheduler==3.10.4
+feedparser==6.0.11
