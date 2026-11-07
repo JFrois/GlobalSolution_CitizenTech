@@ -10,7 +10,7 @@
     {
       "id": "DOC-001",
       "tema": "documentacao",
-      "palavras_chave": ["segunda via", "rg", "identidade", "cin", "perdi", "carteira de identidade"],
+      "palavras_chave": ["segunda via", "rg", "identidade", "cin", "perdi", "carteira de identidade", "documento"],
       "pergunta": "Como solicitar a 2ª via da carteira de identidade (CIN/RG)?",
       "orientacao": "PREENCHER",
       "confirmar_antes": true,
@@ -23,7 +23,7 @@
     {
       "id": "DOC-002",
       "tema": "documentacao",
-      "palavras_chave": ["cin digital", "identidade digital", "celular", "app gov.br", "aplicativo"],
+      "palavras_chave": ["cin digital", "identidade digital", "carteira digital", "identidade no celular", "celular", "app gov.br", "aplicativo", "documento"],
       "pergunta": "Como ter a Carteira de Identidade Nacional (CIN) digital no app gov.br?",
       "orientacao": "PREENCHER",
       "referencia": "https://www.gov.br",
@@ -33,7 +33,7 @@
     {
       "id": "DOC-003",
       "tema": "documentacao",
-      "palavras_chave": ["segunda via", "titulo de eleitor", "titulo", "eleitor", "perdi"],
+      "palavras_chave": ["segunda via", "titulo de eleitor", "titulo", "eleitor", "perdi", "documento"],
       "pergunta": "Como pedir a 2ª via do título de eleitor?",
       "orientacao": "PREENCHER",
       "referencia": "https://www.tse.jus.br",
@@ -43,7 +43,7 @@
     {
       "id": "DOC-004",
       "tema": "documentacao",
-      "palavras_chave": ["titulo cancelado", "cancelado", "regularizar", "titulo", "eleitor"],
+      "palavras_chave": ["titulo cancelado", "cancelado", "regularizar", "titulo", "eleitor", "documento"],
       "pergunta": "Meu título de eleitor foi cancelado: como regularizar?",
       "orientacao": "PREENCHER",
       "confirmar_antes": true,
@@ -54,7 +54,7 @@
     {
       "id": "DOC-005",
       "tema": "documentacao",
-      "palavras_chave": ["situacao eleitoral", "consultar", "regular", "quitacao", "titulo", "eleitor"],
+      "palavras_chave": ["situacao eleitoral", "consultar", "regular", "quitacao", "titulo", "eleitor", "documento"],
       "pergunta": "Como consultar minha situação eleitoral?",
       "orientacao": "PREENCHER",
       "referencia": "https://www.tse.jus.br",
@@ -176,7 +176,7 @@
     {
       "id": "DIR-006",
       "tema": "direitos",
-      "palavras_chave": ["tarifa social", "energia", "luz", "conta de luz", "desconto", "baixa renda"],
+      "palavras_chave": ["tarifa social", "energia", "luz", "conta de luz", "desconto"],
       "pergunta": "Como conseguir a Tarifa Social de Energia Elétrica?",
       "orientacao": "PREENCHER",
       "confirmar_antes": true,
