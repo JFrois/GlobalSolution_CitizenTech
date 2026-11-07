@@ -9,7 +9,7 @@
   "registros": [
     {
       "id": "DOC-001",
-      "titulo": "2ª via da carteira de identidade (CIN/RG)",
+      "titulo": "2ª via da identidade (CIN/RG)",
       "tema": "documentacao",
       "palavras_chave": ["segunda via", "rg", "identidade", "cin", "perdi", "carteira de identidade", "documento"],
       "pergunta": "Como solicitar a 2ª via da carteira de identidade (CIN/RG)?",
@@ -92,7 +92,7 @@
     },
     {
       "id": "SRV-003",
-      "titulo": "Extrato CNIS e simulação de aposentadoria",
+      "titulo": "Extrato CNIS e aposentadoria",
       "tema": "servicos",
       "palavras_chave": ["cnis", "extrato", "simulacao", "aposentadoria", "contribuicao", "inss"],
       "pergunta": "Como tirar o extrato CNIS e simular a aposentadoria?",

@@ -76,6 +76,11 @@ class TestPonte(unittest.TestCase):
                    referencias_estaduais={"SP": "https://sp.exemplo.gov.br"})
         self.assertIn('href="https://sp.exemplo.gov.br"', ponte.formatar_telegram(reg, uf="SP"))
 
+    def test_titulos_cabem_no_botao_do_telegram(self):
+        # Botão não quebra linha: título longo fica cortado na tela do celular.
+        for rid, reg in self.base["registros_por_id"].items():
+            self.assertLessEqual(len(ponte.titulo_do(reg)), 36, rid)
+
 
 if __name__ == "__main__":
     unittest.main()

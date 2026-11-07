@@ -148,14 +148,14 @@ O campo `relacionados` forma um grafo **não direcionado** (se A aponta para B, 
 
 | Registro | Fonte | Verificado em |
 |---|---|---|
-| DOC-001 (2ª via da carteira de identidade (CIN/RG)) | https://www.gov.br/secom/pt-br/acompanhe-a-secom/noticias/2026/02/saiba-como-solicitar-a-2a-via-da-cin-apos-caso-de-perda | 07/11/2026 |
+| DOC-001 (2ª via da identidade (CIN/RG)) | https://www.gov.br/secom/pt-br/acompanhe-a-secom/noticias/2026/02/saiba-como-solicitar-a-2a-via-da-cin-apos-caso-de-perda | 07/11/2026 |
 | DOC-002 (CIN digital no app gov.br) | https://www.gov.br/gestao/pt-br/assuntos/noticias/2026/junho/governo-do-brasil-envia-notificacoes-personalizadas-sobre-o-uso-da-versao-digital-da-cin-saiba-como-usar | 07/11/2026 |
 | DOC-003 (2ª via do título de eleitor) | https://www.tse.jus.br/comunicacao/noticias/2024/Janeiro/precisa-da-2a-via-do-seu-titulo-confira-como-emitir-em-apenas-3-passos | 07/11/2026 |
 | DOC-004 (Título de eleitor cancelado) | https://www.tse.jus.br/comunicacao/noticias/2025/Dezembro/eleitor-em-dia-veja-como-regularizar-o-titulo-cancelado | 07/11/2026 |
 | DOC-005 (Situação eleitoral) | https://www.tse.jus.br/comunicacao/noticias/2026/Abril/eleitor-em-dia-saiba-como-verificar-se-seu-titulo-esta-regular-1 | 07/11/2026 |
 | SRV-001 (Meu INSS e telefone 135) | https://www.gov.br/inss/pt-br/canais_atendimento/meu-inss/meu-inss | 07/11/2026 |
 | SRV-002 (Perícia médica do INSS) | https://www.gov.br/inss/pt-br/noticias/precisa-fazer-pericia-medica-confira-o-passo-a-passo-do-atestmed | 07/11/2026 |
-| SRV-003 (Extrato CNIS e simulação de aposentadoria) | https://www.gov.br/pt-br/servicos/emitir-extrato-de-contribuicao-cnis | 07/11/2026 |
+| SRV-003 (Extrato CNIS e aposentadoria) | https://www.gov.br/pt-br/servicos/emitir-extrato-de-contribuicao-cnis | 07/11/2026 |
 | SRV-004 (Inscrição no CadÚnico) | https://www.gov.br/pt-br/servicos/inscrever-se-no-cadastro-unico-para-programas-sociais-do-governo-federal | 07/11/2026 |
 | SRV-005 (Cartão Nacional de Saúde) | https://www.gov.br/saude/pt-br/composicao/seidigi/meususdigital/perguntas-e-respostas/cidadao/9-como-faco-o-cartao | 07/11/2026 |
 | SRV-006 (Meu SUS Digital) | https://www.gov.br/saude/pt-br/composicao/seidigi/meususdigital/perguntas-e-respostas/cidadao | 07/11/2026 |

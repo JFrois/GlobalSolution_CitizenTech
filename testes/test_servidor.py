@@ -236,6 +236,14 @@ class TestBot(unittest.TestCase):
         self.assertEqual([c for c, _ in telegram_bot.COMANDOS],
                          ["menu", "localizacao", "painel", "apagar_meus_dados"])
         self.assertIn("/menu", telegram_bot.MSG_BOAS_VINDAS)
+        # Voz, foto e outros updates chegam sem texto: não podem derrubar o filtro.
+        self.assertFalse(telegram_bot.eh_palavra_de_menu(None))
+        self.assertFalse(telegram_bot.eh_palavra_de_menu(""))
+        self.assertTrue(telegram_bot.eh_palavra_de_menu("  Menu "))
+        self.assertFalse(telegram_bot.eh_palavra_de_menu("menu do INSS"))
+        # Botões de assunto usam o título curto, não a pergunta inteira.
+        botoes = telegram_bot.botoes_assuntos(b, ["DOC-001"])
+        self.assertEqual(botoes.inline_keyboard[0][0].text, "2ª via da identidade (CIN/RG)")
         # A mensagem de "sem base" do Telegram não repete a lista numerada do terminal.
         self.assertNotIn("1  ", telegram_bot.MSG_SEM_BASE)
 
