@@ -10,6 +10,7 @@ Este módulo só usa a biblioteca padrão; o Gemini é importado dentro de
 """
 from __future__ import annotations
 
+import logging
 import re
 
 import ponte
@@ -18,6 +19,7 @@ import ponte
 # O primeiro é o padrão. TODO (EM ABERTO): confirmar os nomes no plano pago (spec §12).
 MODELOS_GEMINI = ("gemini-4-argon", "gemini-3.1-pro-preview", "gemini-3.8-flash")
 MODELO_GEMINI = MODELOS_GEMINI[0]
+log = logging.getLogger("citizen.llm")
 TEMPO_LIMITE_LLM = 8  # segundos; usado por quem chama (telegram_bot)
 
 FERRAMENTAS = ("buscar_orientacao", "cofre_documento", "gerenciar_tarefas", "briefing_matinal")
@@ -129,15 +131,21 @@ def chamar_gemini(texto, api_key, modelos=None):
     config = types.GenerateContentConfig(
         tools=[types.Tool(function_declarations=declaracoes)],
         tool_config=types.ToolConfig(
-            function_calling_config=types.FunctionCallingConfig(mode="ANY")))
+            function_calling_config=types.FunctionCallingConfig(mode="ANY")),
+        # Só queremos saber qual ferramenta escolher; não deixar o SDK executar nada sozinho.
+        automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True, maximum_remote_calls=None))
     ultimo_erro = None
     for modelo in (modelos or MODELOS_GEMINI):
         try:
             resposta = cliente.models.generate_content(model=modelo, contents=texto, config=config)
             chamada = resposta.candidates[0].content.parts[0].function_call
+            # Log sem o texto da mensagem (spec §13): só o modelo e a ferramenta escolhida.
+            log.info("Gemini: o modelo %s respondeu (ferramenta %s)", modelo, chamada.name)
             return chamada.name, dict(chamada.args or {})
         except Exception as erro:  # modelo indisponível ou resposta vazia: tenta o próximo
             ultimo_erro = erro
+            log.warning("Gemini: o modelo %s falhou (%s %s)", modelo, type(erro).__name__,
+                        getattr(erro, "code", ""))
     raise ultimo_erro  # todos falharam: quem chama cai no fallback por regras
 
 
