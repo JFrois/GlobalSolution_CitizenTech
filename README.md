@@ -41,7 +41,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 - Modelos de resposta A e B, aviso de limitação e mensagens de entrada inválida (`src/respostas.py`).
 - Terminal completo (`python src/sistema.py`), com cores e texto puro de reserva, `--validar-entrega` e `--avaliar` (`src/sistema.py`, `src/avaliacao.py`).
 - Perguntas de teste da equipe congeladas antes das palavras-chave; resultados em `testes/resultados.csv` e `testes/comparacao_modelos.csv`.
-- 94 testes automatizados (`python -m unittest discover -s testes -t .`), passando em Python 3.9 e 3.14.
+- 117 testes automatizados (`python -m unittest discover -s testes -t .`), passando em Python 3.9 e 3.14.
 
 **Rascunho, precisa de revisão humana:**
 
@@ -52,7 +52,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 - Perguntas do público (≥ 10, anônimas) e a taxa de acerto delas antes de qualquer ajuste.
 - Teste de usabilidade com pessoa de fora (`testes/usabilidade.md`) e nota de clareza A × B; só depois se escolhe o formato padrão (hoje o passo a passo é provisório).
 - Estados da equipe para a 2ª via da CIN (`referencias_estaduais` de DOC-001).
-- Onda 2: bot, roteador, cofre, painel, tarefas, briefing e deploy (nada disso está nesta branch).
+- Onda 2: o servidor base (roteador, bot, API do painel, deploy) existe mas não foi testado com Telegram, Gemini nem VM reais. Faltam cofre, criptografia, tarefas, agendador, briefing e o front do painel.
 - Textos das seções 1, 2, 8, 9 e 10 deste README, relatório PDF (`docs/relatorio.pdf`), vídeo e `docs/link_video.txt`.
 
 ---
@@ -225,7 +225,7 @@ Sem base suficiente, o assistente diz que não encontrou orientação verificada
 
 São 19 perguntas em `testes/perguntas.json`: 8 diretas, 3 reformuladas, 3 fora da base e 5 de limite (entrada vazia, consulta ambígua "documento", tópico sem base, só símbolos e texto longo). Todas são fictícias, sem dado pessoal. As perguntas da equipe foram **congeladas num commit antes** de preencher as palavras-chave (histórico do Git). O conjunto do público (≥ 10 perguntas anônimas) será coletado depois e medido **antes** de qualquer ajuste.
 
-Testes automatizados: `python -m unittest discover -s testes -t .` (94 testes: base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal e avaliação).
+Testes automatizados: `python -m unittest discover -s testes -t .` (117 testes: base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal e avaliação).
 
 ### Indicadores da busca
 

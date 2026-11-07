@@ -9,6 +9,8 @@ User=ubuntu
 WorkingDirectory=/home/ubuntu/citizen-assist
 ExecStart=/home/ubuntu/citizen-assist/.venv/bin/python src/sistema.py --servidor
 Restart=always
+NoNewPrivileges=true
+PrivateTmp=true
 RestartSec=5
 
 [Install]
