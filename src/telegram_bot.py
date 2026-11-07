@@ -38,6 +38,9 @@ MSG_MENU = "Escolha um tema para ver os assuntos, ou escreva sua dúvida com sua
 MSG_SEM_BASE = ("Não encontrei orientação verificada sobre isso na minha base. "
                 "Não sou um canal oficial e não vou inventar instruções.\n\n"
                 "Você pode consultar o portal oficial: %s\nou escolher um tema abaixo:")
+# Pergunta ambígua: os candidatos vão só nos botões (a lista numerada do terminal é inútil aqui).
+MSG_ESCOLHA = "Encontrei mais de um assunto parecido. Toque no que você procura:"
+BOTAO_VOLTAR = "Voltar aos temas"
 # Comandos que aparecem no menu do Telegram (bot.set_my_commands, chamado ao iniciar).
 COMANDOS = (("menu", "Ver os assuntos por tema"),
             ("localizacao", "Informar o seu estado"),
@@ -89,10 +92,15 @@ def teclado(linhas):
         [InlineKeyboardButton(text=t, callback_data=c) for t, c in linha] for linha in linhas])
 
 
-def botoes_assuntos(base, ids):
-    """Um botão por assunto (callback 'ab:<id>'); o id nunca aparece para o usuário."""
+def botoes_assuntos(base, ids, voltar=False):
+    """Um botão por assunto (callback 'ab:<id>'); o id nunca aparece para o usuário.
+
+    Com voltar=True, a última linha leva de volta à lista de temas."""
     # Título curto do assunto: a pergunta inteira fica cortada no botão.
-    return teclado([[(ponte.titulo_do(base["registros_por_id"][i]), "ab:" + i)] for i in ids])
+    linhas = [[(ponte.titulo_do(base["registros_por_id"][i]), "ab:" + i)] for i in ids]
+    if voltar:
+        linhas.append([(BOTAO_VOLTAR, "menu:")])
+    return teclado(linhas)
 
 
 def criar_bot(config, base, armazem, links):
@@ -115,6 +123,8 @@ def criar_bot(config, base, armazem, links):
         if resultado["decisao"] == "SEM_BASE":
             # Os temas vão nos botões; não repetir a lista numerada do terminal.
             texto = html.escape(MSG_SEM_BASE % ponte.GOV_BR)
+        if resultado["decisao"] == "PEDIR_ESCOLHA":
+            texto = html.escape(MSG_ESCOLHA)
         markup = botoes_assuntos(base, resultado["opcoes"]) if resultado["opcoes"] else None
         if resultado["decisao"] == "SEM_BASE":
             markup = teclado([[(nome, "tema:" + tid)] for tid, nome in base["temas"].items()])
@@ -211,7 +221,15 @@ def criar_bot(config, base, armazem, links):
             if tema in base["ids_por_tema"]:
                 await mensagem.answer("<b>%s</b>\nToque num assunto ou escreva sua dúvida."
                                       % html.escape(base["temas"][tema]),
-                                      reply_markup=botoes_assuntos(base, base["ids_por_tema"][tema]))
+                                      reply_markup=botoes_assuntos(base, base["ids_por_tema"][tema],
+                                                                   voltar=True))
+        await c.answer()
+
+    @rota.callback_query(F.data == "menu:")
+    async def voltar_aos_temas(c: CallbackQuery):
+        ctx = contexto_do_botao(c)
+        if ctx:
+            await ctx[0].answer(html.escape(MSG_MENU), reply_markup=teclado_de_temas())
         await c.answer()
 
     @rota.message(F.text)
