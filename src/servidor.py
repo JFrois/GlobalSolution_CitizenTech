@@ -23,7 +23,7 @@ def ler_env(caminho=None):
             if linha and not linha.startswith("#") and "=" in linha:
                 chave, _, valor = linha.partition("=")
                 config[chave.strip()] = valor.strip().strip('"').strip("'")
-    for chave in list(config) + list(OBRIGATORIAS) + ["GEMINI_API_KEY", "PAINEL_URL"]:
+    for chave in list(config) + list(OBRIGATORIAS) + ["GEMINI_API_KEY", "GEMINI_MODELO", "PAINEL_URL"]:
         if chave in os.environ:
             config[chave] = os.environ[chave]
     return config

@@ -50,6 +50,10 @@ def criar_bot(config, base, armazem, links):
     rota = Router()
     dp.include_router(rota)
     chave_gemini = config.get("GEMINI_API_KEY")
+    # GEMINI_MODELO (opcional) vira o primeiro da cascata; os demais ficam de reserva.
+    modelo_env = config.get("GEMINI_MODELO")
+    modelos = ((modelo_env,) + tuple(m for m in roteador.MODELOS_GEMINI if m != modelo_env)
+               if modelo_env else roteador.MODELOS_GEMINI)
 
     async def responder(mensagem, resultado, user_id):
         # html.escape: o texto vem da base, mas o Telegram interpreta HTML.
@@ -131,7 +135,7 @@ def criar_bot(config, base, armazem, links):
                 # O Gemini roda em outra thread, com tempo limite; se falhar, usa regras.
                 try:
                     nome, args = await asyncio.wait_for(
-                        asyncio.to_thread(roteador.chamar_gemini, m.text, chave_gemini),
+                        asyncio.to_thread(roteador.chamar_gemini, m.text, chave_gemini, modelos),
                         timeout=roteador.TEMPO_LIMITE_LLM)
                     chamada = roteador.validar_chamada(nome, args)
                 except Exception:

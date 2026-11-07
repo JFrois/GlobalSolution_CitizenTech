@@ -15,8 +15,10 @@ import re
 import busca
 import respostas
 
-# TODO (EM ABERTO): confirmar o modelo Gemini do plano pago (spec §12).
-MODELO_GEMINI = "gemini-2.5-flash"
+# Cascata de modelos Gemini: tenta na ordem; se um falhar, passa ao próximo.
+# O primeiro é o padrão. TODO (EM ABERTO): confirmar os nomes no plano pago (spec §12).
+MODELOS_GEMINI = ("gemini-4-argon", "gemini-3.1-pro-preview", "gemini-3.8-flash")
+MODELO_GEMINI = MODELOS_GEMINI[0]
 TEMPO_LIMITE_LLM = 8  # segundos; usado por quem chama (telegram_bot)
 
 FERRAMENTAS = ("buscar_orientacao", "cofre_documento", "gerenciar_tarefas", "briefing_matinal")
@@ -96,8 +98,12 @@ def rotear(texto, llm=None):
     return fallback_por_regras(texto)
 
 
-def chamar_gemini(texto, api_key):
-    """Pede ao Gemini (function calling) a ferramenta. Import tardio da biblioteca."""
+def chamar_gemini(texto, api_key, modelos=None):
+    """Pede ao Gemini (function calling) a ferramenta, percorrendo a cascata de modelos.
+
+    `modelos` (opcional) substitui a cascata; o .env pode trazer GEMINI_MODELO,
+    que vira o primeiro da lista. Import tardio da biblioteca.
+    """
     from google import genai
     from google.genai import types
 
@@ -121,14 +127,19 @@ def chamar_gemini(texto, api_key):
                   "temas": types.Schema(type="ARRAY", items=texto_s), "hora": texto_s}, ["acao"]),
     ]
     cliente = genai.Client(api_key=api_key)
-    resposta = cliente.models.generate_content(
-        model=MODELO_GEMINI, contents=texto,
-        config=types.GenerateContentConfig(
-            tools=[types.Tool(function_declarations=declaracoes)],
-            tool_config=types.ToolConfig(
-                function_calling_config=types.FunctionCallingConfig(mode="ANY"))))
-    chamada = resposta.candidates[0].content.parts[0].function_call
-    return chamada.name, dict(chamada.args or {})
+    config = types.GenerateContentConfig(
+        tools=[types.Tool(function_declarations=declaracoes)],
+        tool_config=types.ToolConfig(
+            function_calling_config=types.FunctionCallingConfig(mode="ANY")))
+    ultimo_erro = None
+    for modelo in (modelos or MODELOS_GEMINI):
+        try:
+            resposta = cliente.models.generate_content(model=modelo, contents=texto, config=config)
+            chamada = resposta.candidates[0].content.parts[0].function_call
+            return chamada.name, dict(chamada.args or {})
+        except Exception as erro:  # modelo indisponível ou resposta vazia: tenta o próximo
+            ultimo_erro = erro
+    raise ultimo_erro  # todos falharam: quem chama cai no fallback por regras
 
 
 def executar(chamada, base, uf=None):
