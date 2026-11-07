@@ -6,5 +6,7 @@ fastapi==0.115.0
 uvicorn==0.30.6
 cryptography==43.0.1
 google-genai==1.2.0
+# Voz (src/transcricao.py): puxa o PyTorch (centenas de MB) e exige o ffmpeg no sistema.
+openai-whisper==20240930
 APScheduler==3.10.4
 feedparser==6.0.11

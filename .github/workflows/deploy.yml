@@ -33,5 +33,6 @@ jobs:
           script: |
             cd ~/citizen-assist
             git pull --ff-only origin main
+            command -v ffmpeg >/dev/null || echo 'AVISO: instale o ffmpeg na VM (sudo apt install ffmpeg) para ativar a voz'
             .venv/bin/pip install -r requirements.txt
             sudo systemctl restart citizen-assist

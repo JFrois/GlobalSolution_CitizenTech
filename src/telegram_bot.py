@@ -10,6 +10,9 @@ from __future__ import annotations
 import asyncio
 import html
 import logging
+import shutil
+import tempfile
+from pathlib import Path
 
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.client.default import DefaultBotProperties
@@ -21,6 +24,7 @@ from aiogram.types import (CallbackQuery, InlineKeyboardButton, InlineKeyboardMa
 import armazenamento
 import ponte
 import roteador
+import transcricao
 
 log = logging.getLogger("citizen.bot")
 
@@ -59,6 +63,12 @@ def eh_palavra_de_menu(texto):
 
 
 MSG_ERRO = "Tive um problema para responder agora. Tente de novo em instantes."
+MSG_VOZ_LONGA = "Esse áudio é longo demais. Mande um de até 2 minutos ou escreva sua dúvida."
+MSG_VOZ_INDISPONIVEL = ("Ainda não consigo ouvir áudios neste servidor. "
+                        "Escreva sua dúvida com palavras.")
+MSG_VOZ_FALHOU = ("Não consegui entender esse áudio. Tente de novo, falando mais perto, "
+                  "ou escreva sua dúvida.")
+TEMPO_LIMITE_VOZ_S = 90   # o Whisper em CPU pode demorar; passou disso, avisa e segue
 
 
 def teclado(linhas):
@@ -84,6 +94,7 @@ def criar_bot(config, base, armazem, links):
     chave_gemini = config.get("GEMINI_API_KEY")
     # GEMINI_MODELO (opcional) vai para o início da fila; os demais vêm da lista da chave.
     modelo_env = config.get("GEMINI_MODELO") or None
+    modelo_whisper = transcricao.nome_do_modelo(config)
 
     async def responder(mensagem, resultado, user_id):
         # O bot usa parse_mode HTML. A resposta de um assunto já vem em HTML escapado
@@ -191,7 +202,10 @@ def criar_bot(config, base, armazem, links):
     async def texto_livre(m: Message):
         if m.from_user is None or not m.text:  # sem remetente ou sem texto: nada a responder
             return
-        user_id, texto = m.from_user.id, m.text
+        await processar_texto(m, m.from_user.id, m.text)
+
+    async def processar_texto(m: Message, user_id: int, texto: str):
+        """Caminho único para texto digitado e para voz já transcrita."""
         try:
             chamada = None
             # Botões nunca chamam IA. No texto livre, a IA só entra se a base não resolveu sozinha.
@@ -220,9 +234,46 @@ def criar_bot(config, base, armazem, links):
             log.exception("falha ao responder")  # sem o texto da mensagem
             await m.answer(MSG_ERRO)
 
+    @rota.message(F.voice | F.audio)
+    async def voz(m: Message):
+        if m.from_user is None or m.bot is None:
+            return
+        anexo = m.voice or m.audio
+        if anexo is None:
+            return
+        if (anexo.duration or 0) > transcricao.DURACAO_MAXIMA_S or \
+                (anexo.file_size or 0) > transcricao.TAMANHO_MAXIMO_B:
+            await m.answer(MSG_VOZ_LONGA)
+            return
+        ok, motivo = transcricao.disponivel()
+        if not ok:
+            log.warning("Voz indisponível: %s", motivo)  # motivo técnico só no log
+            await m.answer(MSG_VOZ_INDISPONIVEL)
+            return
+        try:
+            await m.bot.send_chat_action(m.chat.id, "typing")
+        except Exception:
+            pass
+        pasta = tempfile.mkdtemp(prefix="citizen-voz-")
+        try:
+            destino = Path(pasta) / "audio.ogg"
+            await m.bot.download(anexo, destination=destino)
+            texto = await asyncio.wait_for(
+                asyncio.to_thread(transcricao.transcrever, destino, modelo_whisper),
+                timeout=TEMPO_LIMITE_VOZ_S)
+        except Exception as erro:
+            log.warning("Falha na transcrição (%s)", type(erro).__name__)  # sem o conteúdo
+            await m.answer(MSG_VOZ_FALHOU)
+            return
+        finally:
+            shutil.rmtree(pasta, ignore_errors=True)  # o áudio não fica no disco
+        # Mostra o que foi entendido antes de responder (spec §19.6).
+        await m.answer("Entendi: <i>%s</i>" % html.escape(texto))
+        await processar_texto(m, m.from_user.id, texto)
+
     @rota.message()
     async def outros(m: Message):
-        # Foto, PDF e voz entram na próxima rodada (cofre e transcrição).
+        # Foto e PDF entram na próxima rodada (cofre).
         await m.answer("Por enquanto só entendo mensagens de texto. " + ponte.NAO_OFICIAL)
 
     return bot, dp
