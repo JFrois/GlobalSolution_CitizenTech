@@ -461,6 +461,7 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 - Armazenamento: confirmar Supabase ou equivalente.
 - Feeds RSS por tema e fuso horário padrão.
 - Modelo de resposta padrão (A ou B), definido pelos testes.
+- **Whisper na VM (voz):** instalar `ffmpeg` e o `openai-whisper` (comandos no README §6) e conferir CPU e memória da VM gratuita; se pesar, usar `WHISPER_MODELO=tiny` ou voltar ao Gemini para voz. Modelo `base` foi o escolhido em 07/11.
 - Ferramenta para coletar as perguntas do público de forma anônima (§14.1).
 - ~~Aprovar a aba "Perguntar"~~ — **aprovada pela equipe em 07/11** (§10.5).
 - ~~Identidade visual~~ — **resolvido em 07/11:** direção **Estreia clara** ([`docs/ux.md`](../ux.md) §9). Manual de marca e telas aprovados pela equipe em 07/11.
@@ -477,7 +478,7 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 - [ ] README com as 10 seções; relatório 4–8 páginas; `uso_ia.md`; `link_video.txt`.
 - [ ] Repositório público, sem segredos (verificar histórico do Git).
 - [ ] Vídeo Não Listado; `.txt` com os dois links enviado na FIAP ON.
-- [ ] Onda 2: cofre testado com senha errada, expiração de desbloqueio e isolamento por usuário; ou movida para o roadmap.
+- [ ] Onda 2: cofre testado com senha errada, expiração de desbloqueio e isolamento por usuário; ou movida para o roadmap. (07/11: bot, UF, voz com Whisper e roteador testados no Telegram real, 147 testes; cofre, tarefas, agendador, briefing, foto/PDF, front do painel e VM ainda não existem ou não foram testados)
 
 ---
 
