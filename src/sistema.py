@@ -4,7 +4,7 @@ Uso:
     python src/sistema.py                    consulta no terminal (offline, sem chaves)
     python src/sistema.py --simples          texto puro, sem cores nem molduras
     python src/sistema.py --validar-entrega  confere se a base está pronta para entregar
-    python src/sistema.py --avaliar          (em construção) taxa de acerto e tempos
+    python src/sistema.py --avaliar          taxa de acerto, tempos e comparação A x B (grava testes/*.csv)
     python src/sistema.py --servidor         (em construção) bot, painel e agendador
 
 Roda só com Python 3.9+, sem .env, sem internet e sem pip install (spec 5.3).
@@ -397,7 +397,7 @@ def _argumentos(argv):
     p.add_argument("--simples", action="store_true", help="texto puro, sem cores nem molduras")
     p.add_argument("--validar-entrega", action="store_true",
                    help="recusa registros ainda não preenchidos ou sem data de verificação")
-    p.add_argument("--avaliar", action="store_true", help="taxa de acerto e tempos (em construção)")
+    p.add_argument("--avaliar", action="store_true", help="taxa de acerto, tempos e comparação A x B; grava CSVs em testes/")
     p.add_argument("--servidor", action="store_true", help="bot, painel e agendador (em construção)")
     p.add_argument("--base", default=None, help="caminho de outro base.json (testes)")
     return p.parse_args(argv)
@@ -410,8 +410,8 @@ def principal(argv=None, entrada=input, saida=print) -> int:
     except (AttributeError, ValueError):
         pass
 
-    if args.servidor or args.avaliar:
-        # TODO(A9, B4): ligar --avaliar (testes/) e --servidor (import tardio, spec 5.3).
+    if args.servidor:
+        # TODO(B4): ligar o modo servidor com import tardio (spec 5.3).
         saida("Este modo ainda não está disponível nesta versão.")
         return 1
 
@@ -428,6 +428,13 @@ def principal(argv=None, entrada=input, saida=print) -> int:
         saida("Base pronta para entrega." if not pendencias
               else "%d pendência(s). Base ainda não está pronta para entrega." % len(pendencias))
         return 1 if pendencias else 0
+
+    if args.avaliar:
+        import avaliacao
+        saida(avaliacao.avaliar(dados))
+        saida("")
+        saida("Arquivos gravados em testes/: resultados.csv e comparacao_modelos.csv")
+        return 0
 
     Sessao(dados, estilo_automatico(args.simples), entrada, saida).executar()
     return 0
