@@ -53,7 +53,7 @@ _A preencher_
 ### 👩‍🏫 Professores
 
 **Tutor(a)**
-- <a href="">_A preencher_</a>
+- Lucas Gomes Jorge Gonçalez
 
 **Coordenador(a)**
 - <a href="https://www.linkedin.com/in/andregodoichiovato/">André Godoi Chiovato</a>
