@@ -42,9 +42,12 @@ class TestInterpretarQuando(unittest.TestCase):
     def test_dia_ja_passado_vai_para_o_mes_seguinte(self):
         self.assertEqual(q("dia 3"), dt(3, 9, mes=12))
 
-    def test_sem_tempo_ou_data_impossivel(self):
+    def test_sem_tempo(self):
         self.assertIsNone(q("pagar a conta"))
-        self.assertIsNone(q("dia 31/02"))
+
+    def test_data_impossivel_levanta_erro(self):
+        with self.assertRaises(tarefas.DataImpossivel):
+            q("dia 31/02")
 
     def test_titulo_sem_a_expressao_de_tempo(self):
         _, titulo = tarefas.interpretar_quando("pagar a conta amanhã às 9h", AGORA)
@@ -70,6 +73,12 @@ class TestExecutar(unittest.TestCase):
 
     def test_quando_ilegivel_nao_cria(self):
         self.assertIn("Não entendi quando", self.run_(1, acao="criar", titulo="x", quando="um dia desses"))
+        self.assertEqual(self.arm.listar_tarefas(1), [])
+
+    def test_data_impossivel_nao_cria_tarefa(self):
+        for args in ({"acao": "criar", "titulo": "pagar a luz dia 31/02"},
+                     {"acao": "criar", "titulo": "pagar a luz", "quando": "31/02"}):
+            self.assertIn("não existe no calendário", self.run_(1, **args))
         self.assertEqual(self.arm.listar_tarefas(1), [])
 
     def test_passado_e_sem_titulo(self):

@@ -21,6 +21,11 @@ HORA_PADRAO = 9  # data sem hora: lembrar às 9h
 MSG_NAO_ENTENDI_QUANDO = ("Não entendi quando devo te avisar. Escreva, por exemplo: "
                           "amanhã às 9h, hoje 18:30, dia 15 às 10h ou daqui a 2 horas.")
 MSG_PASSADO = "Essa data e hora já passou. Diga um momento no futuro."
+MSG_DATA_IMPOSSIVEL = "Essa data não existe no calendário. Confira o dia e o mês e tente de novo."
+
+
+class DataImpossivel(ValueError):
+    """O texto tem uma data no formato certo, mas que não existe (ex.: 31/02)."""
 
 
 def agora_local(fuso=FUSO_PADRAO):
@@ -36,7 +41,7 @@ def _sem_acento(texto):
 def interpretar_quando(texto, agora):
     """Lê data/hora em português. Devolve (datetime ou None, texto sem a expressão de tempo).
 
-    `agora` tem fuso. Aceita: hoje, amanhã, depois de amanhã, dia 15, 15/11, 15/11/2026,
+    `agora` tem fuso. Levanta DataImpossivel se a data escrita não existe. Aceita: hoje, amanhã, depois de amanhã, dia 15, 15/11, 15/11/2026,
     2026-11-15, 9h, 9h30, 09:30, "às 9", "daqui a 2 horas/30 minutos". Só data → 9h;
     só hora → hoje (ou amanhã se já passou)."""
     t = _sem_acento(texto)
@@ -91,7 +96,7 @@ def interpretar_quando(texto, agora):
                                 mes, ano = 1, ano + 1
                         dia = datetime.date(ano, mes, d)
         except ValueError:
-            return None, limpo()  # data impossível (ex.: dia 31 de fevereiro)
+            raise DataImpossivel(texto)  # ex.: dia 31 de fevereiro
 
     hora = None
     m = achar(r"\b(?:as )?([01]?\d|2[0-3]) ?(?:h|:) ?([0-5]\d)?\b") or achar(r"\bas ([01]?\d|2[0-3])\b")
@@ -137,13 +142,16 @@ def _resp(texto):
 def _criar(args, armazem, user_id, agora):
     titulo = (args.get("titulo") or "").strip()
     pedido_quando = (args.get("quando") or "").strip()
-    quando, resto = interpretar_quando(pedido_quando, agora) if pedido_quando else (None, "")
-    if pedido_quando and quando is None:
-        return _resp(MSG_NAO_ENTENDI_QUANDO)
-    if quando is None and titulo:  # a data pode estar dentro do próprio título
-        quando, resto_titulo = interpretar_quando(titulo, agora)
-        if quando is not None:
-            titulo = resto_titulo
+    try:
+        quando, resto = interpretar_quando(pedido_quando, agora) if pedido_quando else (None, "")
+        if pedido_quando and quando is None:
+            return _resp(MSG_NAO_ENTENDI_QUANDO)
+        if quando is None and titulo:  # a data pode estar dentro do próprio título
+            quando, resto_titulo = interpretar_quando(titulo, agora)
+            if quando is not None:
+                titulo = resto_titulo
+    except DataImpossivel:
+        return _resp(MSG_DATA_IMPOSSIVEL)
     titulo = _limpar_titulo(titulo)
     if not titulo:
         return _resp("Qual é a tarefa? Escreva, por exemplo: me lembre de pagar a conta amanhã às 9h.")
