@@ -139,7 +139,7 @@ class TestEstilo(unittest.TestCase):
     def test_16_cores_quando_nao_ha_truecolor(self):
         _, texto = rodar("Como tirar a segunda via do RG?", "0",
                          estilo=sistema.Estilo(ativo=True, truecolor=False))
-        self.assertIn("\x1b[33m", texto)
+        self.assertIn("\x1b[94m", texto)
         self.assertNotIn("38;2;", texto)
 
 

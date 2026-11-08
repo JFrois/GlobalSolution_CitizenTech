@@ -45,7 +45,7 @@
 
 ### 3.1 Regras gerais
 - Linhas com **até 80 colunas**; sem emoji; acentos permitidos (o Python 3 escreve UTF-8 no console do Windows).
-- **Dois modos de exibição (spec §5.4):** *identidade* (cores ANSI e molduras: títulos e números em âmbar, selo de fonte em ciano, `Atenção:` em coral, cartela de abertura estática) e *simples* (texto puro, como nos exemplos abaixo). O modo simples entra sozinho quando a saída não é um terminal ou quando existe `NO_COLOR`, e pode ser forçado com `--simples`. Os exemplos desta seção mostram o modo simples; o modo identidade está no canvas de pesquisa (seção 10).
+- **Dois modos de exibição (spec §5.4):** *identidade* (cores ANSI e molduras: títulos e números em azul, selo de fonte em verde, `Atenção:` em coral, cartela de abertura estática) e *simples* (texto puro, como nos exemplos abaixo). O modo simples entra sozinho quando a saída não é um terminal ou quando existe `NO_COLOR`, e pode ser forçado com `--simples`. Os exemplos desta seção mostram o modo simples; o modo identidade está no canvas de pesquisa (seção 10).
 - **Na entrada:** só dígitos = opção da tela atual; `m` = menu; `?` ou `ajuda` = ajuda; `0` = sair (só no menu principal); qualquer outro texto = **pergunta**.
 - Respostas e listas usam a mesma numeração da tela em que aparecem; a última linha sempre lembra as teclas válidas.
 - `Ctrl+C` e fim de entrada (`Ctrl+D`/`Ctrl+Z`) encerram com a mensagem de despedida, **sem traceback**.
@@ -268,7 +268,7 @@ As notícias ficam **sempre** depois das tarefas e com o rótulo "fonte não ofi
 ### 5.1 Regras visuais
 - **Celular primeiro:** uma coluna, largura máxima de 480 px, centralizada no navegador.
 - **No Mini App**, usar as cores do tema do Telegram (variáveis `--tg-theme-*`) e os botões nativos (`MainButton` para a ação principal, `BackButton` para voltar). **No navegador**, paleta própria com modo claro e escuro.
-- Fonte do sistema, corpo de **16 px**, botões e áreas de toque com **pelo menos 44 px** de altura.
+- Fonte **Plus Jakarta Sans** (§9), corpo de **16 px**, botões e áreas de toque com **pelo menos 44 px** de altura.
 - Sem scripts de terceiros além do script oficial do Telegram Web App (spec §10.4).
 
 ### 5.2 Telas
@@ -341,56 +341,50 @@ Registrar em `testes/usabilidade.md`, para cada tarefa: sucesso (sim/não), temp
 
 ---
 
-## 9. Identidade visual: **Estreia clara** (escolhida e aprovada pela equipe em 07/11/2026)
+## 9. Identidade visual: **Azul Telegram** (aprovada em 08/11/2026; substitui a "Estreia clara" de 07/11)
 
-Manual de marca completo (8 pranchas): https://claude.ai/artifact/5jG18T8avoxzQ2YhSUd8zm · Tokens prontos para o código e imagens exportadas: [`docs/design/`](design/README.md) (`tokens.css`, `tokens.json`, `imagens/`).
+Protótipo animado (6 telas: painel em 5, mais o terminal) no canvas de revisão de UI. Tokens prontos para o código: [`docs/design/`](design/README.md) (`tokens.css`, `tokens.json`).
 
-**Conceito:** cinema a serviço da confiança. **Base híbrida:** leitura em claro e arejado no dia a dia; momentos de cinema em escuro (abertura, cena da verificação, vídeo, terminal). Referências usadas só como inspiração, sem copiar: templates Therapist/Pediatrician e Study Planner (Lovable) e manuais Brand Manual Landscape e Brand Strategy Guide (Adobe Stock).
+**Por quê:** a "Estreia clara" parecia engessada e rústica. A nova direção segue o que os templates do Lovable fazem (fundo cheio de cor, painéis arredondados, botões em pílula, animação de entrada) e usa o **mesmo azul do Telegram** em painel, bot e terminal, para as três interfaces parecerem um produto só.
+
+**Conceito:** calma e confiança. Toda tela do painel tem uma **faixa azul** (hero, com o título) e uma **folha clara** com cantos de 34 px que sobe por baixo com o conteúdo.
 
 ### 9.1 Tokens
 
-| Token | Claro (dia a dia) | Escuro (cinema) | Papel | Contraste (claro / escuro) |
-|---|---|---|---|---|
-| `--fundo` / `--noite` | `#F5F6F8` | `#0B0D12` | Fundo das telas | — |
-| `--superficie` | `#FFFFFF` | `#151922` | Cartões | — |
-| `--texto` / `--tela` | `#0B0D12` | `#F2EEE6` | Títulos e texto | 18,0 / 16,8 |
-| `--apoio` | `#4D5463` | `#A9AFBC` | Legendas e rótulos | 7,0 / 8,8 |
-| `--ambar` | `#8A5300` | `#F5B544` | Números de passo, destaques, selo | 5,9 / 10,7 |
-| `--ciano` | `#0E6E7A` | `#6FD3E0` | Links, "Fonte:", informação | 5,5 / 11,2 |
-| `--atencao` | `#B0391B` | `#FF8A6B` | "Atenção:" | 5,6 / 8,4 |
-| `--acao` | `#F5B544` (texto `#0B0D12`) | igual | Botão principal | 10,7 |
-| `--borda` | `#7A8290` | `#6B7690` | Bordas de campos e botões secundários | 3,6 / 3,9 (mín. 3:1, WCAG 1.4.11) |
-| `--ambar-suave` | `#FFF4DC` | — | Fundo de ícone e bolha do usuário (`#FFF1D6`) | ícone âmbar 5,8 |
-| `--ciano-suave` | `#E1F2F4` | — | Fundo de ícone informativo | ícone ciano 5,2 |
-| `--faixa` | — | `#000000` | Faixas de cinema (só em momentos de cinema) | — |
+| Token | Valor | Papel | Contraste |
+|---|---|---|---|
+| `--cor-azul` | `#229ED9` | Azul do Telegram: marca, brilho e degradê. **Só decoração** | branco 3,0 (não usar em texto pequeno) |
+| `--degrade-hero` | `#229ED9` → `#1676B0` → `#0F5C93` (170°) | Faixa azul do topo | — |
+| `--cor-acao` | `#12689E` | Botão principal, item ativo, número do passo | branco 6,0 |
+| `--cor-link` | `#0B5E94` | Links e "Abrir →" | 6,9 no branco |
+| `--cor-fundo` | `#F2F8FC` | Folha clara | — |
+| `--cor-superficie` | `#FFFFFF` | Cartões | — |
+| `--cor-texto` | `#0E2233` | Títulos e texto | 16,5 |
+| `--cor-apoio` | `#4A6176` | Legendas e rótulos | 5,9 |
+| `--cor-noite` | `#0E2233` | Barra de navegação flutuante e terminal | — |
+| `--cor-verde` | `#0F7A5A` | Selo "Fonte conferida" (fundo `#DDF3EA`) | branco 5,5 |
+| `--cor-teal` / `--cor-coral` | `#0A7C73` / `#B8431F` | Tinta dos temas Serviços e Direitos (Documentos usa o azul) | ícone sobre fundo suave ≥ 4,5 |
+| `--cor-atencao-texto` | `#5E1F0B` | "Atenção:" sobre `#FDE7DF` | 9,5 |
+| `--cor-borda` | `#6F8CA2` | Bordas de campos e botões secundários | ≥ 3,3 |
 
-- **Regra da luz:** âmbar em no máximo ~10% da tela.
-- **Tipografia:** títulos em **Archivo** 800, condensada (66–72%), caixa alta só em títulos de até 6 palavras e a partir de 24 px; texto em **Atkinson Hyperlegible** (mínimo 16 px, entrelinha 1,5); dados e terminal em fonte monoespaçada. Fontes gratuitas (Google Fonts, licença OFL).
-- **Símbolo:** lente (anel) + arco âmbar (luz) + sinal de conferido. Mínimos: símbolo 24 px, avatar 40 px, logotipo 140 px. Avatar do bot: fundo âmbar, símbolo sem o arco. No terminal: `C I T I Z E N   A S S I S T   A I` em âmbar.
-- **Ícones:** grade 24 px, traço 2 px, pontas redondas, sempre com texto ao lado.
-- **Grafismos:** selo "Fonte conferida", numeração `01 02 03`, rótulo "NÃO OFICIAL", faixas de cinema.
-- **Movimento:** `--mov-rapido` 150 ms (toque), `--mov-medio` 300 ms (entrada, sequência de 150 ms), `--mov-cena` 450 ms (selo); curva `cubic-bezier(0.2, 0.7, 0.2, 1)`; só opacidade e posição; "reduzir movimento" desliga tudo.
-- **Estado ativo nunca só pela cor:** abas e itens selecionados levam também uma barra ou marcação (ex.: barra âmbar de 3 px na aba ativa e `aria-current="page"`).
-- **Títulos no Telegram:** em negrito e com a primeira letra maiúscula, sem caixa alta (a fonte do chat não é a Archivo).
-- **Nunca:** azul e amarelo do gov.br, brasão ou bandeira; tirar o "não oficial".
-
-### 9.2 Alternativas registradas (não escolhidas)
-
-Três direções, todas com contraste AA nos modos claro e escuro e **propositalmente diferentes do visual do gov.br** (azul e amarelo), para não sugerir canal oficial:
-
-| Direção | Ideia | Cores (fundo · texto · primária · atenção) | Fontes | Símbolo |
-|---|---|---|---|---|
-| **A · Bússola** | Guia calmo que mostra o caminho | `#F5F7F9` · `#13233A` · `#0B6E6E` · `#9A4A06` | Space Grotesk (títulos) + Atkinson Hyperlegible (texto, feita para baixa visão) | Rota com três pontos (o grafo de assuntos) |
-| **B · Praça** | Conversa acolhedora e comunitária | `#F6F6F4` · `#1E2A24` · `#1F5D45` · `#A8401F` | Nunito Sans | Balão de conversa com sinal de verificado |
-| **C · Selo** | Preciso e documental; a fonte em destaque | `#FFFFFF` · `#111318` · `#4C3BCF` · `#B33A0B` | IBM Plex Sans + IBM Plex Mono | Documento com sinal de conferido |
+- **Vidro:** fundo `rgba(8,40,70,.38)`, borda `rgba(255,255,255,.4)`, blur de 14 px (chips e cartões sobre o azul). Texto branco só sobre vidro ou sobre a parte escura do degradê.
+- **Tipografia:** **Plus Jakarta Sans** em tudo (400 a 800; títulos em 800, 36 px no hero e 32 px na resposta, espaçamento -0,03 em); texto de no mínimo 16 px, entrelinha 1,5; **JetBrains Mono** no terminal. Fontes gratuitas (Google Fonts, licença OFL).
+- **Formas:** cartões 22 px, ícones 14 px, folha 34 px nos cantos de cima, botões, chips e barra de navegação em pílula; sombras suaves, sem borda dura.
+- **Navegação do painel:** barra escura flutuante em pílula (Perguntar · Cofre · Ajustes). O item ativo vira uma pílula branca com ícone e **rótulo** (nunca só a cor), com `aria-current="page"`.
+- **Símbolo:** lente (anel) com sinal de conferido, em branco sobre azul. Mínimos: símbolo 24 px, avatar 40 px, logotipo 140 px. **Avatar do bot:** degradê azul e símbolo branco (`docs/design/imagens/`).
+- **Ícones:** grade 24 px, traço 2 px, pontas redondas, sempre com texto ao lado (ou `aria-label`).
+- **Grafismos:** selo "Fonte conferida" (cartão verde com check), números de passo em círculo, rótulo "Não oficial" em vidro.
+- **Movimento:** blocos entram subindo 14 px com fade em 550 ms, em sequência de ~150 ms; a folha sobe 60 px em 600 ms; o selo "Fonte conferida" faz *pop* e o check é desenhado; toque reduz a escala a 0,96 em 150 ms. Só `opacity` e `transform`. **Cena da verificação** (aba Perguntar, spec §10.5): contagem até 17 com barra de progresso, título, 3 passos, selo e próximos assuntos, em ~3 s, com botão "Repetir cena" no protótipo. Com "reduzir movimento", tudo aparece pronto.
+- **Estado ativo nunca só pela cor:** aba e chip selecionados levam também rótulo e marca de check.
+- **Títulos no Telegram:** em negrito e com a primeira letra maiúscula (a fonte do chat não é a Plus Jakarta Sans).
+- **Terminal (identidade):** fundo sugerido `#0B1622`; destaque (marca, números, teclas) em `#2AABEE` (16 cores: `94`); "Fonte:" em `#5BD68F` (`32`); "Atenção:" em `#FF9B7A` (`91`); apoio `#8FA9BD`. Moldura com caracteres de caixa e a cartela `C I T I Z E N   A S S I S T   A I` em azul. Modo `--simples`, `NO_COLOR` e saída sem terminal continuam em texto puro.
+- **Nunca:** o azul e o amarelo do gov.br, brasão ou bandeira; tirar o "não oficial". O azul do Telegram é permitido e deve ser diferente o bastante do azul institucional do gov.br (`#1351B4`): a base é `#229ED9`, mais claro e mais ciano.
 
 Onde a identidade aparece: avatar e nome do bot, painel no navegador (no Mini App valem as cores do Telegram, com a primária como destaque), README, relatório, vídeo e o cabeçalho do terminal (só o nome, em texto). As telas do Telegram e do painel já foram desenhadas na Estreia clara (seção 10).
 
-## 10. Wireframes e pesquisa
+## 10. Protótipo e wireframes
 
-- Wireframes (terminal em modo simples) e as direções A, B e C: https://claude.ai/artifact/T3RUAHaEZy8zYef4SVgW85
-- **Telas finais na Estreia clara (painel com 7 telas, Telegram com 6 cenas e terminal no modo identidade), protótipos clicáveis:** https://claude.ai/artifact/TiNyp7dFzrcgfsrriizCxo
-- **Manual de marca (Estreia clara, escolhida) e a alternativa Petróleo e menta:** https://claude.ai/artifact/5jG18T8avoxzQ2YhSUd8zm
-- Pesquisa da direção cinematográfica (achados, matriz de pontos de contato, três formas de aplicar, cena da verificação animada e terminal com a identidade): https://claude.ai/artifact/AcRYZX7E9wbCfoJ17WjSGW
+- **Protótipo animado da identidade Azul Telegram** (painel em 5 telas, cena da verificação e terminal): código em [`docs/design/prototipo/`](design/prototipo/) e canvas de revisão de UI: https://claude.ai/artifact/VLaxzKY5pHx7NYm9utVwLc
+- Wireframes do terminal em modo simples (estrutura das telas da §3): https://claude.ai/artifact/T3RUAHaEZy8zYef4SVgW85
 
 Os links são privados; o dono precisa compartilhar pelo menu Share para a equipe abrir. Os protótipos usam **texto de exemplo** nas orientações; não são fonte de conteúdo.

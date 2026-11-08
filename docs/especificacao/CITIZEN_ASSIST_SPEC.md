@@ -466,7 +466,7 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 - **Whisper na VM (voz):** instalar `ffmpeg` e o `openai-whisper` (comandos no README §6) e conferir CPU e memória da VM gratuita; se pesar, usar `WHISPER_MODELO=tiny` ou voltar ao Gemini para voz. Modelo `base` foi o escolhido em 07/11.
 - Ferramenta para coletar as perguntas do público de forma anônima (§14.1).
 - ~~Aprovar a aba "Perguntar"~~ — **aprovada pela equipe em 07/11** (§10.5).
-- ~~Identidade visual~~ — **resolvido em 07/11:** direção **Estreia clara** ([`docs/ux.md`](../ux.md) §9). Manual de marca e telas aprovados pela equipe em 07/11.
+- ~~Identidade visual~~ — **resolvido em 08/11:** direção **Azul Telegram** ([`docs/ux.md`](../ux.md) §9). Avatar do bot regerado; protótipo em `docs/design/prototipo/`.
 
 ---
 
@@ -496,6 +496,6 @@ Detalhe completo (telas, textos, mensagens, acessibilidade, roteiro de usabilida
 6. **Telegram:** escolhas por botões; áudio mostra a transcrição antes da resposta; UF perguntada só quando a resposta depende do estado; o bot nunca fica mudo.
 7. **Painel:** celular primeiro (uma coluna, até 480 px); no Mini App usa as cores e botões nativos do Telegram; contador visível de bloqueio do cofre; apagar em dois passos.
 8. **Acessibilidade mínima:** contraste WCAG AA, toque ≥ 44 px, texto 16 px, nada indicado só por cor, linguagem simples, terminal com até 80 colunas e sem emoji.
-9. **Identidade visual "Estreia clara" (decisão de 07/11):** base híbrida (leitura em claro, momentos de cinema em escuro), paleta âmbar e ciano, Archivo condensada nos títulos e Atkinson Hyperlegible no texto. Tokens e regras em [`docs/ux.md`](../ux.md) §9; manual de marca completo no link registrado lá.
+9. **Identidade visual "Azul Telegram" (decisão de 08/11, substitui a "Estreia clara" de 07/11):** faixa azul (hero) com a folha clara por cima, o mesmo azul do Telegram em painel, bot e terminal, cartões e botões arredondados, animação de entrada (só opacidade e escala), Plus Jakarta Sans. Tokens e regras em [`docs/ux.md`](../ux.md) §9; tokens prontos em `docs/design/`.
 10. **Cena da verificação no produto (§10.5):** aba "Perguntar" no painel/Mini App, com o mesmo núcleo do terminal.
 11. **Metas de aprendizado** (medidas no teste de usabilidade): primeira resposta útil em < 1 min; ≥ 4 de 5 tarefas sem ajuda.

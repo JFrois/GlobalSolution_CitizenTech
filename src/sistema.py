@@ -48,7 +48,7 @@ DESPEDIDA = "Até logo. Lembre-se de confirmar as informações no site oficial.
 # --------------------------------------------------------------------------
 
 class Estilo:
-    """Aplica cores da identidade 'Estreia clara' (docs/ux.md, seção 9).
+    """Aplica cores da identidade 'Azul Telegram' (docs/ux.md, seção 9).
 
     Com ativo=False devolve o texto sem nenhum enfeite. A cor nunca é a única
     pista: 'Atenção:' e 'Fonte:' continuam escritos.
@@ -66,14 +66,14 @@ class Estilo:
         codigo = "38;2;%d;%d;%d" % rgb if self.truecolor else basico
         return "\x1b[%s%sm%s\x1b[0m" % (extra, codigo, texto)
 
-    def ambar(self, texto: str, negrito: bool = False) -> str:
-        return self._pintar(texto, (245, 181, 68), "33", "1;" if negrito else "")
+    def destaque(self, texto: str, negrito: bool = False) -> str:
+        return self._pintar(texto, (42, 171, 238), "94", "1;" if negrito else "")
 
-    def ciano(self, texto: str) -> str:
-        return self._pintar(texto, (111, 211, 224), "36")
+    def verde(self, texto: str) -> str:
+        return self._pintar(texto, (91, 214, 143), "32")
 
     def coral(self, texto: str) -> str:
-        return self._pintar(texto, (255, 138, 107), "91")
+        return self._pintar(texto, (255, 155, 122), "91")
 
 
 def _ativar_cores_no_windows() -> bool:
@@ -145,7 +145,7 @@ class Sessao:
 
     def _rodape(self, texto: str) -> str:
         """Teclas válidas: o que está entre colchetes ganha destaque."""
-        return re.sub(r"\[[^\]]+\]", lambda m: self.estilo.ambar(m.group(0)), texto)
+        return re.sub(r"\[[^\]]+\]", lambda m: self.estilo.destaque(m.group(0)), texto)
 
     def _estilizar_resposta(self, texto: str) -> str:
         """Pinta a resposta já montada por respostas.py (só quando há cor)."""
@@ -156,10 +156,10 @@ class Sessao:
         for linha in texto.split("\n"):
             if linha == "-" * respostas.LARGURA:
                 barras += 1
-                saida.append(e.ambar(e.traco * respostas.LARGURA))
+                saida.append(e.destaque(e.traco * respostas.LARGURA))
                 continue
             if barras == 1:  # linha entre as duas barras: título do assunto
-                saida.append(e.ambar(linha, negrito=True))
+                saida.append(e.destaque(linha, negrito=True))
                 continue
             if linha.startswith("Atenção:"):
                 bloco = "atencao"
@@ -170,19 +170,19 @@ class Sessao:
             if bloco == "atencao":
                 linha = e.coral(linha)
             elif bloco == "fonte":
-                linha = e.ciano(linha)
+                linha = e.verde(linha)
             else:
-                linha = re.sub(r"^(\s*)(\d+)(\.|\s)", lambda m: m.group(1) + e.ambar(m.group(2)) + m.group(3), linha)
+                linha = re.sub(r"^(\s*)(\d+)(\.|\s)", lambda m: m.group(1) + e.destaque(m.group(2)) + m.group(3), linha)
             saida.append(linha)
         return "\n".join(saida)
 
     def cabecalho(self) -> None:
         e = self.estilo
         barra = e.dupla * 64
-        self.escrever(e.ambar(barra))
-        self.escrever("  " + e.ambar("CITIZEN ASSIST AI", negrito=True)
+        self.escrever(e.destaque(barra))
+        self.escrever("  " + e.destaque("CITIZEN ASSIST AI", negrito=True)
                       + "  -  orientação cidadã NÃO OFICIAL")
-        self.escrever(e.ambar(barra))
+        self.escrever(e.destaque(barra))
 
     # ---- telas -----------------------------------------------------------
 
@@ -195,12 +195,12 @@ class Sessao:
         self.escrever("ou escolha uma opção:")
         self.escrever("")
         e = self.estilo
-        self.escrever("  %s  Ver assuntos por tema" % e.ambar("1"))
-        self.escrever("  %s  Ver o caminho entre dois assuntos" % e.ambar("2"))
+        self.escrever("  %s  Ver assuntos por tema" % e.destaque("1"))
+        self.escrever("  %s  Ver o caminho entre dois assuntos" % e.destaque("2"))
         self.escrever("  %s  Formato da resposta (agora: %s)"
-                      % (e.ambar("3"), respostas.NOMES_DE_FORMATO[self.modelo]))
-        self.escrever("  %s  Ajuda" % e.ambar("?"))
-        self.escrever("  %s  Sair" % e.ambar("0"))
+                      % (e.destaque("3"), respostas.NOMES_DE_FORMATO[self.modelo]))
+        self.escrever("  %s  Ajuda" % e.destaque("?"))
+        self.escrever("  %s  Sair" % e.destaque("0"))
         self.tela = Tela("menu", [], "", None)
 
     def tela_ajuda(self) -> None:
@@ -218,15 +218,15 @@ class Sessao:
         self.escrever("Temas disponíveis:")
         for i, tid in enumerate(self.ids_dos_temas, start=1):
             qtd = sum(1 for r in self.dados["registros"] if r["tema"] == tid)
-            self.escrever("  %s  %s (%d assuntos)" % (self.estilo.ambar(str(i)), self.temas[tid], qtd))
+            self.escrever("  %s  %s (%d assuntos)" % (self.estilo.destaque(str(i)), self.temas[tid], qtd))
         self.tela = Tela("temas", list(self.ids_dos_temas),
                          rodape % len(self.ids_dos_temas) if "%d" in rodape else rodape, None)
 
     def tela_assuntos_do_tema(self, tema: str) -> None:
         ids = sorted(r["id"] for r in self.dados["registros"] if r["tema"] == tema)
-        self.escrever(self.estilo.ambar(self.temas[tema], negrito=True))
+        self.escrever(self.estilo.destaque(self.temas[tema], negrito=True))
         for i, rid in enumerate(ids, start=1):
-            self.escrever("  %s  %s" % (self.estilo.ambar(str(i)), respostas.titulo_do(self.por_id[rid])))
+            self.escrever("  %s  %s" % (self.estilo.destaque(str(i)), respostas.titulo_do(self.por_id[rid])))
         self.tela = Tela("tema", ids, "[número] abrir assunto  [m] menu  "
                          "ou digite uma pergunta sobre este tema", tema)
 
@@ -237,15 +237,15 @@ class Sessao:
             reg = self.por_id[rid]
             if reg["tema"] != tema_atual:
                 tema_atual = reg["tema"]
-                self.escrever(self.estilo.ambar(self.temas[tema_atual]))
-            self.escrever("  %s  %s" % (self.estilo.ambar("%2d" % i), respostas.titulo_do(reg)))
+                self.escrever(self.estilo.destaque(self.temas[tema_atual]))
+            self.escrever("  %s  %s" % (self.estilo.destaque("%2d" % i), respostas.titulo_do(reg)))
         self.tela = Tela(tipo, list(self.ordem), "%s escolher  [m] menu" % _faixa(len(self.ordem)), origem)
 
     def tela_formato(self) -> None:
         self.escrever("Como você prefere ler as respostas?")
-        self.escrever("  %s  Resumido: um parágrafo curto e a fonte" % self.estilo.ambar("1"))
+        self.escrever("  %s  Resumido: um parágrafo curto e a fonte" % self.estilo.destaque("1"))
         self.escrever("  %s  Passo a passo: lista de passos, avisos e assuntos relacionados"
-                      % self.estilo.ambar("2"))
+                      % self.estilo.destaque("2"))
         self.escrever("Agora: %s." % respostas.NOMES_DE_FORMATO[self.modelo])
         self.tela = Tela("formato", [], "[1-2] escolher  [m] menu", None)
 
@@ -323,7 +323,7 @@ class Sessao:
             self.escrever("")
             self.escrever(self._rodape(self.tela.rodape))
         try:
-            return self.entrada(self.estilo.ambar(">") + " ")
+            return self.entrada(self.estilo.destaque(">") + " ")
         except (EOFError, KeyboardInterrupt):
             raise Sair()
 
