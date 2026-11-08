@@ -85,6 +85,7 @@ def iniciar(caminho_base=None):
     import base as modulo_base
     import ponte
     import agendador
+    import briefing
     import cofre
     import painel
     import telegram_bot
@@ -112,8 +113,13 @@ def iniciar(caminho_base=None):
         except Exception as erro:
             logging.getLogger("citizen.bot").warning("set_my_commands falhou (%s)", type(erro).__name__)
         # Lembretes e autodestruição (src/agendador.py): o primeiro tick já cumpre o que venceu.
+        feeds = briefing.carregar_feeds()
+
+        async def resumo(uid):  # monta o resumo numa thread (busca feeds na rede)
+            return await asyncio.to_thread(briefing.montar, uid, armazem, feeds, dados["temas"])
+
         agendador.iniciar(armazem, lambda uid, texto: bot.send_message(uid, html.escape(texto)),
-                          lambda chat, msg: bot.delete_message(chat, msg))
+                          lambda chat, msg: bot.delete_message(chat, msg), briefing=resumo)
         # Painel só em localhost: o Caddy faz o HTTPS na frente (spec §12).
         servidor_web = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=porta,
                                                      log_level="warning"))

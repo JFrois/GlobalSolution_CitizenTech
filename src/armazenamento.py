@@ -42,6 +42,10 @@ class ArmazenamentoSQLite:
             "CREATE TABLE IF NOT EXISTS tarefas ("
             "id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, titulo TEXT NOT NULL, "
             "quando INTEGER, concluida INTEGER NOT NULL DEFAULT 0, avisada INTEGER NOT NULL DEFAULT 0)")
+        # Horário do resumo da manhã (HH:MM, fuso de Brasília) e o último dia enviado.
+        self._con.execute(
+            "CREATE TABLE IF NOT EXISTS briefing_config ("
+            "user_id INTEGER PRIMARY KEY, hora TEXT NOT NULL, ultimo_envio TEXT)")
         # Mensagens com documento a apagar do chat (autodestruição, spec §11).
         self._con.execute(
             "CREATE TABLE IF NOT EXISTS exclusoes ("
@@ -169,6 +173,35 @@ class ArmazenamentoSQLite:
                 "AND quando >= ? AND quando < ? ORDER BY quando", (int(user_id), int(inicio), int(fim))
             ).fetchall()
 
+    # --- resumo da manhã ---
+
+    def definir_hora_briefing(self, user_id, hora):
+        with self._lock:
+            self._con.execute(
+                "INSERT INTO briefing_config (user_id, hora) VALUES (?, ?) "
+                "ON CONFLICT(user_id) DO UPDATE SET hora = excluded.hora",
+                (int(user_id), hora))
+            self._con.commit()
+
+    def obter_hora_briefing(self, user_id):
+        with self._lock:
+            l = self._con.execute("SELECT hora FROM briefing_config WHERE user_id = ?",
+                                  (int(user_id),)).fetchone()
+        return l[0] if l else None
+
+    def briefings_a_enviar(self, hoje, hora_atual):
+        """user_ids cujo horário já chegou hoje e que ainda não receberam hoje (strings ISO / HH:MM)."""
+        with self._lock:
+            return [l[0] for l in self._con.execute(
+                "SELECT user_id FROM briefing_config WHERE hora <= ? "
+                "AND (ultimo_envio IS NULL OR ultimo_envio <> ?)", (hora_atual, hoje)).fetchall()]
+
+    def marcar_briefing_enviado(self, user_id, hoje):
+        with self._lock:
+            self._con.execute("UPDATE briefing_config SET ultimo_envio = ? WHERE user_id = ?",
+                              (hoje, int(user_id)))
+            self._con.commit()
+
     # --- autodestruição de mensagens ---
 
     def agendar_exclusao(self, user_id, chat_id, message_id, apagar_em):
@@ -193,6 +226,6 @@ class ArmazenamentoSQLite:
     def apagar_usuario(self, user_id):
         """Remove tudo do usuário (/apagar_meus_dados), inclusive o cofre."""
         with self._lock:
-            for tabela in ("cofre_docs", "cofre_config", "tarefas", "exclusoes", "usuarios"):
+            for tabela in ("cofre_docs", "cofre_config", "tarefas", "exclusoes", "briefing_config", "usuarios"):
                 self._con.execute("DELETE FROM %s WHERE user_id = ?" % tabela, (int(user_id),))
             self._con.commit()

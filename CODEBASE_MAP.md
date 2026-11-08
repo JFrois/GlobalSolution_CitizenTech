@@ -23,4 +23,5 @@ Mapa curto do repositório (atualizar ao criar ou mover módulos).
 | `src/criptografia.py`, `src/cofre.py`, `src/classificador.py` | PBKDF2 + AES-GCM, cofre por `user_id`, tipo do documento via Gemini (lista fechada) | Testados (unitários); Gemini real e Telegram ainda não |
 | `painel/` (`index.html`, `painel.js`, `painel.css`, `tokens.css`) + rotas em `src/painel.py` | Front estático: Perguntar (cena da verificação), Cofre, Ajustes; API do cofre e config | Testado no navegador local e por testes; Mini App no Telegram real não |
 | `src/tarefas.py`, `src/agendador.py` | Tarefas e lembretes (data lida por regras, fuso Brasília), tick do APScheduler que cumpre lembretes e exclusões vencidas (estado no SQLite) | Testados (unitários + APScheduler real); Telegram real ainda não |
-| Onda 2 restante (`briefing`, foto/PDF no bot) | Não existem ainda | Pendente |
+| `src/briefing.py`, `data/feeds.json` | Resumo da manhã: tarefas do dia + até 3 manchetes/tema (rotuladas "não oficial"), feed com erro é pulado; horário por usuário (painel ou chat) | Testado com coletor falso; **feeds por tema vazios (EM ABERTO, equipe escolhe)**; feed real e Telegram não testados |
+| Onda 2 restante (foto/PDF no bot) | Não existe ainda | Pendente |

@@ -27,8 +27,9 @@ class TestFuncoesPuras(unittest.TestCase):
     def test_validar_config(self):
         temas = {"documentacao": "Doc"}
         self.assertEqual(painel.validar_config({"uf": "sp", "temas": ["documentacao"]}, temas),
-                         ("SP", ["documentacao"]))
-        for ruim in ({"uf": "XX"}, {"temas": ["inexistente"]}, {"temas": "doc"}, [1], {"uf": 3}):
+                         ("SP", ["documentacao"], None))
+        self.assertEqual(painel.validar_config({"hora": "07:30"}, temas), (None, None, "07:30"))
+        for ruim in ({"uf": "XX"}, {"temas": ["inexistente"]}, {"temas": "doc"}, [1], {"uf": 3}, {"hora": "7h"}, {"hora": "25:00"}):
             with self.assertRaises(ValueError):
                 painel.validar_config(ruim, temas)
 

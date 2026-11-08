@@ -128,7 +128,6 @@ TAMANHO_MAX_TEXTO = 300
 MSG_EM_BREVE_POR_FERRAMENTA = {
     "cofre_documento": "O cofre de documentos ainda não está disponível no bot nesta versão. "
                        "Você já pode criá-lo no painel (/painel).",
-    "briefing_matinal": "O resumo da manhã ainda não está disponível nesta versão.",
     "gerenciar_tarefas": "As tarefas e lembretes não estão disponíveis agora.",
 }
 MSG_EM_BREVE = ("Essa função ainda não está disponível nesta versão. "

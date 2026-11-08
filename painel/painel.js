@@ -228,6 +228,7 @@ for (const uf of UFS) { const o = el("option", uf); o.value = uf; $("uf").append
 
 function desenharAjustes() {
   $("uf").value = estado.uf || "";
+  $("hora").value = estado.hora_briefing || "";
   const caixa = $("temas"); caixa.textContent = ""; caixa.className = "temas";
   for (const [chave, nome] of Object.entries(estado.temas)) {
     const rotulo = el("label");
@@ -241,6 +242,7 @@ $("salvar").addEventListener("click", async () => {
   const temas = [...document.querySelectorAll("#temas input:checked")].map((c) => c.value);
   const corpo = { temas };
   if ($("uf").value) corpo.uf = $("uf").value;
+  if ($("hora").value) corpo.hora = $("hora").value;
   try { await json(await api("PUT", "/api/config", corpo)); avisar("Salvo."); }
   catch (e) { avisar(e.message); }
 });
