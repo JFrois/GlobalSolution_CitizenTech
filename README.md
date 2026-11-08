@@ -32,7 +32,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 
 > Global Solution 2026.2 · Desafio CitizenTech
 
-## Estado do projeto (atualizado em 08/11/2026, `main` até o PR #38)
+## Estado do projeto (atualizado em 08/11/2026, `main` até o PR #44)
 
 > Resumo para quem está chegando agora. O detalhe de quem faz o quê está em [`docs/planejamento.md`](docs/planejamento.md) (seção "Status e onde parou"). Prazos: **código congelado em 13/11**, **entrega em 19/11**.
 
@@ -51,6 +51,13 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 - **Voz:** o áudio é transcrito localmente pelo Whisper (`src/transcricao.py`), o bot avisa "Recebi seu áudio…" e depois mostra "Entendi: …". Testado com um áudio real em português.
 - Roteador com cascata de modelos do Gemini: a IA só entra quando a base não resolve (fora da base) ou há pedido de cofre/tarefa/briefing; botões, perguntas respondidas e ambíguas **nunca** chamam a IA.
 
+**Testado de ponta a ponta com o servidor local em 08/11 (PRs #42 a #44):**
+
+- **Lembrete pelo chat:** "me lembra de pagar a luz amanhã às 9h" cria a tarefa (antes caía na busca e respondia a Tarifa Social de Energia; corrigido no PR #44). O aviso chega no Telegram na hora certa (o atraso de 39 min foi corrigido no PR #42).
+- **Lembrete pelo painel local:** "daqui a 1 minuto" foi marcado como avisado pelo agendador no tick seguinte (cerca de 30 s depois). A chegada dessa mensagem no Telegram não foi conferida.
+- **Desligar o servidor:** Ctrl+C agora encerra bot, painel e agendador juntos (PR #43). Se a porta 8000 estiver ocupada, o `--servidor` avisa e não sobe um segundo bot.
+- Painel local: sem sessão ou com link vencido, a API responde 401 e a tela pede um novo link pelo `/painel`.
+
 **Implementado em 08/11 (Onda 2), testado só por testes automatizados e no navegador local; nunca no Telegram real nem na VM:**
 
 - **Criptografia e cofre** (`src/criptografia.py`, `src/cofre.py`): PBKDF2-SHA256 (600 mil iterações, salt por usuário), AES-256-GCM, verificador de senha, chave só na memória com validade de 10 min; nome e conteúdo cifrados; tudo filtrado por `user_id`.
@@ -66,16 +73,20 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 
 **Pendente, por prioridade:**
 
-1. **Antes do congelamento (13/11), Onda 1:** revisão humana das 17 orientações (E2) e links por estado da 2ª via da CIN (`referencias_estaduais` de DOC-001 está vazio; todos os estados caem no `gov.br`); conferir `python src/sistema.py` numa máquina limpa e no Windows.
+1. **Antes do congelamento (13/11), Onda 1:** revisão humana das 17 orientações (E2) e links por estado da 2ª via da CIN (`referencias_estaduais` de DOC-001 está vazio; todos os estados caem no `gov.br`); conferir `python src/sistema.py` numa máquina limpa e no Windows. **Bug conhecido na busca:** "quanto custa a tarifa de ônibus" responde a Tarifa Social de Energia (DIR-006), porque a palavra "tarifa" sozinha no título já soma 6 pontos e passa do limiar (3). O certo seria "fora da base". A correção mexe na pontuação; por isso precisa rodar `--avaliar` antes e depois e não pode quebrar o 19/19.
 2. **Indicadores (até 15/11):** perguntas do público (≥ 10, anônimas; hoje só existe o conjunto `equipe`) medidas **antes** de ajustar a busca; teste de usabilidade com pessoa de fora (`testes/usabilidade.md` está vazio); nota de clareza A × B (coluna `clareza_1a5` vazia). Só depois se escolhe o formato padrão (hoje o passo a passo é provisório).
-3. **Onda 2, teste real:** no Telegram real (com documentos fictícios): foto/PDF, cofre pelo chat, lembrete, resumo da manhã, Mini App (incluindo a aba Tarefas) e o botão "Sim, apagar tudo". `/painel` precisa de `PAINEL_URL` com https.
+3. **Onda 2, teste real:** no Telegram real (com documentos fictícios): foto/PDF, cofre pelo chat, resumo da manhã, Mini App (incluindo a aba Tarefas) e o botão "Sim, apagar tudo". O lembrete pelo chat já foi testado (08/11). `/painel` precisa de `PAINEL_URL` com https.
 4. **Infraestrutura:** VM, DuckDNS/Caddy e deploy automático (nunca testados; o deploy só liga com `DEPLOY_ATIVO=true`); `ffmpeg` e Whisper na VM.
 5. **Segurança:** `cryptography` atualizada para 50.0.2 em 08/11 (fecha os 6 alertas do Dependabot). Para atualizar um ambiente já criado: `.venv/bin/python -m pip install cryptography==50.0.2` (não use `pip install -r requirements.txt` fora do `.venv` nem antes do passo do Whisper, ver §6). Antes da VM, gerar **novo** token do bot e **nova** chave do Gemini (os de teste foram compartilhados fora do `.env`) e conferir o histórico do Git (busca feita em 08/11 não achou tokens).
 6. **Decisões EM ABERTO:** feeds RSS por tema, fuso por usuário (hoje todos em America/Sao_Paulo), armazenamento definitivo (hoje SQLite; Supabase não foi adotado), faturamento do Gemini.
 7. **Documentação e entrega:** textos das seções 1, 2, 8, 9 e 10 deste README e "Participação na Competição"; relatório PDF (`docs/relatorio.pdf`); vídeo e `docs/link_video.txt`; `.txt` na FIAP ON.
 8. **Roadmap planejado (opcional, baixa prioridade):** números de contexto da Base dos Dados para o relatório (ver seção 10, "Melhorias e roadmap").
 
-Melhoria conhecida que não bloqueia a entrega: respostas da IA podem chegar fora de ordem quando a pergunta cai no Gemini.
+Melhorias conhecidas que não bloqueiam a entrega:
+
+- Respostas da IA podem chegar fora de ordem quando a pergunta cai no Gemini.
+- A aba Tarefas mostra em "Pendentes" também os lembretes já avisados: a tarefa só sai da lista quando é concluída.
+- Sem `httpx` no `.venv`, 18 testes do painel e do cofre são pulados localmente (o CI roda todos). Para rodar tudo: `.venv/bin/python -m pip install httpx`.
 
 ---
 
