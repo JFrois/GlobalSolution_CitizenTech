@@ -26,7 +26,7 @@ Cidadãos encontram informação dispersa, termos difíceis e instruções incom
 1. **Resposta vem da base**, nunca de texto livre do LLM. Isso torna a taxa de acerto mensurável.
 2. **Transparência:** toda resposta traz fonte, data e, quando preciso, aviso para confirmar no site oficial.
 3. **Privacidade por padrão:** coletar o mínimo; senha do cofre só no painel; criptografia antes de armazenar.
-4. **Honestidade sobre limites:** não é canal oficial; criptografia ponta a ponta real só no painel; documentos do cofre passam pelo Gemini (plano pago, com consentimento).
+4. **Honestidade sobre limites:** não é canal oficial; criptografia ponta a ponta real só no painel; documentos do cofre passam pelo Gemini (plano gratuito, com consentimento que avisa dos riscos).
 
 ### A.5 Fora do escopo
 Integração com órgãos públicos, consulta ao site oficial em tempo real (`consultar_site_oficial`, roadmap), classificador de documentos local (roadmap), CNH e CPF na base (ampliação), qualquer pagamento.

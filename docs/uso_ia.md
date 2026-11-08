@@ -12,7 +12,7 @@
 |---|---|---|
 | Claude (chat) | Planejamento | _A confirmar pela equipe_: elaboração da spec e do documento de processo |
 | Claude Code (app desktop) | Desenvolvimento | Leitura do enunciado, documentação de planejamento e arquitetura, esqueletos de documentos; depois, implementação guiada pela spec (uma tarefa por vez) |
-| Google Gemini (API, plano pago) | **Dentro do produto** (Onda 2) | Escolher a ferramenta (function calling) e sugerir o nome de documentos do cofre. A voz **não** usa mais o Gemini (decisão de 07/11: Whisper local). **Não gera** o texto das orientações (spec §1) |
+| Google Gemini (API, plano gratuito) | **Dentro do produto** (Onda 2) | Escolher a ferramenta (function calling) e sugerir o nome de documentos do cofre. A voz **não** usa mais o Gemini (decisão de 07/11: Whisper local). **Não gera** o texto das orientações (spec §1) |
 
 <!-- Acrescentar outras ferramentas se forem usadas (ex.: revisão de texto, geração de testes). -->
 
@@ -127,4 +127,4 @@ _A preencher_
 
 - A IA pode produzir texto convincente e errado. Por isso, nenhum conteúdo de orientação é aceito sem conferência na fonte oficial.
 - Respostas de IA mudam entre execuções. Por isso, a resposta ao cidadão é determinística (vem da base) e o LLM só escolhe a ferramenta.
-- No produto, documentos do cofre passam pelo Gemini **com consentimento do usuário** e em plano pago (spec §12). Logs de abuso podem ser mantidos por tempo limitado pelo Google.
+- No produto, documentos do cofre passam pelo Gemini **com consentimento do usuário** e em plano gratuito (spec §12): o Google pode usar o conteúdo para melhorar produtos e permitir revisão humana, e o aviso de consentimento diz isso. Demonstração e testes usam só documentos fictícios.

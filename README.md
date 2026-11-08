@@ -78,14 +78,12 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 3. **Onda 2, teste real:** no Telegram real (com documentos fictícios): foto/PDF, cofre pelo chat, resumo da manhã, Mini App (incluindo a aba Tarefas) e o botão "Sim, apagar tudo". O lembrete pelo chat já foi testado (08/11). `/painel` precisa de `PAINEL_URL` com https.
 4. **Infraestrutura:** VM, DuckDNS/Caddy e deploy automático (nunca testados; o deploy só liga com `DEPLOY_ATIVO=true`); `ffmpeg` e Whisper na VM.
 5. **Segurança:** `cryptography` atualizada para 50.0.2 em 08/11 (fecha os 6 alertas do Dependabot). Para atualizar um ambiente já criado: `.venv/bin/python -m pip install cryptography==50.0.2` (não use `pip install -r requirements.txt` fora do `.venv` nem antes do passo do Whisper, ver §6). Antes da VM, gerar **novo** token do bot e **nova** chave do Gemini (os de teste foram compartilhados fora do `.env`) e conferir o histórico do Git (busca feita em 08/11 não achou tokens).
-6. **Decisões EM ABERTO:** feeds RSS por tema, fuso por usuário (hoje todos em America/Sao_Paulo), armazenamento definitivo (hoje SQLite; Supabase não foi adotado), faturamento do Gemini.
+6. **Decisões EM ABERTO:** feeds RSS por tema, fuso por usuário (hoje todos em America/Sao_Paulo), armazenamento definitivo (hoje SQLite; Supabase não foi adotado). Gemini no plano gratuito (decidido em 08/11; ver spec §12).
 7. **Documentação e entrega:** textos das seções 1, 2, 8, 9 e 10 deste README e "Participação na Competição"; relatório PDF (`docs/relatorio.pdf`); vídeo e `docs/link_video.txt`; `.txt` na FIAP ON.
 8. **Roadmap planejado (opcional, baixa prioridade):** números de contexto da Base dos Dados para o relatório (ver seção 10, "Melhorias e roadmap").
 
 Melhorias conhecidas que não bloqueiam a entrega:
 
-- Respostas da IA podem chegar fora de ordem quando a pergunta cai no Gemini.
-- A aba Tarefas mostra em "Pendentes" também os lembretes já avisados: a tarefa só sai da lista quando é concluída.
 - Sem `httpx` no `.venv`, 18 testes do painel e do cofre são pulados localmente (o CI roda todos). Para rodar tudo: `.venv/bin/python -m pip install httpx`.
 
 ---

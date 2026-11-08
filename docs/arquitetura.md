@@ -36,7 +36,7 @@ flowchart LR
     end
 
     Telegram[[Telegram<br/>Bot API + Mini App]]
-    Gemini[[Google Gemini<br/>plano pago]]
+    Gemini[[Google Gemini<br/>plano gratuito]]
     Storage[[Armazenamento<br/>Supabase ou equivalente<br/>EM ABERTO]]
     RSS[[Feeds RSS<br/>EM ABERTO]]
     Gov[[Portais oficiais<br/>gov.br, TSE, INSS...]]

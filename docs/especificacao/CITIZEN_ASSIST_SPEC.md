@@ -86,7 +86,7 @@ Um `.txt` contendo **apenas** dois links: (1) repositório GitHub **público**; 
 1. **Interface:** Telegram + painel web. O painel abre como **Telegram Mini App** (login pelo `initData` assinado pelo Telegram) e também no **navegador** (link de uso único gerado pelo comando `/painel`).
 2. **Senha do cofre:** criada e digitada **somente no painel web**. **Nunca** no chat do Telegram. O servidor não armazena a senha.
 3. **Cofre:** arquivos **criptografados antes de armazenar**, com chave derivada da senha do usuário. Desbloqueio **temporário**: o servidor mantém a chave só em memória por tempo curto.
-4. **Classificador de documentos:** os documentos do cofre **são enviados ao Gemini** (plano pago, com consentimento no upload) para reconhecer o tipo e sugerir o nome; o usuário confirma. Se a API falhar, usa nome padrão. Classificador local = roadmap.
+4. **Classificador de documentos:** os documentos do cofre **são enviados ao Gemini** (plano **gratuito**, decisão de 08/11, com consentimento no upload que avisa dos riscos do plano) para reconhecer o tipo e sugerir o nome; o usuário confirma. Se a API falhar, usa nome padrão. Classificador local = roadmap.
 5. **Autodestruição:** o bot apaga as mensagens com documentos após **5 minutos** (só mensagens com menos de 48 h).
 6. **Localização:** o usuário informa apenas a **UF**; muda a qualquer hora com `/localizacao` ou no painel.
 7. **Briefing matinal:** tarefas/lembretes do dia + até **3 manchetes por tema** escolhido pelo usuário, vindas de feeds RSS, **rotuladas "não oficial"** e **separadas** da base verificada.
@@ -363,7 +363,7 @@ Dois modelos documentados, comparados nos testes (clareza, consistência, presen
   - **Teste obrigatório de 15 min (EM ABERTO):** apontar o subdomínio, subir o Caddy e ver se o certificado emite. Também **ler os Termos/Privacidade do DuckDNS** (não verificados) e os limites do serviço.
 - **Deploy automático (aprovado):** GitHub Actions em `push` na `main`, `appleboy/ssh-action`, **chave SSH de deploy dedicada**, secrets `HOST`, `USER`, `KEY` no GitHub Secrets; o script na VM faz `git pull` e reinicia o serviço (`systemd`).
 - **Segredos:** o `.env` fica **somente na VM** e **nunca** entra no repositório. O repo é público e contém apenas `.env.example`. Variáveis **(sugestão de nomes)**: `TELEGRAM_BOT_TOKEN`, `GEMINI_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY`, `PAINEL_URL`, `SESSAO_SEGREDO`, `DUCKDNS_TOKEN`.
-- **Gemini:** a chave **deve pertencer a um projeto com faturamento ativo** (plano pago). No plano gratuito os dados podem ser usados para melhoria de produto. Conferir no AI Studio. No plano pago, o Google não usa prompts/arquivos/respostas para treinar produtos, mas **mantém logs por período limitado para monitoramento de abuso** (fontes secundárias citam ~55 dias) e pode armazenar em qualquer país. O usuário é avisado antes do primeiro upload.
+- **Gemini (decisão de 08/11: plano gratuito, sem faturamento):** o projeto usa a chave do plano gratuito. Nesse plano o Google **pode usar prompts e arquivos para melhorar seus produtos, pode permitir revisão humana** e pode processar em qualquer país. Por isso o aviso de consentimento do primeiro upload (`documentos.AVISO_CONSENTIMENTO`) diz isso claramente, o usuário pode escolher um nome próprio sem enviar o arquivo, e **demonstração, vídeo e testes usam só documentos fictícios**. Documentos reais no cofre com classificação pelo Gemini ficam como risco declarado no README e no relatório; migrar para plano pago (ou classificador local) é roadmap.
 - Rodar como serviço `systemd` com reinício automático; logs **sem** conteúdo de documentos nem tokens.
 
 ---
@@ -459,7 +459,7 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 - ~~Responsáveis pelas 3 frentes~~ — **resolvido em 07/11** (ver cabeçalho). Suplentes: a definir.
 - **Quem mantém a VM no ar:** a definir; Juan assume em último caso.
 - **Teste de 15 min do DuckDNS + Caddy** (HTTP-01 com subdomínio DuckDNS) e leitura dos Termos/Privacidade do DuckDNS; se falhar → Cloudflare quick tunnel ou máquina de um integrante.
-- **Confirmar faturamento ativo** do projeto da chave do Gemini no AI Studio.
+- ~~Confirmar faturamento do Gemini~~ — **resolvido em 08/11:** o projeto usa o plano gratuito (ver §12); o aviso de consentimento e o relatório declaram o risco.
 - **Revisar as 17 orientações** (rascunho feito em 07/11 a partir das páginas oficiais, falta conferência humana) — em especial DOC-001 (UFs da equipe), DOC-004 (reconferir suspensões do TSE), DIR-006 (conflito de fontes) e DIR-004/DIR-005 (limites).
 - Armazenamento: confirmar Supabase ou equivalente.
 - Feeds RSS por tema e fuso horário padrão.

@@ -43,7 +43,7 @@ class TestPuras(unittest.TestCase):
         self.assertFalse(p.esta_pedindo_nome(1))
 
     def test_aviso_de_consentimento_diz_a_verdade(self):
-        for trecho in ("Gemini", "treinar", "abuso", "outros países"):
+        for trecho in ("Gemini", "plano gratuito", "melhorar", "revisem", "outros países"):
             self.assertIn(trecho, d.AVISO_CONSENTIMENTO)
         self.assertIn("não é de ponta a ponta" if False else "ponta a ponta", d.AVISO_ENVIO)
 
