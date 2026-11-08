@@ -59,6 +59,7 @@ def iniciar(caminho_base=None):
         return 1
     try:
         import asyncio
+        import html
         import logging
         import aiogram  # noqa: F401
         import fastapi  # noqa: F401
@@ -83,6 +84,7 @@ def iniciar(caminho_base=None):
     import armazenamento
     import base as modulo_base
     import ponte
+    import agendador
     import cofre
     import painel
     import telegram_bot
@@ -109,6 +111,9 @@ def iniciar(caminho_base=None):
                                        for c, d in telegram_bot.COMANDOS])
         except Exception as erro:
             logging.getLogger("citizen.bot").warning("set_my_commands falhou (%s)", type(erro).__name__)
+        # Lembretes e autodestruição (src/agendador.py): o primeiro tick já cumpre o que venceu.
+        agendador.iniciar(armazem, lambda uid, texto: bot.send_message(uid, html.escape(texto)),
+                          lambda chat, msg: bot.delete_message(chat, msg))
         # Painel só em localhost: o Caddy faz o HTTPS na frente (spec §12).
         servidor_web = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=porta,
                                                      log_level="warning"))

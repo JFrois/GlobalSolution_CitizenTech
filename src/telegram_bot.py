@@ -24,6 +24,7 @@ from aiogram.types import (CallbackQuery, InlineKeyboardButton, InlineKeyboardMa
 import armazenamento
 import ponte
 import roteador
+import tarefas
 import transcricao
 
 log = logging.getLogger("citizen.bot")
@@ -195,7 +196,7 @@ def criar_bot(config, base, armazem, links):
         if ctx:
             mensagem, dados, user_id = ctx
             if dados == "apagar:sim":
-                armazem.apagar_usuario(user_id)  # TODO: apagar também o cofre (Onda 2)
+                armazem.apagar_usuario(user_id)  # inclui cofre, tarefas e exclusões agendadas
                 await mensagem.answer("Pronto. Seus dados foram apagados.")
             else:
                 await mensagem.answer("Tudo certo, nada foi apagado.")
@@ -262,7 +263,11 @@ def criar_bot(config, base, armazem, links):
                     log.warning("Gemini sem resposta útil (%s); usando regras", type(erro).__name__)
                     chamada = None
             chamada = roteador.reconciliar(chamada, texto)
-            resultado = roteador.executar(chamada, base, armazem.obter_uf(user_id))
+            if chamada["ferramenta"] == "gerenciar_tarefas":
+                # Tarefas e lembretes: o texto de "quando" é lido por regras, sem IA (src/tarefas.py).
+                resultado = tarefas.executar(chamada["args"], armazem, user_id)
+            else:
+                resultado = roteador.executar(chamada, base, armazem.obter_uf(user_id))
             await responder(m, resultado, user_id)
         except Exception:
             log.exception("falha ao responder")  # sem o texto da mensagem
