@@ -310,7 +310,8 @@ def executar(chamada, base, uf=None):
     `opcoes` é a lista de ids de assuntos que a interface pode oferecer como botões.
     """
     if chamada["ferramenta"] != "buscar_orientacao":
-        # Cofre, tarefas e briefing entram na próxima rodada (roadmap).
+        # Cofre, tarefas e briefing são tratados pelo telegram_bot antes de chegar aqui;
+        # esta mensagem é só reserva para quem chamar executar() com outra ferramenta.
         texto = MSG_EM_BREVE_POR_FERRAMENTA.get(chamada["ferramenta"], MSG_EM_BREVE)
         return {"texto": texto, "opcoes": [], "decisao": "EM_BREVE"}
 
