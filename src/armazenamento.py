@@ -37,6 +37,16 @@ class ArmazenamentoSQLite:
             "CREATE TABLE IF NOT EXISTS cofre_docs ("
             "id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, "
             "nome BLOB, conteudo BLOB)")
+        # Tarefas e lembretes (spec §11). `quando` e `apagar_em` são segundos desde 1970 (UTC).
+        self._con.execute(
+            "CREATE TABLE IF NOT EXISTS tarefas ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, titulo TEXT NOT NULL, "
+            "quando INTEGER, concluida INTEGER NOT NULL DEFAULT 0, avisada INTEGER NOT NULL DEFAULT 0)")
+        # Mensagens com documento a apagar do chat (autodestruição, spec §11).
+        self._con.execute(
+            "CREATE TABLE IF NOT EXISTS exclusoes ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, chat_id INTEGER NOT NULL, "
+            "message_id INTEGER NOT NULL, apagar_em INTEGER NOT NULL)")
         self._con.commit()
 
     def _garantir(self, user_id):
@@ -115,9 +125,74 @@ class ArmazenamentoSQLite:
             self._con.commit()
             return cur.rowcount > 0
 
+    # --- tarefas e lembretes ---
+
+    def criar_tarefa(self, user_id, titulo, quando=None):
+        with self._lock:
+            cur = self._con.execute("INSERT INTO tarefas (user_id, titulo, quando) VALUES (?, ?, ?)",
+                                    (int(user_id), titulo, None if quando is None else int(quando)))
+            self._con.commit()
+            return cur.lastrowid
+
+    def listar_tarefas(self, user_id):
+        """Pendentes do usuário: [(id, titulo, quando)], as com data primeiro."""
+        with self._lock:
+            return self._con.execute(
+                "SELECT id, titulo, quando FROM tarefas WHERE user_id = ? AND concluida = 0 "
+                "ORDER BY quando IS NULL, quando, id", (int(user_id),)).fetchall()
+
+    def concluir_tarefa(self, user_id, tarefa_id):
+        with self._lock:
+            cur = self._con.execute(
+                "UPDATE tarefas SET concluida = 1 WHERE id = ? AND user_id = ?",
+                (int(tarefa_id), int(user_id)))
+            self._con.commit()
+            return cur.rowcount > 0
+
+    def tarefas_a_avisar(self, agora):
+        """Lembretes vencidos ainda não avisados: [(id, user_id, titulo)]."""
+        with self._lock:
+            return self._con.execute(
+                "SELECT id, user_id, titulo FROM tarefas WHERE concluida = 0 AND avisada = 0 "
+                "AND quando IS NOT NULL AND quando <= ?", (int(agora),)).fetchall()
+
+    def marcar_avisada(self, tarefa_id):
+        with self._lock:
+            self._con.execute("UPDATE tarefas SET avisada = 1 WHERE id = ?", (int(tarefa_id),))
+            self._con.commit()
+
+    def tarefas_do_dia(self, user_id, inicio, fim):
+        """Pendentes com data entre `inicio` e `fim` (para o briefing)."""
+        with self._lock:
+            return self._con.execute(
+                "SELECT id, titulo, quando FROM tarefas WHERE user_id = ? AND concluida = 0 "
+                "AND quando >= ? AND quando < ? ORDER BY quando", (int(user_id), int(inicio), int(fim))
+            ).fetchall()
+
+    # --- autodestruição de mensagens ---
+
+    def agendar_exclusao(self, user_id, chat_id, message_id, apagar_em):
+        with self._lock:
+            self._con.execute(
+                "INSERT INTO exclusoes (user_id, chat_id, message_id, apagar_em) VALUES (?, ?, ?, ?)",
+                (int(user_id), int(chat_id), int(message_id), int(apagar_em)))
+            self._con.commit()
+
+    def exclusoes_vencidas(self, agora):
+        """[(id, chat_id, message_id)] que já passaram da hora."""
+        with self._lock:
+            return self._con.execute(
+                "SELECT id, chat_id, message_id FROM exclusoes WHERE apagar_em <= ?",
+                (int(agora),)).fetchall()
+
+    def remover_exclusao(self, exclusao_id):
+        with self._lock:
+            self._con.execute("DELETE FROM exclusoes WHERE id = ?", (int(exclusao_id),))
+            self._con.commit()
+
     def apagar_usuario(self, user_id):
         """Remove tudo do usuário (/apagar_meus_dados), inclusive o cofre."""
         with self._lock:
-            for tabela in ("cofre_docs", "cofre_config", "usuarios"):
+            for tabela in ("cofre_docs", "cofre_config", "tarefas", "exclusoes", "usuarios"):
                 self._con.execute("DELETE FROM %s WHERE user_id = ?" % tabela, (int(user_id),))
             self._con.commit()

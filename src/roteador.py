@@ -124,6 +124,13 @@ ESQUEMAS = {
 }
 TAMANHO_MAX_TEXTO = 300
 
+# Mensagem por função ainda sem implementação (diz QUAL função, em vez de uma frase genérica).
+MSG_EM_BREVE_POR_FERRAMENTA = {
+    "cofre_documento": "O cofre de documentos ainda não está disponível no bot nesta versão. "
+                       "Você já pode criá-lo no painel (/painel).",
+    "briefing_matinal": "O resumo da manhã ainda não está disponível nesta versão.",
+    "gerenciar_tarefas": "As tarefas e lembretes não estão disponíveis agora.",
+}
 MSG_EM_BREVE = ("Essa função ainda não está disponível nesta versão. "
                 "Por enquanto posso orientar sobre documentos, serviços e direitos.")
 
@@ -164,7 +171,12 @@ def fallback_por_regras(texto):
     palavras = " ".join(ponte.tokenizar(texto))
     if re.search(r"\b(cofre|guardar|guarde|me envie|meus documentos)\b", palavras):
         return {"ferramenta": "cofre_documento", "args": {"acao": "listar"}}
-    if re.search(r"\b(lembrete|lembre|tarefa|tarefas)\b", palavras):
+    if re.search(r"\b(lembrete|lembretes|lembre|tarefa|tarefas)\b", palavras):
+        resto = texto.strip()[:TAMANHO_MAX_TEXTO]
+        if re.search(r"\b(conclui|concluir|concluida|concluido|feita|feito)\b", palavras):
+            return {"ferramenta": "gerenciar_tarefas", "args": {"acao": "concluir", "titulo": resto}}
+        if re.search(r"\b(lembre|criar|nova|novo|anotar)\b", palavras):
+            return {"ferramenta": "gerenciar_tarefas", "args": {"acao": "criar", "titulo": resto}}
         return {"ferramenta": "gerenciar_tarefas", "args": {"acao": "listar"}}
     if re.search(r"\b(briefing|manchetes|noticias|resumo do dia)\b", palavras):
         return {"ferramenta": "briefing_matinal", "args": {"acao": "agora"}}
@@ -275,7 +287,8 @@ def executar(chamada, base, uf=None):
     """
     if chamada["ferramenta"] != "buscar_orientacao":
         # Cofre, tarefas e briefing entram na próxima rodada (roadmap).
-        return {"texto": MSG_EM_BREVE, "opcoes": [], "decisao": "EM_BREVE"}
+        texto = MSG_EM_BREVE_POR_FERRAMENTA.get(chamada["ferramenta"], MSG_EM_BREVE)
+        return {"texto": texto, "opcoes": [], "decisao": "EM_BREVE"}
 
     ponte.preparar(base)
     pergunta = chamada["args"]["pergunta"]
