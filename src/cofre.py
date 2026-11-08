@@ -85,14 +85,6 @@ class Cofre:
             return None
         return cripto.decifrar(chave, linha[0]).decode("utf-8"), cripto.decifrar(chave, linha[1])
 
-    def buscar_por_nome(self, user_id, trecho):
-        """Primeiro documento cujo nome contém `trecho` (sem acento/caixa não tratado aqui)."""
-        trecho = trecho.lower()
-        for doc_id, nome in self.listar(user_id):
-            if trecho in nome.lower():
-                return doc_id, nome
-        return None
-
     def apagar(self, user_id, doc_id):
         """Apaga de verdade (arquivo e metadados). Não exige senha desbloqueada."""
         return self._arm.apagar_doc(user_id, doc_id)

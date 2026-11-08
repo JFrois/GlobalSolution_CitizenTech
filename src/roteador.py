@@ -126,8 +126,6 @@ TAMANHO_MAX_TEXTO = 300
 
 # Mensagem por função ainda sem implementação (diz QUAL função, em vez de uma frase genérica).
 MSG_EM_BREVE_POR_FERRAMENTA = {
-    "cofre_documento": "O cofre de documentos ainda não está disponível no bot nesta versão. "
-                       "Você já pode criá-lo no painel (/painel).",
     "gerenciar_tarefas": "As tarefas e lembretes não estão disponíveis agora.",
 }
 MSG_EM_BREVE = ("Essa função ainda não está disponível nesta versão. "
@@ -168,7 +166,20 @@ def validar_chamada(nome, args):
 def fallback_por_regras(texto):
     """Escolha determinística por palavras-chave simples. Padrão: buscar."""
     palavras = " ".join(ponte.tokenizar(texto))
-    if re.search(r"\b(cofre|guardar|guarde|me envie|meus documentos)\b", palavras):
+    # "me" e "meu" são stopwords e somem em `palavras`: o pedido de envio usa o texto cru.
+    cru = " ".join(re.findall(r"\w+", texto.lower()))
+    if re.search(r"\b(guardar|guarde|salvar|salve)\b", palavras):
+        return {"ferramenta": "cofre_documento", "args": {"acao": "enviar"}}
+    if re.search(r"\b(briefing|manchetes|noticias|resumo do dia)\b", palavras):
+        return {"ferramenta": "briefing_matinal", "args": {"acao": "agora"}}
+    if re.search(r"\bme (envie|mande|mostre|manda)\b", cru):
+        nome = " ".join(p for p in palavras.split()
+                        if p not in ("envie", "mande", "mostre", "manda", "cofre", "documento", "documentos"))
+        args = {"acao": "abrir"}
+        if nome:
+            args["nome"] = nome[:TAMANHO_MAX_TEXTO]
+        return {"ferramenta": "cofre_documento", "args": args}
+    if re.search(r"\b(cofre|meus documentos)\b", palavras) or "meus documentos" in cru:
         return {"ferramenta": "cofre_documento", "args": {"acao": "listar"}}
     if re.search(r"\b(lembrete|lembretes|lembre|tarefa|tarefas)\b", palavras):
         resto = texto.strip()[:TAMANHO_MAX_TEXTO]
@@ -177,8 +188,6 @@ def fallback_por_regras(texto):
         if re.search(r"\b(lembre|criar|nova|novo|anotar)\b", palavras):
             return {"ferramenta": "gerenciar_tarefas", "args": {"acao": "criar", "titulo": resto}}
         return {"ferramenta": "gerenciar_tarefas", "args": {"acao": "listar"}}
-    if re.search(r"\b(briefing|manchetes|noticias|resumo do dia)\b", palavras):
-        return {"ferramenta": "briefing_matinal", "args": {"acao": "agora"}}
     return {"ferramenta": "buscar_orientacao", "args": {"pergunta": texto.strip()[:TAMANHO_MAX_TEXTO]}}
 
 

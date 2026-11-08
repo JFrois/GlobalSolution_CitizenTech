@@ -46,6 +46,8 @@ class ArmazenamentoSQLite:
         self._con.execute(
             "CREATE TABLE IF NOT EXISTS briefing_config ("
             "user_id INTEGER PRIMARY KEY, hora TEXT NOT NULL, ultimo_envio TEXT)")
+        # Consentimento para enviar documentos ao Gemini (spec §10.3): pedido uma vez por usuário.
+        self._con.execute("CREATE TABLE IF NOT EXISTS consentimento_gemini (user_id INTEGER PRIMARY KEY)")
         # Mensagens com documento a apagar do chat (autodestruição, spec §11).
         self._con.execute(
             "CREATE TABLE IF NOT EXISTS exclusoes ("
@@ -202,6 +204,18 @@ class ArmazenamentoSQLite:
                               (hoje, int(user_id)))
             self._con.commit()
 
+    # --- consentimento do envio ao Gemini ---
+
+    def registrar_consentimento(self, user_id):
+        with self._lock:
+            self._con.execute("INSERT OR IGNORE INTO consentimento_gemini VALUES (?)", (int(user_id),))
+            self._con.commit()
+
+    def tem_consentimento(self, user_id):
+        with self._lock:
+            return self._con.execute("SELECT 1 FROM consentimento_gemini WHERE user_id = ?",
+                                     (int(user_id),)).fetchone() is not None
+
     # --- autodestruição de mensagens ---
 
     def agendar_exclusao(self, user_id, chat_id, message_id, apagar_em):
@@ -226,6 +240,6 @@ class ArmazenamentoSQLite:
     def apagar_usuario(self, user_id):
         """Remove tudo do usuário (/apagar_meus_dados), inclusive o cofre."""
         with self._lock:
-            for tabela in ("cofre_docs", "cofre_config", "tarefas", "exclusoes", "briefing_config", "usuarios"):
+            for tabela in ("cofre_docs", "cofre_config", "tarefas", "exclusoes", "briefing_config", "consentimento_gemini", "usuarios"):
                 self._con.execute("DELETE FROM %s WHERE user_id = ?" % tabela, (int(user_id),))
             self._con.commit()

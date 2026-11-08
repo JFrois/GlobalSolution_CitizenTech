@@ -84,12 +84,6 @@ class TestCofre(unittest.TestCase):
         self.assertFalse(self.cofre.existe(1))
         self.assertEqual(self.arm.listar_docs(1), [])
 
-    def test_buscar_por_nome(self):
-        self.cofre.criar(1, SENHA)
-        i = self.cofre.guardar(1, "RG-ficticio", b"x")
-        self.assertEqual(self.cofre.buscar_por_nome(1, "rg"), (i, "RG-ficticio"))
-        self.assertIsNone(self.cofre.buscar_por_nome(1, "cnh"))
-
 
 if __name__ == "__main__":
     unittest.main()
