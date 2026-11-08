@@ -161,6 +161,10 @@ def validar_config(corpo, temas_validos):
     return (uf.upper() if uf else None), temas, hora
 
 
+MAX_TITULO_TAREFA = 200
+MAX_QUANDO_TAREFA = 80
+
+
 def pergunta_do_corpo(corpo):
     """Extrai a pergunta do JSON recebido; qualquer formato inesperado vira texto vazio."""
     if isinstance(corpo, dict) and isinstance(corpo.get("pergunta"), str):
@@ -212,6 +216,7 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
     from fastapi.staticfiles import StaticFiles
     import cofre as modulo_cofre
     import criptografia
+    import tarefas
 
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     # CORS restrito ao domínio do painel (spec §10.4).
@@ -228,6 +233,9 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
         resp.headers["X-Content-Type-Options"] = "nosniff"
         resp.headers["X-Frame-Options"] = "SAMEORIGIN"
         resp.headers["Referrer-Policy"] = "no-referrer"
+        if request.url.path.startswith("/static/"):
+            # Revalida sempre (ETag): depois de um deploy ninguém fica com CSS/JS velho.
+            resp.headers["Cache-Control"] = "no-cache"
         resp.headers["Content-Security-Policy"] = ("default-src 'self'; img-src 'self' blob: data:; "
             "script-src 'self' https://telegram.org; "
             "style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; "
@@ -380,6 +388,42 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
         if not cofre.apagar(uid, doc_id):
             raise HTTPException(status_code=404, detail="Documento não encontrado.")
         return {"ok": True}
+
+    # ---- Tarefas e lembretes (spec §11): o mesmo núcleo do chat, em formato de dados ----
+    def exigir_armazem():
+        if armazem is None:
+            raise HTTPException(status_code=503, detail="As tarefas não estão disponíveis agora.")
+
+    @app.get("/api/tarefas")
+    def tarefas_listar(x_telegram_init_data: str = Header(default=""), sessao: str = Cookie(default="")):
+        uid = usuario(x_telegram_init_data, sessao)
+        exigir_armazem()
+        return {"tarefas": tarefas.lista_para_painel(armazem, uid)}
+
+    @app.post("/api/tarefas")
+    async def tarefas_criar(request: Request, x_telegram_init_data: str = Header(default=""),
+                            sessao: str = Cookie(default="")):
+        uid = usuario(x_telegram_init_data, sessao)
+        exigir_armazem()
+        if not limitador.permitir(uid):
+            raise HTTPException(status_code=429, detail="Muitos pedidos seguidos. Aguarde um instante.")
+        corpo = await json_ou_400(request)
+        titulo, quando = campo_texto(corpo, "titulo"), campo_texto(corpo, "quando")
+        if len(titulo) > MAX_TITULO_TAREFA or len(quando) > MAX_QUANDO_TAREFA:
+            raise HTTPException(status_code=400, detail="Texto muito longo. Escreva uma versão mais curta.")
+        criou, mensagem = tarefas.tentar_criar(titulo, quando, armazem, uid)
+        if not criou:
+            raise HTTPException(status_code=400, detail=mensagem)
+        return {"ok": True, "mensagem": mensagem, "tarefas": tarefas.lista_para_painel(armazem, uid)}
+
+    @app.post("/api/tarefas/{tarefa_id}/concluir")
+    def tarefas_concluir(tarefa_id: int, x_telegram_init_data: str = Header(default=""),
+                         sessao: str = Cookie(default="")):
+        uid = usuario(x_telegram_init_data, sessao)
+        exigir_armazem()
+        if not armazem.concluir_tarefa(uid, tarefa_id):
+            raise HTTPException(status_code=404, detail="Tarefa não encontrada.")
+        return {"ok": True, "tarefas": tarefas.lista_para_painel(armazem, uid)}
 
     # ---- Front estático (HTML/JS/CSS em painel/) ----
     if Path(pasta_front).is_dir():
