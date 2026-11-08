@@ -227,12 +227,17 @@ async function concluirTarefa(tarefa, linha) {
 
 $("form-tarefa").addEventListener("submit", async (ev) => {
   ev.preventDefault(); avisar(""); $("tarefa-ok").hidden = true;
+  // Botão desligado durante o envio: evita tarefa duplicada com dois toques seguidos.
+  const botao = ev.currentTarget.querySelector("button[type=submit]");
+  if (botao.disabled) return;
+  botao.disabled = true;
   try {
     const d = await json(await api("POST", "/api/tarefas", { titulo: $("tarefa-titulo").value, quando: $("tarefa-quando").value }));
     $("tarefa-titulo").value = ""; $("tarefa-quando").value = "";
     $("tarefa-ok").textContent = d.mensagem; $("tarefa-ok").hidden = false;
     desenharTarefas(d.tarefas);
   } catch (e) { avisar(e.message); }
+  finally { botao.disabled = false; }
 });
 
 // ---- Estado, cofre e ajustes ----
