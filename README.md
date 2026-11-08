@@ -32,16 +32,18 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 
 > Global Solution 2026.2 · Desafio CitizenTech
 
-## Estado do projeto (atualizado em 08/11/2026, `main` até o PR #31)
+## Estado do projeto (atualizado em 08/11/2026, `main` até o PR #38)
 
-**Concluído e testado (Onda 1, núcleo avaliado):**
+> Resumo para quem está chegando agora. O detalhe de quem faz o quê está em [`docs/planejamento.md`](docs/planejamento.md) (seção "Status e onde parou"). Prazos: **código congelado em 13/11**, **entrega em 19/11**.
 
-- Base com 17 registros em 3 temas, validada por `src/base.py` (arquivo ausente, vazio, JSON inválido, campos, ids duplicados e relacionados inexistentes).
-- Busca por palavras-chave com pontuação, sinônimos, índice invertido e busca linear (mesmo resultado), regra de decisão com 4 saídas, grafo de temas e Dijkstra (`src/busca.py`). **Novo:** quando nada casa, a busca tenta corrigir erro de digitação (spec §7.3, item 5b).
+**Concluído e testado (Onda 1, núcleo avaliado pela GS):**
+
+- Base com 17 registros em 3 temas, validada por `src/base.py` (arquivo ausente, vazio, JSON inválido, campos, ids duplicados e relacionados inexistentes). `--validar-entrega` passa.
+- Busca por palavras-chave com pontuação, sinônimos, índice invertido e busca linear (mesmo resultado), regra de decisão com 4 saídas, correção de erro de digitação quando nada casa, grafo de temas e Dijkstra (`src/busca.py`).
 - Modelos de resposta A e B, aviso de limitação e mensagens de entrada inválida (`src/respostas.py`).
 - Terminal completo (`python src/sistema.py`), com cores e texto puro de reserva, `--validar-entrega` e `--avaliar`.
-- Perguntas de teste da equipe congeladas antes das palavras-chave: **19/19 (100%)**; resultados em `testes/resultados.csv` e `testes/comparacao_modelos.csv`.
-- 214 testes automatizados (`python -m unittest discover -s testes -t .`). O CI roda no Python 3.9; os testes de FastAPI, aiogram e cryptography só rodam com o ambiente do servidor (Python 3.11–3.13).
+- Perguntas de teste da equipe congeladas antes das palavras-chave: **19/19 (100%)**; índice invertido cerca de 100 vezes mais rápido que a busca linear. Resultados em `testes/resultados.csv` e `testes/comparacao_modelos.csv`.
+- **231 testes automatizados** (`python -m unittest discover -s testes -t .`), todos passando. O CI roda no Python 3.9; os testes de FastAPI, aiogram e cryptography só rodam com o ambiente do servidor (precisa também de `pip install httpx`).
 
 **Concluído e testado no Telegram real (Onda 2, camada de produto), em 07/11:**
 
@@ -53,26 +55,27 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 
 - **Criptografia e cofre** (`src/criptografia.py`, `src/cofre.py`): PBKDF2-SHA256 (600 mil iterações, salt por usuário), AES-256-GCM, verificador de senha, chave só na memória com validade de 10 min; nome e conteúdo cifrados; tudo filtrado por `user_id`.
 - **Classificador** (`src/classificador.py`): o Gemini escolhe um tipo de uma lista fechada; o nome é montado pelo código, nunca copiado do texto do modelo; falha vira `documento-AAAAMMDD`.
-- **Painel** (`painel/` + rotas em `src/painel.py`): abas Perguntar (cena da verificação), Tarefas (anotar, ver pendentes e concluir; o aviso chega pelo bot), Cofre (criar, desbloquear, ver, apagar em dois passos) e Ajustes (UF, temas e horário do resumo). Conferido no navegador local; Mini App no Telegram real não.
-- **Tarefas e agendador** (`src/tarefas.py`, `src/agendador.py`): lembretes com data lida por regras (fuso de Brasília) e autodestruição das mensagens com documento em 5 min. O estado fica no SQLite e o APScheduler só dispara o tick; assim, ao subir, o servidor cumpre o que venceu.
+- **Painel** (`painel/` + rotas em `src/painel.py`): abas Perguntar (cena da verificação), Tarefas (anotar, ver pendentes e concluir; o aviso chega pelo bot; botão protegido contra envio duplo), Cofre (criar, desbloquear, ver, apagar em dois passos) e Ajustes (UF, temas e horário do resumo). Conferido no navegador local; Mini App no Telegram real não.
+- **Tarefas e agendador** (`src/tarefas.py`, `src/agendador.py`): lembretes com data lida por regras (fuso de Brasília) e autodestruição das mensagens com documento em 5 min. O estado fica no SQLite e o APScheduler só dispara o tick; assim, ao subir, o servidor cumpre o que venceu. Chat e painel usam as mesmas regras (`tarefas.tentar_criar`).
 - **Resumo da manhã** (`src/briefing.py`, `data/feeds.json`): tarefas do dia + até 3 manchetes por tema, rotuladas "não oficial". **Os feeds por tema estão vazios (EM ABERTO): a equipe preenche `data/feeds.json`.**
 - **Foto/PDF e cofre no chat** (`src/documentos.py`, `src/telegram_bot.py`): cofre fechado não guarda nada (botão para o painel); consentimento do Gemini; nome confirmado ou editado; "me envie meu RG" envia e apaga em 5 min.
 
 **Rascunho, precisa de revisão humana:**
 
-- As 17 orientações de `data/base.json` foram redigidas pela IA a partir das páginas oficiais lidas em 07/11/2026. Cada orientação precisa ser conferida por um integrante (atividade E2 do planejamento). Pontos de atenção em `docs/uso_ia.md`.
+- As 17 orientações de `data/base.json` foram redigidas pela IA a partir das páginas oficiais lidas em 07/11/2026 (todas com `data_verificacao` 2026-11-07). Cada orientação precisa ser conferida por um integrante (atividade E2 do planejamento). Pontos de atenção em `docs/uso_ia.md`.
 
-**Pendente (quem faz o quê está em [`docs/planejamento.md`](docs/planejamento.md), seção "Onde parou"):**
+**Pendente, por prioridade:**
 
-- Revisão humana das 17 orientações e links por estado da 2ª via da CIN (`referencias_estaduais` de DOC-001; hoje todos os estados caem no link `gov.br`).
-- Perguntas do público (≥ 10, anônimas) e a taxa de acerto delas **antes** de qualquer ajuste da busca; teste de usabilidade com pessoa de fora (`testes/usabilidade.md`); nota de clareza A × B. Só depois se escolhe o formato padrão (hoje o passo a passo é provisório).
-- **Teste no Telegram real** (com documentos fictícios) de: foto/PDF, cofre pelo chat, lembrete, resumo da manhã e Mini App; `/painel` precisa de `PAINEL_URL` com https.
-- VM, DuckDNS/Caddy e deploy automático (nunca testados); `ffmpeg` e Whisper na VM.
-- Feeds RSS por tema em `data/feeds.json` e fuso por usuário (hoje todos em America/Sao_Paulo).
-- Botão "Sim, apagar tudo" (agora apaga também cofre, tarefas e exclusões) não foi exercitado no Telegram real.
-- Melhorias conhecidas: respostas da IA chegam fora de ordem quando a pergunta cai no Gemini.
-- Textos das seções 1, 2, 8, 9 e 10 deste README, relatório PDF (`docs/relatorio.pdf`), vídeo e `docs/link_video.txt`.
-- Antes de colocar na VM: gerar **novo** token do bot e **nova** chave do Gemini (os de teste foram compartilhados fora do `.env`) e conferir o histórico do Git.
+1. **Antes do congelamento (13/11), Onda 1:** revisão humana das 17 orientações (E2) e links por estado da 2ª via da CIN (`referencias_estaduais` de DOC-001 está vazio; todos os estados caem no `gov.br`); conferir `python src/sistema.py` numa máquina limpa e no Windows.
+2. **Indicadores (até 15/11):** perguntas do público (≥ 10, anônimas; hoje só existe o conjunto `equipe`) medidas **antes** de ajustar a busca; teste de usabilidade com pessoa de fora (`testes/usabilidade.md` está vazio); nota de clareza A × B (coluna `clareza_1a5` vazia). Só depois se escolhe o formato padrão (hoje o passo a passo é provisório).
+3. **Onda 2, teste real:** no Telegram real (com documentos fictícios): foto/PDF, cofre pelo chat, lembrete, resumo da manhã, Mini App (incluindo a aba Tarefas) e o botão "Sim, apagar tudo". `/painel` precisa de `PAINEL_URL` com https.
+4. **Infraestrutura:** VM, DuckDNS/Caddy e deploy automático (nunca testados; o deploy só liga com `DEPLOY_ATIVO=true`); `ffmpeg` e Whisper na VM.
+5. **Segurança:** atualizar `cryptography` de 43.0.1 para **49.0.0 ou mais** no `requirements.txt` (5 alertas do Dependabot, 3 altos) e rodar os testes de novo; antes da VM, gerar **novo** token do bot e **nova** chave do Gemini (os de teste foram compartilhados fora do `.env`) e conferir o histórico do Git (busca feita em 08/11 não achou tokens).
+6. **Decisões EM ABERTO:** feeds RSS por tema, fuso por usuário (hoje todos em America/Sao_Paulo), armazenamento definitivo (hoje SQLite; Supabase não foi adotado), faturamento do Gemini.
+7. **Documentação e entrega:** textos das seções 1, 2, 8, 9 e 10 deste README e "Participação na Competição"; relatório PDF (`docs/relatorio.pdf`); vídeo e `docs/link_video.txt`; `.txt` na FIAP ON.
+8. **Roadmap planejado (opcional, baixa prioridade):** números de contexto da Base dos Dados para o relatório (ver seção 10, "Melhorias e roadmap").
+
+Melhoria conhecida que não bloqueia a entrega: respostas da IA podem chegar fora de ordem quando a pergunta cai no Gemini.
 
 ---
 
@@ -471,7 +474,11 @@ _A preencher_
 
 ### Melhorias e roadmap
 
-_A preencher_
+<!-- Completar com o que virar roadmap na regra de corte de 13/11. -->
+
+- **Números de contexto para o relatório (planejado, opcional, baixa prioridade):** consultar uma única vez na [Base dos Dados](https://basedosdados.org) alguns números públicos que justifiquem o problema e o impacto social (ex.: famílias no CadÚnico, eleitores por UF). O resultado vai só para o relatório, com fonte e data citadas; não entra no código, porque a Base dos Dados exige `pip install`, BigQuery e internet (spec §5.3) e traz estatísticas, não orientações passo a passo.
+- Ferramenta `consultar_site_oficial`, classificador de documentos local, CNH e CPF na base, fuso por usuário (spec §3 e §11).
+
 
 ---
 

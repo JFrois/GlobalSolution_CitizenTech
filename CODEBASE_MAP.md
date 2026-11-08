@@ -9,7 +9,7 @@ Mapa curto do repositório (atualizar ao criar ou mover módulos).
 | `src/avaliacao.py` | Taxa de acerto, tempos, escala, rubrica A × B, CSVs | Pronto |
 | `data/base.json` | 17 registros, 3 temas, sinônimos (vazio) | Orientações em rascunho (sem revisão humana) |
 | `testes/perguntas.json` | 19 perguntas do conjunto `equipe` | Congelado; conjunto `publico` pendente |
-| `testes/test_*.py` | 147 testes (`python -m unittest discover -s testes -t .`) | Passando (CI em Python 3.9) |
+| `testes/test_*.py` | 231 testes (`python -m unittest discover -s testes -t .`) | Passando (CI em Python 3.9) |
 | `testes/usabilidade.md` | Modelo do teste de usabilidade (T1 a T5, clareza, SUS) | Modelo vazio; teste pendente |
 | `testes/resultados.csv`, `comparacao_modelos.csv` | Saída de `--avaliar` (versionados com `git add -f`) | Gerados em 07/11 |
 | `scripts/testar_gemini.py` | Testa a chave do Gemini do `.env` e lista os modelos que ela enxerga | Pronto; rodar com o ambiente do servidor |
