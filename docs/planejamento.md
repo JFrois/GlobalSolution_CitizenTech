@@ -48,7 +48,7 @@
 **Integrante A (Juan), até 13/11:**
 1. E2: revisar as orientações de `direitos`; consolidar o README (§3, 4, 6 e 8) e o bloco "Estado do projeto".
 2. Conferir `python src/sistema.py` numa máquina limpa e no Windows; rodar `--validar-entrega` antes de congelar (E5).
-3. ~~Atualizar `cryptography`~~ feito em 08/11: `cryptography==49.0.0` (fecha os 5 alertas do Dependabot; 231 testes passando). Reinstale no ambiente do servidor: `pip install -r requirements.txt`.
+3. ~~Atualizar `cryptography`~~ feito em 08/11: `cryptography==50.0.2` (fecha os 6 alertas do Dependabot). Reinstale no ambiente do servidor: `pip install -r requirements.txt`.
 4. Decidir o formato padrão A ou B depois das notas de clareza (B3); antes da VM, gerar novo token do bot e nova chave do Gemini.
 
 **Integrante B (Flávia):**

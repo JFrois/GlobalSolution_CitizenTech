@@ -192,10 +192,10 @@ class ArmazenamentoSQLite:
         return l[0] if l else None
 
     def briefings_a_enviar(self, hoje, hora_atual):
-        """user_ids cujo horário já chegou hoje e que ainda não receberam hoje (strings ISO / HH:MM)."""
+        """[(user_id, hora)] cujo horário já chegou hoje e que ainda não receberam hoje (strings ISO / HH:MM)."""
         with self._lock:
-            return [l[0] for l in self._con.execute(
-                "SELECT user_id FROM briefing_config WHERE hora <= ? "
+            return [(l[0], l[1]) for l in self._con.execute(
+                "SELECT user_id, hora FROM briefing_config WHERE hora <= ? "
                 "AND (ultimo_envio IS NULL OR ultimo_envio <> ?)", (hora_atual, hoje)).fetchall()]
 
     def marcar_briefing_enviado(self, user_id, hoje):
