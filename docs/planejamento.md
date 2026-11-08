@@ -9,58 +9,61 @@
 
 ---
 
-## Status em 07/11/2026 (`main` atualizada até o PR #23)
+## Status em 08/11/2026 (`main` até o PR #38)
 
 | Código | Situação | Observação |
 |---|---|---|
-| A1 a A3 | Concluído | Base com 17 registros, `base.py` e `--validar-entrega` |
-| A4 a A6 | Concluído | Busca, índice × linear, decisão C·A·B, grafo e Dijkstra. **Novo:** correção de digitação quando nada casa (spec §7.3, item 5b) |
-| A7 | Concluído | Modelos A e B; campo `titulo` acrescentado à spec |
-| A8 | Concluído | Terminal completo; testado em Python 3.9 e 3.14 (não testado em Windows) |
-| A9, A10 | Concluído | `--avaliar` (19/19 no conjunto da equipe) e 147 testes automatizados |
-| A11 | Concluído | `scripts/verificacoes_antigas.py` |
-| B1 | Concluído | `testes/perguntas.json` (19 perguntas), congelado antes das palavras-chave; feito pelo Juan |
-| E1 (redigir as 17 orientações) | **Rascunho feito** | Escrito pela IA a partir das páginas oficiais, em 07/11 |
-| E2 (revisão cruzada da base) | **Pendente** | Cada integrante confere as orientações de outro tema (ver `docs/uso_ia.md`) |
-| B4, B5, B6 | **Concluído e testado no Telegram real** | Bot, `/localizacao`, `/apagar_meus_dados`, roteador com cascata do Gemini e UF. `/painel` depende de `PAINEL_URL` |
-| B10 (voz) | **Concluído e testado** | Whisper local (`src/transcricao.py`), "Recebi seu áudio…" e "Entendi: …". Foto e PDF **pendentes** |
-| C2 | Parcial | Interface de armazenamento em SQLite (`armazenamento.py`); Supabase continua em aberto |
-| C4 | Escrito, **não testado** | `deploy.yml`, `deploy/`; o deploy só liga com a variável `DEPLOY_ATIVO=true` e os secrets. Na VM falta `ffmpeg` (`sudo apt install ffmpeg`) |
-| C8, C10 | Parcial | API do painel (`painel.py`, `/api/perguntar`) pronta; faltam o front (`painel/`) e as telas |
-| B2, B3, B7 a B9, B11, B12 | Pendente | Faturamento do Gemini, nota de clareza A × B, tarefas, agendador, briefing, usabilidade, perguntas do público |
-| C1, C3, C5 a C7, C9 | Pendente | DuckDNS/Caddy, VM, criptografia, cofre, classificador, testes de segurança |
+| A1 a A11 | **Concluído** | Base, validação, busca (índice × linear, C·A·B, digitação, sinônimos), grafo/Dijkstra, modelos A e B, terminal, `--avaliar` (19/19), 231 testes, `scripts/verificacoes_antigas.py`. Falta só conferir numa máquina limpa e no Windows |
+| B1 | Concluído | `testes/perguntas.json` (19 perguntas, conjunto `equipe`), congelado antes das palavras-chave |
+| E1 (redigir as 17 orientações) | **Rascunho feito pela IA** | Todas com `data_verificacao` 2026-11-07; falta revisão humana (E2) |
+| E2 (revisão cruzada da base) | **Pendente** | Inclui `referencias_estaduais` de DOC-001 (hoje vazio) |
+| B4, B5, B6, B10 (voz) | **Concluído e testado no Telegram real** (07/11) | Bot, `/localizacao`, `/apagar_meus_dados`, roteador com cascata do Gemini, UF e voz (Whisper local) |
+| B7, B8, B9, B10 (foto/PDF) | Código pronto e testado por testes; **falta teste no Telegram real** | Tarefas, agendador, autodestruição, resumo da manhã, foto/PDF no cofre |
+| C5 a C8, C10 | Código pronto e testado por testes e no navegador local; **falta teste real** | Criptografia, cofre, classificador, painel (abas Perguntar, **Tarefas**, Cofre e Ajustes) |
+| C2 | Parcial | SQLite atrás de `armazenamento.py`; Supabase **não** adotado (decisão EM ABERTO) |
+| C1, C3, C4 | **Pendente** | DuckDNS/Caddy, VM e deploy nunca testados; deploy só liga com `DEPLOY_ATIVO=true` |
+| C9 | Parcial | Testes de isolamento, senha errada, expiração e `initData` existem; falta revisão humana de segurança |
+| B2, B3, B11, B12 | **Pendente** | Faturamento do Gemini, nota de clareza A × B (coluna `clareza_1a5` vazia), usabilidade (`testes/usabilidade.md` vazio), perguntas do público (nenhuma ainda) |
+| E6 a E10 | **Pendente** | README (seções 1, 2, 8, 9, 10 e "Participação na Competição"), relatório PDF, `uso_ia.md` (consolidar), vídeo, `link_video.txt`, envio |
+| E12 (novo) | Planejado, opcional | Números de contexto da Base dos Dados para o relatório (seção 5) |
 
-Existe uma implementação paralela arquivada na branch `arquivo/servidor-implementacao-paralela`. **Não fazer merge dela**: conflita com o núcleo da `main`. O que servia dela já entrou pelo PR #5.
+### Branches no GitHub
+
+- `main`: única branch de integração. Cada tarefa vira uma branch curta (`feat/…`, `fix/…`, `docs/…`) e entra por PR com revisão de outro integrante (E3). **Depois do merge, apague a branch.**
+- `feat/painel-tarefas-aba` (PR #38): complemento da aba Tarefas; revisado, na `main` desde 08/11 e branch apagada.
+- `arquivo/servidor-implementacao-paralela`: implementação paralela **arquivada de propósito**. **Não fazer merge**: conflita com o núcleo da `main`; o que servia dela já entrou pelo PR #5. Pode ficar como arquivo ou virar uma tag.
+- `main` não está protegida no GitHub. Recomendado: em Settings > Branches, exigir PR e o teste `testes` passando antes do merge.
 
 ### Onde parou e o que cada um faz agora
 
-**Como retomar:** `git pull origin main`, crie o ambiente do README §6 ("Rodar o bot"), rode `python -m unittest discover -s testes -t .` (214 testes com o ambiente do servidor) e `python src/sistema.py --avaliar` (19/19). Uma branch por tarefa a partir da `main`, PR com a seção da spec; commits sem segredos.
+**Como retomar:** `git pull origin main`; crie o ambiente do README §6 ("Rodar o bot") e instale também `httpx` para os testes do painel; rode `python -m unittest discover -s testes -t .` (231 testes) e `python src/sistema.py --avaliar` (19/19). Uma branch por tarefa a partir da `main`; PR citando a seção da spec; commits sem segredos.
 
 **Já feito que vale conhecer antes de mexer:**
 - A IA só entra no texto livre quando a base não resolve (`roteador.resposta_direta_basta`) e a escolha do Gemini é conferida com as regras (`roteador.reconciliar`). Botões nunca chamam IA.
 - O bot usa `parse_mode` HTML; todo texto da base passa por `html.escape` (`ponte.formatar_telegram`).
-- A voz é transcrita localmente com a dica de vocabulário `transcricao.VOCABULARIO` (o modelo `base` ouvia "segundo aviado" no lugar de "segunda via"). Trocar para `small` é só `WHISPER_MODELO=small` no `.env`.
+- Chat e painel criam tarefas pela mesma função (`tarefas.tentar_criar`); a data é lida por regras, não pela IA. Concluir duas vezes a mesma tarefa não dá erro (de propósito).
+- A voz é transcrita localmente com a dica de vocabulário `transcricao.VOCABULARIO`. Trocar para `small` é só `WHISPER_MODELO=small` no `.env`.
 - `painel.py` **não** pode usar `from __future__ import annotations` (o FastAPI precisa das anotações em tempo de execução).
 
-**Integrante A (Juan):**
-1. Revisar as orientações do tema `documentacao` (E2, cruzada) e consolidar o README (§3, 4, 6 e 8).
-2. Conferir `python src/sistema.py` numa máquina limpa e no Windows; rodar `--validar-entrega` antes de congelar.
-3. Decidir o formato padrão A ou B depois das notas de clareza (B3).
-4. Antes da VM: gerar novo token do bot e nova chave do Gemini.
+**Integrante A (Juan), até 13/11:**
+1. E2: revisar as orientações de `direitos`; consolidar o README (§3, 4, 6 e 8) e o bloco "Estado do projeto".
+2. Conferir `python src/sistema.py` numa máquina limpa e no Windows; rodar `--validar-entrega` antes de congelar (E5).
+3. Atualizar `cryptography` para 49.0.0 ou mais no `requirements.txt` (alertas do Dependabot) e rodar os testes.
+4. Decidir o formato padrão A ou B depois das notas de clareza (B3); antes da VM, gerar novo token do bot e nova chave do Gemini.
 
 **Integrante B (Flávia):**
-1. B2: confirmar faturamento do Gemini; B3: notas de clareza 1 a 5 (rótulos X/Y); B11: teste de usabilidade (`docs/ux.md` §8 e SUS); B12: perguntas do público (≥ 10, anônimas), medidas **antes** de ajustar a busca (spec §14.1).
-2. B7 a B9: `tarefas.py`, `agendador.py` (APScheduler persistente), autodestruição de mensagens e `briefing.py` com feeds RSS (feeds por tema e fuso padrão são EM ABERTO).
-3. B10: foto e PDF no bot ("guardar no cofre?"), sem tratar o conteúdo como instrução. Substituir a mensagem genérica "função não disponível" por uma que diga qual função.
-4. E2: revisar as orientações de `servicos` e **os links por estado do DOC-001** (hoje só `gov.br`).
+1. B12 (até 14/11): coletar ≥ 10 perguntas do público, anônimas, no conjunto `publico`, e medir **antes** de ajustar a busca. B11 (até 15/11): teste de usabilidade (`docs/ux.md` §8 e SUS). B3: notas de clareza 1 a 5 (rótulos X/Y).
+2. B2: confirmar faturamento do Gemini. Escolher os feeds RSS por tema (`data/feeds.json`).
+3. Testar no Telegram real: foto/PDF, cofre pelo chat, lembrete, resumo da manhã e "Sim, apagar tudo".
+4. E2: revisar `documentacao`, incluindo os links por estado do DOC-001. E8: consolidar `docs/uso_ia.md`.
 
 **Integrante C (Pedro):**
-1. C1, C3, C4: teste DuckDNS + Caddy, VM, `ffmpeg` e Whisper na VM (comandos no README §6), secrets e `DEPLOY_ATIVO=true`.
-2. C5 a C7 e C9: `criptografia.py`, `cofre.py`, `classificador.py` e testes de segurança (isolamento por `user_id`, senha errada, expiração).
-3. C8 e C10: front do painel (`painel/`), `PAINEL_URL` e a aba "Perguntar".
-4. E2: revisar `direitos` e conferir o histórico do Git sem segredos.
+1. C1, C3, C4 (prioridade): teste DuckDNS + Caddy, VM, `ffmpeg` e Whisper na VM, secrets e `DEPLOY_ATIVO=true`.
+2. Testar o Mini App no Telegram real (todas as abas, incluindo Tarefas) com `PAINEL_URL` em https.
+3. C9: revisão humana de segurança (cripto, `initData`, isolamento por `user_id`, `.env`).
+4. E2: revisar `servicos`. E7: consolidar o relatório PDF; se der tempo, E12 (Base dos Dados).
 
-**Melhorias conhecidas (não bloqueiam a entrega):** respostas do Gemini podem chegar fora de ordem; `pyright` não está no `.venv`; Windows não testado; o botão "Sim, apagar tudo" nunca foi exercitado no Telegram real.
+**Melhorias conhecidas (não bloqueiam a entrega):** respostas do Gemini podem chegar fora de ordem; `pyright` não está no `.venv`; Windows não testado.
 
 ---
 
@@ -139,6 +142,7 @@ Existe uma implementação paralela arquivada na branch `arquivo/servidor-implem
 | E9 | Vídeo: cada integrante apresenta e explica o seu módulo; publicar como "Não Listado" e criar `docs/link_video.txt` | Todos | 18/11 |
 | E10 | Enviar o `.txt` na FIAP ON com os 2 links e conferir o checklist da spec §18 | Todos | 19/11 |
 | E11 | Revisar a UI ([`docs/ux.md`](ux.md) e wireframes) antes de implementar cada interface · **feito: design aprovado pela equipe em 07/11** | A: terminal · B: Telegram · C: painel | 08/11 |
+| E12 | **Roadmap planejado (opcional, baixa prioridade):** consultar **uma única vez** na [Base dos Dados](https://basedosdados.org) alguns números públicos que justifiquem o problema e o impacto social no relatório (ex.: famílias inscritas no CadÚnico, eleitores por UF). O resultado entra só no relatório, com a fonte e a data da consulta citadas; **não entra no código** nem em `data/base.json` (spec §5.3 e §15.2) | C (com apoio de quem estiver livre) | Depois de 13/11, se sobrar tempo; até 17/11 |
 
 ---
 

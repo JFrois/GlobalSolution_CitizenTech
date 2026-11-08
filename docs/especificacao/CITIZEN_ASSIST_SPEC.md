@@ -77,7 +77,7 @@ Um `.txt` contendo **apenas** dois links: (1) repositório GitHub **público**; 
 | **1 (core, avaliada)** | base, busca, grafo/Dijkstra, respostas A/B, `sistema.py` terminal, testes/métricas, docs | Prioridade absoluta. Deve estar 100% pronta e testada primeiro. |
 | **2 (produto)** | bot Telegram, roteador Gemini, cofre + criptografia, classificador Gemini, painel/Mini App, tarefas/lembretes, briefing, autodestruição de mensagens, voz/foto/PDF | Todo o código entra até 13/11 (decisão da equipe). O que não for testado vira roadmap. |
 
-**Fora do escopo (roadmap, não implementar):** ferramenta `consultar_site_oficial`; classificador de documentos local (sem enviar ao Gemini); CNH e CPF na base (entram na ampliação); integração com órgãos públicos; qualquer pagamento.
+**Fora do escopo (roadmap, não implementar):** ferramenta `consultar_site_oficial`; classificador de documentos local (sem enviar ao Gemini); CNH e CPF na base (entram na ampliação); integração com órgãos públicos; qualquer pagamento. **Roadmap planejado (opcional):** números de contexto da Base dos Dados (basedosdados.org) consultados uma única vez para o relatório, com fonte citada; nunca importados pelo código (§5.3).
 
 ---
 
@@ -465,6 +465,7 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 - Feeds RSS por tema e fuso horário padrão.
 - Modelo de resposta padrão (A ou B), definido pelos testes.
 - **Whisper na VM (voz):** instalar `ffmpeg` e o `openai-whisper` (comandos no README §6) e conferir CPU e memória da VM gratuita; se pesar, usar `WHISPER_MODELO=tiny` ou voltar ao Gemini para voz. Modelo `base` foi o escolhido em 07/11.
+- **Atualizar `cryptography`** de 43.0.1 para ≥ 49.0.0 (5 alertas do Dependabot em 08/11) antes da VM.
 - Ferramenta para coletar as perguntas do público de forma anônima (§14.1).
 - ~~Aprovar a aba "Perguntar"~~ — **aprovada pela equipe em 07/11** (§10.5).
 - ~~Identidade visual~~ — **resolvido em 08/11:** direção **Azul Telegram** ([`docs/ux.md`](../ux.md) §9). Avatar do bot regerado; protótipo em `docs/design/prototipo/`.
