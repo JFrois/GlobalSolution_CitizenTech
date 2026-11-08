@@ -156,10 +156,10 @@ class ArmazenamentoSQLite:
             return cur.rowcount > 0
 
     def tarefas_a_avisar(self, agora):
-        """Lembretes vencidos ainda não avisados: [(id, user_id, titulo)]."""
+        """Lembretes vencidos ainda não avisados: [(id, user_id, titulo, quando)]."""
         with self._lock:
             return self._con.execute(
-                "SELECT id, user_id, titulo FROM tarefas WHERE concluida = 0 AND avisada = 0 "
+                "SELECT id, user_id, titulo, quando FROM tarefas WHERE concluida = 0 AND avisada = 0 "
                 "AND quando IS NOT NULL AND quando <= ?", (int(agora),)).fetchall()
 
     def marcar_avisada(self, tarefa_id):

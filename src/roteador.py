@@ -163,6 +163,12 @@ def validar_chamada(nome, args):
     return {"ferramenta": nome, "args": limpo}
 
 
+# Palavras (já normalizadas) que, sozinhas junto de "tarefa"/"lembrete", pedem a lista de pendentes.
+PALAVRAS_DE_LISTAGEM = {"lembrete", "lembretes", "tarefa", "tarefas", "minhas", "minha", "meus", "meu",
+                        "ver", "listar", "lista", "mostrar", "mostre", "quais", "qual", "pendentes",
+                        "pendente", "tenho", "hoje", "amanha", "semana", "todas", "todos"}
+
+
 def fallback_por_regras(texto):
     """Escolha determinística por palavras-chave simples. Padrão: buscar."""
     palavras = " ".join(ponte.tokenizar(texto))
@@ -185,7 +191,12 @@ def fallback_por_regras(texto):
         resto = texto.strip()[:TAMANHO_MAX_TEXTO]
         if re.search(r"\b(conclui|concluir|concluida|concluido|feita|feito)\b", palavras):
             return {"ferramenta": "gerenciar_tarefas", "args": {"acao": "concluir", "titulo": resto}}
-        if re.search(r"\b(lembre|criar|nova|novo|anotar)\b", palavras):
+        if re.search(r"\b(lembre|lembrar|criar|crie|cria|nova|novo|anotar|anote|adicionar|adicione|agendar|marcar)\b",
+                     palavras):
+            return {"ferramenta": "gerenciar_tarefas", "args": {"acao": "criar", "titulo": resto}}
+        # Sem verbo: se sobrar conteúdo além das palavras de consulta ("tarefa - trabalho às 18:10"),
+        # é um pedido de criação; só "minhas tarefas", "quais lembretes" etc. viram listagem.
+        if [p for p in palavras.split() if p not in PALAVRAS_DE_LISTAGEM]:
             return {"ferramenta": "gerenciar_tarefas", "args": {"acao": "criar", "titulo": resto}}
         return {"ferramenta": "gerenciar_tarefas", "args": {"acao": "listar"}}
     return {"ferramenta": "buscar_orientacao", "args": {"pergunta": texto.strip()[:TAMANHO_MAX_TEXTO]}}
@@ -284,6 +295,11 @@ def reconciliar(chamada_llm, texto):
     if chamada_llm is None:
         return regras
     if chamada_llm["ferramenta"] != "buscar_orientacao" and regras["ferramenta"] == "buscar_orientacao":
+        return regras
+    # O texto traz uma tarefa para anotar, mas o Gemini escolheu só listar: vale a criação,
+    # senão "tarefa - trabalho às 18:10" respondia "Você não tem tarefas pendentes".
+    if (chamada_llm["ferramenta"] == regras["ferramenta"] == "gerenciar_tarefas"
+            and regras["args"].get("acao") == "criar" and chamada_llm["args"].get("acao") == "listar"):
         return regras
     return chamada_llm
 

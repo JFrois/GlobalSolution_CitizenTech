@@ -114,8 +114,10 @@ def interpretar_quando(texto, agora):
 
 
 def _limpar_titulo(titulo):
-    titulo = re.sub(r"^(me lembre?( de)?|lembrete( de)?|criar tarefa|nova tarefa|tarefa)\b[: ]*", "",
-                    titulo.strip(), flags=re.I)
+    # Tira o pedido do começo: "me lembre de", "crie uma tarefa", "adicionar lembrete:", "tarefa -" ...
+    titulo = re.sub(r"^(me lembre?( de)?|(crie|criar|cria|adicionar|adicione|anotar|anote|agendar|marcar)"
+                    r"( (uma|um|a|o))?( nova| novo)? (tarefa|lembrete)( de)?|nova tarefa|novo lembrete|"
+                    r"lembrete( de)?|tarefa)\b[: ]*", "", titulo.strip(), flags=re.I)
     return titulo.strip(" ,.-:")[:200]
 
 
