@@ -1,6 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-label="Citizen Assist AI: lente com sinal de conferido">
-  <!-- Avatar do bot (docs/design/README.md): fundo #F5B544, símbolo #0B0D12 sem o arco. -->
-  <rect width="1024" height="1024" fill="#F5B544"/>
-  <circle cx="512" cy="512" r="298" fill="none" stroke="#0B0D12" stroke-width="64"/>
-  <polyline points="352,520 470,640 690,400" fill="none" stroke="#0B0D12" stroke-width="72" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Avatar do bot (docs/design/README.md): fundo azul Telegram em degradê, símbolo branco sem o arco. -->
+  <defs>
+    <linearGradient id="fundo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2AABEE"/>
+      <stop offset="1" stop-color="#1A86C2"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#fundo)"/>
+  <circle cx="512" cy="512" r="298" fill="none" stroke="#FFFFFF" stroke-width="64"/>
+  <polyline points="352,520 470,640 690,400" fill="none" stroke="#FFFFFF" stroke-width="72" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

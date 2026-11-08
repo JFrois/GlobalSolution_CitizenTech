@@ -1,76 +1,80 @@
 /*
- * Citizen Assist AI — tokens da identidade "Estreia clara"
- * Fonte: manual de marca (docs/design/README.md) e docs/ux.md §9.
+ * Citizen Assist AI — tokens da identidade "Azul Telegram"
+ * Fonte: docs/ux.md §9 e docs/design/README.md. Protótipo: canvas de revisão de UI.
  *
  * Como usar no painel (painel/):
  *   <link rel="stylesheet" href="tokens.css">
- *   - Telas de leitura usam os tokens do :root (modo claro).
- *   - Momentos de cinema (desbloquear o cofre, cena da verificação)
- *     usam o atributo data-tema="cinema" no contêiner da tela.
+ *   - Estrutura de toda tela: faixa azul (hero, --degrade-hero) com o título e
+ *     uma "folha" clara (--cor-fundo) que sobe por baixo com o conteúdo.
  *   - No Mini App, as cores do Telegram (--tg-theme-*) podem substituir
- *     fundo e texto; a primária continua sendo --cor-acao.
+ *     fundo e texto da folha; a ação continua sendo --cor-acao.
  *
- * Todos os pares de texto passam no contraste WCAG AA (≥ 4,5:1);
- * bordas de campos passam no mínimo de 3:1 para componentes.
+ * Contraste: texto sobre a folha e sobre cartões passa WCAG AA (≥ 4,5:1).
+ * --cor-azul (#229ED9) é só decoração e degradê: nunca texto pequeno sobre
+ * ele em branco (3,0:1); o texto do hero fica na parte escura do degradê.
  */
 
 :root {
-  /* Cores — dia a dia (claro) */
-  --cor-fundo: #F5F6F8;          /* fundo das telas */
+  /* Cores */
+  --cor-azul: #229ED9;           /* azul do Telegram: marca, brilho, degradê (decorativo) */
+  --cor-acao: #12689E;           /* botão principal e item ativo · branco sobre ele 6,0:1 */
+  --cor-acao-texto: #FFFFFF;
+  --cor-link: #0B5E94;           /* links e "Abrir →" · 6,9:1 no branco */
+  --cor-fundo: #F2F8FC;          /* folha clara das telas */
   --cor-superficie: #FFFFFF;     /* cartões */
-  --cor-texto: #0B0D12;          /* títulos e texto · 18,0:1 */
-  --cor-apoio: #4D5463;          /* legendas e rótulos · 7,0:1 */
-  --cor-ambar: #8A5300;          /* números de passo e destaques · 5,9:1 */
-  --cor-ciano: #0E6E7A;          /* links e "Fonte:" · 5,5:1 */
-  --cor-atencao: #B0391B;        /* "Atenção:" · 5,6:1 */
-  --cor-acao: #F5B544;           /* botão principal (texto --cor-acao-texto) */
-  --cor-acao-texto: #0B0D12;     /* texto no botão principal · 10,7:1 */
-  --cor-borda: #7A8290;          /* bordas de campos e botões secundários · 3,6:1 */
-  --cor-ambar-suave: #FFF4DC;    /* fundo de ícone âmbar */
-  --cor-ciano-suave: #E1F2F4;    /* fundo de ícone informativo */
-  --cor-faixa: #000000;          /* faixas de cinema (só no modo cinema) */
+  --cor-texto: #0E2233;          /* títulos e texto · 16,5:1 */
+  --cor-apoio: #4A6176;          /* legendas e rótulos · 5,9:1 */
+  --cor-noite: #0E2233;          /* barra de navegação e terminal */
+  --cor-azul-suave: #DDEFFA;     /* fundo de ícone do tema Documentos */
+  --cor-verde: #0F7A5A;          /* selo "Fonte conferida" */
+  --cor-verde-suave: #DDF3EA;
+  --cor-verde-texto: #0A4F3A;
+  --cor-teal: #0A7C73;           /* tema Serviços */
+  --cor-teal-suave: #D9F2EF;
+  --cor-coral: #B8431F;          /* tema Direitos */
+  --cor-coral-suave: #FDE7DF;
+  --cor-atencao-texto: #5E1F0B;  /* texto do aviso "Atenção:" no fundo coral suave */
+  --cor-perigo: #B0391B;         /* borda e texto de "Apagar" */
+  --cor-borda: #6F8CA2;          /* bordas de campos e botões secundários · 3,5:1 */
+
+  /* Hero e vidro */
+  --degrade-hero: linear-gradient(170deg, #229ED9 0%, #1676B0 45%, #0F5C93 100%);
+  --vidro-fundo: rgba(8, 40, 70, 0.38);
+  --vidro-borda: rgba(255, 255, 255, 0.4);
+  --vidro-blur: 14px;
+  --sombra-cartao: 0 8px 20px -12px rgba(14, 34, 51, 0.35);
+  --sombra-flutuante: 0 18px 34px -12px rgba(6, 24, 40, 0.7);
 
   /* Tipografia (Google Fonts, licença OFL) */
-  --fonte-titulo: "Archivo", "Arial Narrow", sans-serif;   /* peso 800, largura 66–72% */
-  --fonte-texto: "Atkinson Hyperlegible", system-ui, sans-serif;
+  --fonte-texto: "Plus Jakarta Sans", system-ui, sans-serif;   /* pesos 400 a 800, títulos em 800 */
   --fonte-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-  --largura-titulo: 70%;         /* font-stretch dos títulos */
-  --tamanho-cartela: 72px;       /* abertura e cenas */
-  --tamanho-titulo: 40px;
-  --tamanho-subtitulo: 22px;
-  --tamanho-texto: 17px;         /* nunca menor que 16px em texto corrido */
-  --tamanho-rotulo: 13px;        /* rótulos em caixa alta, espaçamento 0.16em */
+  --tamanho-titulo: 36px;        /* hero; 32px em telas de resposta */
+  --tamanho-subtitulo: 18px;
+  --tamanho-texto: 16px;         /* nunca menor que 16px em texto corrido */
+  --tamanho-rotulo: 13px;
   --entrelinha-texto: 1.5;
+  --tracking-titulo: -0.03em;
 
   /* Espaços e cantos */
   --espaco-1: 4px;
   --espaco-2: 8px;
   --espaco-3: 12px;
   --espaco-4: 16px;
-  --espaco-5: 24px;
-  --espaco-6: 32px;
-  --canto-p: 8px;
-  --canto-m: 12px;
-  --canto-g: 16px;
+  --espaco-5: 20px;              /* margem lateral das telas */
+  --espaco-6: 28px;
+  --canto-icone: 14px;
+  --canto-cartao: 22px;
+  --canto-folha: 34px;           /* cantos superiores da folha */
+  --canto-pilula: 999px;         /* botões, chips, barra de navegação (26px) */
   --alvo-toque: 44px;            /* altura mínima de botões e campos */
 
-  /* Movimento: só opacidade e posição */
-  --mov-rapido: 150ms;           /* toque, foco, seleção */
-  --mov-medio: 300ms;            /* entrada de cartões e passos (sequência de 150ms) */
-  --mov-cena: 450ms;             /* selo "Fonte conferida" */
+  /* Movimento: opacidade, posição e escala */
+  --mov-rapido: 150ms;           /* toque (escala 0,96), foco, seleção */
+  --mov-medio: 550ms;            /* entrada de blocos: sobe 14px; sequência de ~150ms */
+  --mov-folha: 600ms;            /* folha sobe 60px */
+  --mov-selo: 500ms;             /* selo "Fonte conferida" (pop) */
   --mov-curva: cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-/* Momentos de cinema (escuro, com faixas pretas no topo e na base) */
-[data-tema="cinema"] {
-  --cor-fundo: #0B0D12;          /* noite */
-  --cor-superficie: #151922;
-  --cor-texto: #F2EEE6;          /* 16,8:1 */
-  --cor-apoio: #A9AFBC;          /* 8,8:1 */
-  --cor-ambar: #F5B544;          /* 10,7:1 */
-  --cor-ciano: #6FD3E0;          /* 11,2:1 */
-  --cor-atencao: #FF8A6B;        /* 8,4:1 */
-  --cor-borda: #6B7690;          /* 3,9:1 */
+  --mov-curva-pop: cubic-bezier(0.2, 0.9, 0.3, 1.2);
 }
 
 /* Quem pede "reduzir movimento" vê tudo pronto, sem animação */
@@ -78,6 +82,8 @@
   :root {
     --mov-rapido: 0ms;
     --mov-medio: 0ms;
-    --mov-cena: 0ms;
+    --mov-folha: 0ms;
+    --mov-selo: 0ms;
   }
+  * { animation: none !important; transition: none !important; }
 }
