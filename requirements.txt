@@ -4,7 +4,7 @@
 aiogram==3.13.1
 fastapi==0.115.0
 uvicorn==0.30.6
-cryptography==49.0.0
+cryptography==50.0.2
 google-genai==1.2.0
 # Voz (src/transcricao.py): puxa o PyTorch (centenas de MB) e exige o ffmpeg no sistema.
 # ATENÇÃO: instale ANTES, à mão: pip install "setuptools<81" wheel && pip install --no-build-isolation openai-whisper==20240930

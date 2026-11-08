@@ -465,7 +465,7 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 - Feeds RSS por tema e fuso horário padrão.
 - Modelo de resposta padrão (A ou B), definido pelos testes.
 - **Whisper na VM (voz):** instalar `ffmpeg` e o `openai-whisper` (comandos no README §6) e conferir CPU e memória da VM gratuita; se pesar, usar `WHISPER_MODELO=tiny` ou voltar ao Gemini para voz. Modelo `base` foi o escolhido em 07/11.
-- ~~Atualizar `cryptography`~~ — **feito em 08/11:** 43.0.1 → 49.0.0 (5 alertas do Dependabot).
+- ~~Atualizar `cryptography`~~ — **feito em 08/11:** 43.0.1 → 50.0.2 (6 alertas do Dependabot).
 - Ferramenta para coletar as perguntas do público de forma anônima (§14.1).
 - ~~Aprovar a aba "Perguntar"~~ — **aprovada pela equipe em 07/11** (§10.5).
 - ~~Identidade visual~~ — **resolvido em 08/11:** direção **Azul Telegram** ([`docs/ux.md`](../ux.md) §9). Avatar do bot regerado; protótipo em `docs/design/prototipo/`.
