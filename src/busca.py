@@ -306,6 +306,8 @@ class Buscador:
         melhor = ranking[0][1] if ranking else 0
         segundo = ranking[1][1] if len(ranking) > 1 else 0
         a = melhor >= LIMIAR_MINIMO
+        if a and self._so_pedaco(tokens, equivalentes, ranking[0][0]):
+            a = False  # "tarifa de ônibus" não é a "Tarifa Social" de energia
         b = (melhor - segundo) >= MARGEM
         decisao = decidir(c, a, b)
 
@@ -316,6 +318,22 @@ class Buscador:
         else:
             candidatos = []
         return Resultado(decisao=decisao, ranking=ranking, candidatos=candidatos, tokens=tokens)
+
+    def _so_pedaco(self, tokens: list, equivalentes: list, rid: str) -> bool:
+        """True se a pergunta tem palavra que a base não conhece e o registro só
+        bate por pedaço de palavra-chave composta (nenhuma palavra-chave inteira).
+
+        Ex.: "tarifa de onibus" casa "tarifa" de "tarifa social", mas "onibus" não
+        existe na base: o assunto é outro, então não responde com esse registro."""
+        desconhecida = any(t not in self.indice and t not in self.grupos for t in tokens)
+        if not desconhecida:
+            return False
+        expandidos = set().union(*equivalentes)
+        for palavra in self.por_id[rid]["palavras_chave"]:
+            partes = set(normalizar(palavra))
+            if partes and partes <= expandidos:
+                return False
+        return True
 
     def _corrigir(self, tokens: list) -> dict:
         """{token digitado: palavra parecida da base} para palavras fora do vocabulário.

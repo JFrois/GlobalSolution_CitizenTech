@@ -126,6 +126,17 @@ class TestBaseReal(unittest.TestCase):
         self.assertGreaterEqual(len(r.candidatos), 2)
         self.assertEqual(self.s.buscar("como tirar passaporte?").decisao, busca.SEM_BASE)
 
+    def test_pedaco_de_palavra_chave_com_assunto_desconhecido(self):
+        # "tarifa" sozinha é pedaço de "tarifa social"; "onibus" não existe na base.
+        for pergunta in ("tarifa de ônibus", "quanto custa a tarifa de onibus"):
+            self.assertEqual(self.s.buscar(pergunta).decisao, busca.SEM_BASE, pergunta)
+            self.assertEqual(self.s.buscar(pergunta, metodo="linear").decisao, busca.SEM_BASE, pergunta)
+        # Palavra-chave inteira continua respondendo, mesmo com palavra desconhecida.
+        for pergunta, rid in (("tarifa social", "DIR-006"), ("tarifa de luz", "DIR-006"),
+                              ("segunda via rg urgente", "DOC-001")):
+            r = self.s.buscar(pergunta)
+            self.assertEqual((r.decisao, r.candidatos), (busca.RESPONDER, [rid]), pergunta)
+
     def test_pergunta_direta(self):
         r = self.s.buscar("Como tirar a segunda via do RG?")
         self.assertEqual((r.decisao, r.candidatos), (busca.RESPONDER, ["DOC-001"]))

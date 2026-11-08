@@ -43,7 +43,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 - Modelos de resposta A e B, aviso de limitação e mensagens de entrada inválida (`src/respostas.py`).
 - Terminal completo (`python src/sistema.py`), com cores e texto puro de reserva, `--validar-entrega` e `--avaliar`.
 - Perguntas de teste da equipe congeladas antes das palavras-chave: **19/19 (100%)**; índice invertido cerca de 100 vezes mais rápido que a busca linear. Resultados em `testes/resultados.csv` e `testes/comparacao_modelos.csv`.
-- **242 testes automatizados** (`python -m unittest discover -s testes -t .`), todos passando. O CI roda a suíte duas vezes: no Python 3.9 só com a biblioteca padrão (o que o avaliador usa) e no 3.12 com as bibliotecas do servidor, sem pular os testes do painel, cofre e bot.
+- **243 testes automatizados** (`python -m unittest discover -s testes -t .`), todos passando. O CI roda a suíte duas vezes: no Python 3.9 só com a biblioteca padrão (o que o avaliador usa) e no 3.12 com as bibliotecas do servidor, sem pular os testes do painel, cofre e bot.
 
 **Concluído e testado no Telegram real (Onda 2, camada de produto), em 07/11:**
 
@@ -73,7 +73,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 
 **Pendente, por prioridade:**
 
-1. **Antes do congelamento (13/11), Onda 1:** revisão humana das 17 orientações (E2) e links por estado da 2ª via da CIN (`referencias_estaduais` de DOC-001 está vazio; todos os estados caem no `gov.br`); conferir `python src/sistema.py` numa máquina limpa e no Windows. **Bug conhecido na busca:** "quanto custa a tarifa de ônibus" responde a Tarifa Social de Energia (DIR-006), porque a palavra "tarifa" sozinha no título já soma 6 pontos e passa do limiar (3). O certo seria "fora da base". A correção mexe na pontuação; por isso precisa rodar `--avaliar` antes e depois e não pode quebrar o 19/19.
+1. **Antes do congelamento (13/11), Onda 1:** revisão humana das 17 orientações (E2) e links por estado da 2ª via da CIN (`referencias_estaduais` de DOC-001 está vazio; todos os estados caem no `gov.br`); conferir `python src/sistema.py` numa máquina limpa e no Windows.
 2. **Indicadores (até 15/11):** perguntas do público (≥ 10, anônimas; hoje só existe o conjunto `equipe`) medidas **antes** de ajustar a busca; teste de usabilidade com pessoa de fora (`testes/usabilidade.md` está vazio); nota de clareza A × B (coluna `clareza_1a5` vazia). Só depois se escolhe o formato padrão (hoje o passo a passo é provisório).
 3. **Onda 2, teste real:** no Telegram real (com documentos fictícios): foto/PDF, cofre pelo chat, resumo da manhã, Mini App (incluindo a aba Tarefas) e o botão "Sim, apagar tudo". O lembrete pelo chat já foi testado (08/11). `/painel` precisa de `PAINEL_URL` com https.
 4. **Infraestrutura:** VM, DuckDNS/Caddy e deploy automático (nunca testados; o deploy só liga com `DEPLOY_ATIVO=true`); `ffmpeg` e Whisper na VM.
@@ -258,7 +258,7 @@ Sem base suficiente, o assistente diz que não encontrou orientação verificada
 
 São 19 perguntas em `testes/perguntas.json`: 8 diretas, 3 reformuladas, 3 fora da base e 5 de limite (entrada vazia, consulta ambígua "documento", tópico sem base, só símbolos e texto longo). Todas são fictícias, sem dado pessoal. As perguntas da equipe foram **congeladas num commit antes** de preencher as palavras-chave (histórico do Git). O conjunto do público (≥ 10 perguntas anônimas) será coletado depois e medido **antes** de qualquer ajuste.
 
-Testes automatizados: `python -m unittest discover -s testes -t .` (242 testes: base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal e avaliação, além do servidor, que só rodam com o ambiente do bot).
+Testes automatizados: `python -m unittest discover -s testes -t .` (243 testes: base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal e avaliação, além do servidor, que só rodam com o ambiente do bot).
 
 ### Indicadores da busca
 
