@@ -102,9 +102,9 @@ class TestRotasCofre(unittest.TestCase):
 
     def test_config_e_estado(self):
         c = self.cliente(42)
-        self.assertEqual(c.put("/api/config", json={"uf": "RJ", "temas": ["servicos"]}).status_code, 200)
+        self.assertEqual(c.put("/api/config", json={"uf": "RJ", "temas": ["musica"]}).status_code, 200)
         e = c.get("/api/estado").json()
-        self.assertEqual((e["uf"], e["temas_briefing"]), ("RJ", ["servicos"]))
+        self.assertEqual((e["uf"], e["temas_briefing"]), ("RJ", ["musica"]))
         self.assertEqual(c.put("/api/config", json={"uf": "ZZ"}).status_code, 400)
 
     def test_front_servido_com_csp(self):

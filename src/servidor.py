@@ -129,7 +129,7 @@ def iniciar(caminho_base=None):
         feeds = briefing.carregar_feeds()
 
         async def resumo(uid):  # monta o resumo numa thread (busca feeds na rede)
-            return await asyncio.to_thread(briefing.montar, uid, armazem, feeds, dados["temas"])
+            return await asyncio.to_thread(briefing.montar, uid, armazem, feeds, briefing.TEMAS_BRIEFING)
 
         agenda = agendador.iniciar(armazem, lambda uid, texto: bot.send_message(uid, html.escape(texto)),
                                    lambda chat, msg: bot.delete_message(chat, msg), briefing=resumo)

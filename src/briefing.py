@@ -5,8 +5,9 @@ manchetes por tema, de feeds RSS, sempre rotuladas "Notícias — fonte não ofi
 As manchetes nunca se misturam com a base verificada nem viram orientação.
 Falha de um feed (rede, XML ruim) não derruba o briefing: aquele feed é ignorado.
 
-Os feeds ficam em `data/feeds.json` (dados, não código).
-TODO (EM ABERTO, spec §11 e §17): a equipe escolhe os feeds de cada tema.
+Os feeds ficam em `data/feeds.json` (dados, não código). O usuário escolhe, entre os 5
+temas de TEMAS_BRIEFING, quais manchetes quer receber (chat ou aba Ajustes do painel).
+Esses temas são de interesse geral e NÃO são os temas da base verificada.
 """
 from __future__ import annotations
 
@@ -25,6 +26,10 @@ CAMINHO_FEEDS = Path(__file__).resolve().parent.parent / "data" / "feeds.json"
 MAX_POR_TEMA = 3
 TEMPO_LIMITE_FEED_S = 8
 TAM_MAX_FEED = 2 * 1024 * 1024
+# Temas de interesse que o usuário escolhe para o resumo da manhã (decisão de 08/11).
+# A chave liga ao data/feeds.json; o valor é o nome mostrado ao cidadão.
+TEMAS_BRIEFING = {"cultura": "Cultura", "tecnologia": "Tecnologia",
+                  "saude": "Saúde e bem-estar", "musica": "Música", "filmes": "Filmes"}
 ROTULO_NOTICIAS = "Notícias — fonte não oficial"
 FORMATO_HORA = re.compile(r"([01]\d|2[0-3]):[0-5]\d")
 
@@ -81,7 +86,8 @@ def montar(user_id, armazem, feeds, nomes_dos_temas, agora=None, coletor=coletar
         linhas += ["- %s (%s)" % (t, tarefas.formatar_quando(q)[-5:]) for _, t, q in do_dia]
     else:
         linhas.append("Você não tem tarefas com data para hoje.")
-    temas = armazem.obter_temas_briefing(user_id)
+    # Temas guardados por versões antigas (que não existem mais) são ignorados.
+    temas = [t for t in armazem.obter_temas_briefing(user_id) if t in nomes_dos_temas]
     blocos = []
     for tema in temas:
         itens = manchetes_do_tema(feeds.get(tema, []), coletor)

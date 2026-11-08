@@ -55,7 +55,7 @@
 
 **Integrante B (Flávia):**
 1. B12 (até 14/11): coletar ≥ 10 perguntas do público, anônimas, no conjunto `publico`, e medir **antes** de ajustar a busca. B11 (até 15/11): teste de usabilidade (`docs/ux.md` §8 e SUS). B3: notas de clareza 1 a 5 (rótulos X/Y).
-2. ~~B2~~ decidido em 08/11: Gemini no plano gratuito (sem faturamento). Escolher os feeds RSS por tema (`data/feeds.json`).
+2. ~~B2~~ decidido em 08/11: Gemini no plano gratuito (sem faturamento). Feeds RSS feitos em 08/11 (5 temas do usuário); reavaliar só a fonte de Filmes.
 3. Testar no Telegram real: foto/PDF, cofre pelo chat, resumo da manhã e "Sim, apagar tudo" (o lembrete pelo chat já foi testado em 08/11).
 4. E2: revisar `documentacao`, incluindo os links por estado do DOC-001. E8: consolidar `docs/uso_ia.md`.
 
@@ -194,7 +194,7 @@ Estes itens são decisões humanas, não da IA (spec §17).
 | Teste DuckDNS + Caddy | C3, C4, C8 | C |
 | Armazenamento (Supabase ou equivalente) | C6, C7, C8, B7 | C |
 | ~~Faturamento do Gemini~~ (plano gratuito, 08/11) | B5, C7, B10 | B |
-| Feeds RSS por tema e fuso horário padrão | B9, B7 | B |
+| ~~Feeds RSS por tema~~ (feito 08/11) e fuso horário padrão | B9, B7 | B |
 | Modelo de resposta padrão (A ou B) | Default do produto | B, após os testes |
 | Ferramenta para coletar perguntas do público de forma anônima | B12 | B |
 | ~~Aprovar a aba "Perguntar"~~ (aprovada em 07/11) | — | — |

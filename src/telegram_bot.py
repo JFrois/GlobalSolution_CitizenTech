@@ -123,7 +123,7 @@ def criar_bot(config, base, armazem, links, cofre=None):
     # GEMINI_MODELO (opcional) vai para o início da fila; os demais vêm da lista da chave.
     modelo_env = config.get("GEMINI_MODELO") or None
     modelo_whisper = transcricao.nome_do_modelo(config)
-    feeds = briefing.carregar_feeds()  # data/feeds.json (EM ABERTO: a equipe escolhe os feeds)
+    feeds = briefing.carregar_feeds()  # data/feeds.json (feeds por tema de interesse)
     travas = {}  # uma fila por usuário, para responder na ordem em que as mensagens chegaram
 
     def trava_do_usuario(user_id):
@@ -440,7 +440,7 @@ def criar_bot(config, base, armazem, links, cofre=None):
             elif chamada["ferramenta"] == "briefing_matinal":
                 # Busca os feeds na rede: em outra thread, para não travar o bot.
                 resultado = await asyncio.to_thread(
-                    briefing.executar, chamada["args"], armazem, user_id, feeds, base["temas"])
+                    briefing.executar, chamada["args"], armazem, user_id, feeds, briefing.TEMAS_BRIEFING)
             else:
                 resultado = roteador.executar(chamada, base, armazem.obter_uf(user_id))
             await responder(m, resultado, user_id)

@@ -140,7 +140,7 @@ src/
   documentos.py             fluxo de foto/PDF do bot sem aiogram (testável)        (extra)
 data/
   base.json
-  feeds.json                feeds RSS por tema do briefing (a equipe preenche; EM ABERTO)  (extra)
+  feeds.json                feeds RSS por tema de interesse do briefing  (extra)
 docs/
   relatorio.pdf  link_video.txt  uso_ia.md          entregáveis da GS (Tabela 2)
   Solicitação GS.md                                  enunciado oficial
@@ -347,7 +347,7 @@ Dois modelos documentados, comparados nos testes (clareza, consistência, presen
 
 - **Tarefas no painel (decisão de 08/11):** aba "Tarefas" com o mesmo núcleo do chat (`tarefas.tentar_criar`, sem IA): `GET /api/tarefas`, `POST /api/tarefas` (`titulo`, `quando` opcional em texto livre, lido por regras) e `POST /api/tarefas/{id}/concluir`. Tudo filtrado por `user_id`, com limite de pedidos; título até 200 e "quando" até 80 caracteres. O aviso no horário continua saindo pelo bot. **Não há tarefas no terminal:** o núcleo avaliado não guarda dado do usuário (§13.4).
 - **Tarefas/lembretes (`tarefas.py`):** título, data/hora (fuso do usuário **(EM ABERTO: assumir America/Sao_Paulo por padrão)**), status. Alertas via APScheduler. **Persistência (decisão de 08/11):** o estado fica nas tabelas `tarefas` e `exclusoes` do armazenamento; o APScheduler só dispara um tick a cada 30 s que cumpre o que venceu, então a subida do servidor já executa o vencido, sem jobstore próprio. O fuso é America/Sao_Paulo para todos (fuso por usuário = roadmap).
-- **Briefing (`briefing.py`):** todo dia no horário configurado, envia (1) tarefas/lembretes do dia e (2) até **3 manchetes por tema** do usuário, de feeds RSS, com rótulo **"Notícias — fonte não oficial"**. Lista curada de feeds por tema **(EM ABERTO: equipe escolher 1–2 feeds por tema; preferir veículos públicos/governamentais)**. Falha de um feed não derruba o briefing.
+- **Briefing (`briefing.py`) — temas (decisão de 08/11): o usuário escolhe entre Cultura, Tecnologia, Saúde e bem-estar, Música e Filmes (não são os temas da base verificada).** todo dia no horário configurado, envia (1) tarefas/lembretes do dia e (2) até **3 manchetes por tema** do usuário, de feeds RSS, com rótulo **"Notícias — fonte não oficial"**. Lista curada de feeds por tema **(EM ABERTO: equipe escolher 1–2 feeds por tema; preferir veículos públicos/governamentais)**. Falha de um feed não derruba o briefing.
 - **UF:** `/localizacao` (teclado com UFs) ou painel. Ao responder um registro `abrangencia: estadual`, usar `referencias_estaduais[UF]` se existir; senão o link nacional gov.br e um aviso de que o procedimento varia por estado. Se a UF não foi informada, perguntar uma vez.
 - **Autodestruição (`agendador.py`):** job por mensagem com documento, em 5 min. Só apaga mensagens com < 48 h (limite do Telegram). **Ao iniciar o servidor, executar exclusões vencidas** (persistência).
 - **Privacidade:** coletar o mínimo — `user_id` do Telegram, UF, temas do briefing, tarefas, metadados do cofre. Comando `/apagar_meus_dados` remove tudo do usuário.
@@ -462,7 +462,7 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 - ~~Confirmar faturamento do Gemini~~ — **resolvido em 08/11:** o projeto usa o plano gratuito (ver §12); o aviso de consentimento e o relatório declaram o risco.
 - **Revisar as 17 orientações** (rascunho feito em 07/11 a partir das páginas oficiais, falta conferência humana) — em especial DOC-001 (UFs da equipe), DOC-004 (reconferir suspensões do TSE), DIR-006 (conflito de fontes) e DIR-004/DIR-005 (limites).
 - Armazenamento: confirmar Supabase ou equivalente.
-- Feeds RSS por tema e fuso horário padrão.
+- ~~Feeds RSS por tema~~ — **resolvido em 08/11:** o usuário escolhe entre 5 temas (Cultura, Tecnologia, Saúde e bem-estar, Música, Filmes; `briefing.TEMAS_BRIEFING`), com feeds em `data/feeds.json`. Fonte de Filmes é fraca; reavaliar. Fuso horário padrão segue America/Sao_Paulo.
 - Modelo de resposta padrão (A ou B), definido pelos testes.
 - **Whisper na VM (voz):** instalar `ffmpeg` e o `openai-whisper` (comandos no README §6) e conferir CPU e memória da VM gratuita; se pesar, usar `WHISPER_MODELO=tiny` ou voltar ao Gemini para voz. Modelo `base` foi o escolhido em 07/11.
 - ~~Atualizar `cryptography`~~ — **feito em 08/11:** 43.0.1 → 50.0.2 (6 alertas do Dependabot).
