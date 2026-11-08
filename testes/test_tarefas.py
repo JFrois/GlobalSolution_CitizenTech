@@ -239,6 +239,22 @@ class TestRoteamentoDeTarefas(unittest.TestCase):
         self.assertEqual(f("concluir tarefa 1")["args"]["acao"], "concluir")
         self.assertEqual(f("como pagar o IPVA")["ferramenta"], "buscar_orientacao")
 
+    def test_me_lembra_cria_lembrete(self):
+        # Antes ia para a busca e "luz" respondia a Tarifa Social de Energia.
+        import roteador
+        f = roteador.fallback_por_regras
+        for texto in ("me lembra de pagar a luz amanhã às 9h", "Me lembrar de ligar pro INSS amanhã",
+                      "me avisa amanhã 10h de levar o RG", "lembrar de renovar a CNH dia 15"):
+            r = f(texto)
+            self.assertEqual((r["ferramenta"], r["args"]["acao"]), ("gerenciar_tarefas", "criar"), texto)
+            self.assertEqual(r["args"]["titulo"], texto)
+        for texto in ("não lembro a senha do gov.br", "quanto custa a tarifa de onibus"):
+            self.assertEqual(f(texto)["ferramenta"], "buscar_orientacao", texto)
+        # O título guardado não leva o pedido ("me lembra de").
+        for texto in ("me lembra de pagar a luz", "me lembrar de pagar a luz", "lembrar de pagar a luz",
+                      "me avisa de pagar a luz", "me lembre de pagar a luz"):
+            self.assertEqual(tarefas._limpar_titulo(texto), "pagar a luz", texto)
+
     def test_tarefa_sem_verbo_com_conteudo_cria(self):
         import roteador
         f = roteador.fallback_por_regras
