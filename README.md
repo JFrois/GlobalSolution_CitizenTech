@@ -43,7 +43,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 - Modelos de resposta A e B, aviso de limitação e mensagens de entrada inválida (`src/respostas.py`).
 - Terminal completo (`python src/sistema.py`), com cores e texto puro de reserva, `--validar-entrega` e `--avaliar`.
 - Perguntas de teste da equipe congeladas antes das palavras-chave: **19/19 (100%)**; índice invertido cerca de 100 vezes mais rápido que a busca linear. Resultados em `testes/resultados.csv` e `testes/comparacao_modelos.csv`.
-- **231 testes automatizados** (`python -m unittest discover -s testes -t .`), todos passando. O CI roda no Python 3.9; os testes de FastAPI, aiogram e cryptography só rodam com o ambiente do servidor (precisa também de `pip install httpx`).
+- **239 testes automatizados** (`python -m unittest discover -s testes -t .`), todos passando. O CI roda a suíte duas vezes: no Python 3.9 só com a biblioteca padrão (o que o avaliador usa) e no 3.12 com as bibliotecas do servidor, sem pular os testes do painel, cofre e bot.
 
 **Concluído e testado no Telegram real (Onda 2, camada de produto), em 07/11:**
 
@@ -70,7 +70,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 2. **Indicadores (até 15/11):** perguntas do público (≥ 10, anônimas; hoje só existe o conjunto `equipe`) medidas **antes** de ajustar a busca; teste de usabilidade com pessoa de fora (`testes/usabilidade.md` está vazio); nota de clareza A × B (coluna `clareza_1a5` vazia). Só depois se escolhe o formato padrão (hoje o passo a passo é provisório).
 3. **Onda 2, teste real:** no Telegram real (com documentos fictícios): foto/PDF, cofre pelo chat, lembrete, resumo da manhã, Mini App (incluindo a aba Tarefas) e o botão "Sim, apagar tudo". `/painel` precisa de `PAINEL_URL` com https.
 4. **Infraestrutura:** VM, DuckDNS/Caddy e deploy automático (nunca testados; o deploy só liga com `DEPLOY_ATIVO=true`); `ffmpeg` e Whisper na VM.
-5. **Segurança:** `cryptography` atualizada para 49.0.0 em 08/11 (fecha os 5 alertas do Dependabot; reinstale com `pip install -r requirements.txt`). Antes da VM, gerar **novo** token do bot e **nova** chave do Gemini (os de teste foram compartilhados fora do `.env`) e conferir o histórico do Git (busca feita em 08/11 não achou tokens).
+5. **Segurança:** `cryptography` atualizada para 49.0.0 em 08/11 (fecha os 5 alertas do Dependabot). Para atualizar um ambiente já criado: `.venv/bin/python -m pip install cryptography==49.0.0` (não use `pip install -r requirements.txt` fora do `.venv` nem antes do passo do Whisper, ver §6). Antes da VM, gerar **novo** token do bot e **nova** chave do Gemini (os de teste foram compartilhados fora do `.env`) e conferir o histórico do Git (busca feita em 08/11 não achou tokens).
 6. **Decisões EM ABERTO:** feeds RSS por tema, fuso por usuário (hoje todos em America/Sao_Paulo), armazenamento definitivo (hoje SQLite; Supabase não foi adotado), faturamento do Gemini.
 7. **Documentação e entrega:** textos das seções 1, 2, 8, 9 e 10 deste README e "Participação na Competição"; relatório PDF (`docs/relatorio.pdf`); vídeo e `docs/link_video.txt`; `.txt` na FIAP ON.
 8. **Roadmap planejado (opcional, baixa prioridade):** números de contexto da Base dos Dados para o relatório (ver seção 10, "Melhorias e roadmap").
@@ -247,7 +247,7 @@ Sem base suficiente, o assistente diz que não encontrou orientação verificada
 
 São 19 perguntas em `testes/perguntas.json`: 8 diretas, 3 reformuladas, 3 fora da base e 5 de limite (entrada vazia, consulta ambígua "documento", tópico sem base, só símbolos e texto longo). Todas são fictícias, sem dado pessoal. As perguntas da equipe foram **congeladas num commit antes** de preencher as palavras-chave (histórico do Git). O conjunto do público (≥ 10 perguntas anônimas) será coletado depois e medido **antes** de qualquer ajuste.
 
-Testes automatizados: `python -m unittest discover -s testes -t .` (133 testes: base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal e avaliação).
+Testes automatizados: `python -m unittest discover -s testes -t .` (239 testes: base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal e avaliação, além do servidor, que só rodam com o ambiente do bot).
 
 ### Indicadores da busca
 
@@ -307,7 +307,7 @@ python src/sistema.py
 | `python src/sistema.py --validar-entrega` | Confere se todos os registros da base estão completos |
 | `python src/sistema.py --simples` | Texto puro, sem cor nem molduras (leitores de tela); também automático com `NO_COLOR` ou saída redirecionada |
 | `python src/sistema.py --base caminho.json` | Usa outra base JSON (para testes) |
-| `python src/sistema.py --servidor` | Sobe o bot do Telegram e a API do painel (precisa de `.env` e do ambiente descrito abaixo). O agendador ainda não existe |
+| `python src/sistema.py --servidor` | Sobe o bot do Telegram e a API do painel (precisa de `.env` e do ambiente descrito abaixo), com o agendador de lembretes, autodestruição e resumo da manhã |
 | `python -m unittest discover -s testes -t .` | Roda os testes automatizados |
 
 ### Rodar o bot (modo `--servidor`)
@@ -316,10 +316,11 @@ Use **Python 3.11 a 3.13** (no 3.14 o `pydantic-core` não compila). Exemplo no 
 
 ```bash
 python3.12 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-# Voz (Whisper local): precisa do ffmpeg no sistema e de dois passos, nesta ordem
+# Voz (Whisper local): precisa do ffmpeg no sistema e de ser instalado ANTES do requirements.txt
 brew install ffmpeg            # Linux: sudo apt install ffmpeg
 pip install "setuptools<81" wheel && pip install --no-build-isolation openai-whisper==20240930
+pip install -r requirements.txt   # sem o passo acima, falha com "No module named 'pkg_resources'"
+pip install httpx                 # opcional: para rodar também os testes do painel
 cp .env.example .env           # preencha TELEGRAM_BOT_TOKEN e, se quiser IA, GEMINI_API_KEY
 python src/sistema.py --servidor
 ```

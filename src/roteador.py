@@ -10,6 +10,7 @@ Este módulo só usa a biblioteca padrão; o Gemini é importado dentro de
 """
 from __future__ import annotations
 
+import difflib
 import logging
 import re
 import time
@@ -169,9 +170,26 @@ PALAVRAS_DE_LISTAGEM = {"lembrete", "lembretes", "tarefa", "tarefas", "minhas", 
                         "pendente", "tenho", "hoje", "amanha", "semana", "todas", "todos"}
 
 
+PALAVRAS_DE_TAREFA = ("tarefa", "tarefas", "lembrete", "lembretes")
+# Palavras reais parecidas com "tarefa" que NÃO podem virar tarefa ("Tarifa Social de Energia").
+NAO_CORRIGIR = {"tarifa", "tarifas"}
+
+
+def corrigir_digitacao_de_tarefa(tokens):
+    """"tareda" -> "tarefa", "lembrte" -> "lembrete": o roteamento de tarefas exige a palavra certa."""
+    saida = []
+    for t in tokens:
+        if len(t) >= 5 and t not in NAO_CORRIGIR and t not in PALAVRAS_DE_TAREFA:
+            parecida = difflib.get_close_matches(t, PALAVRAS_DE_TAREFA, n=1, cutoff=0.8)
+            if parecida:
+                t = parecida[0]
+        saida.append(t)
+    return saida
+
+
 def fallback_por_regras(texto):
     """Escolha determinística por palavras-chave simples. Padrão: buscar."""
-    palavras = " ".join(ponte.tokenizar(texto))
+    palavras = " ".join(corrigir_digitacao_de_tarefa(ponte.tokenizar(texto)))
     # "me" e "meu" são stopwords e somem em `palavras`: o pedido de envio usa o texto cru.
     cru = " ".join(re.findall(r"\w+", texto.lower()))
     if re.search(r"\b(guardar|guarde|salvar|salve)\b", palavras):
@@ -191,8 +209,11 @@ def fallback_por_regras(texto):
         resto = texto.strip()[:TAMANHO_MAX_TEXTO]
         if re.search(r"\b(conclui|concluir|concluida|concluido|feita|feito)\b", palavras):
             return {"ferramenta": "gerenciar_tarefas", "args": {"acao": "concluir", "titulo": resto}}
-        if re.search(r"\b(lembre|lembrar|criar|crie|cria|nova|novo|anotar|anote|adicionar|adicione|agendar|marcar)\b",
-                     palavras):
+        verbos = r"\b(lembre|lembrar|criar|crie|cria|nova|novo|anotar|anote|adicionar|adicione|agendar|marcar)\b"
+        if re.search(verbos, palavras):
+            # Só o pedido, sem o que anotar ("crie esta tareda"): título vazio faz a tarefa perguntar qual é.
+            if not [p for p in re.sub(verbos, " ", palavras).split() if p not in PALAVRAS_DE_LISTAGEM]:
+                resto = ""
             return {"ferramenta": "gerenciar_tarefas", "args": {"acao": "criar", "titulo": resto}}
         # Sem verbo: se sobrar conteúdo além das palavras de consulta ("tarefa - trabalho às 18:10"),
         # é um pedido de criação; só "minhas tarefas", "quais lembretes" etc. viram listagem.

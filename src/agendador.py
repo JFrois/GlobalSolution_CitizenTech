@@ -40,6 +40,25 @@ def texto_do_lembrete(titulo, quando, agora):
     return "Lembrete: %s" % titulo
 
 
+# Resumo da manhã com mais atraso que isto (servidor parado) é pulado: não faz sentido às 22h.
+ATRASO_MAX_BRIEFING_MIN = 3 * 60
+
+
+def erro_definitivo(erro):
+    """True quando tentar de novo não adianta: o usuário bloqueou o bot ou a conversa não existe.
+
+    Compara pelo nome da classe para não importar o aiogram aqui (o agendador é testado sem ele)."""
+    nome = type(erro).__name__
+    if nome == "TelegramForbiddenError":
+        return True
+    return nome == "TelegramBadRequest" and "chat not found" in str(erro).lower()
+
+
+def _minutos(hhmm):
+    h, m = hhmm.split(":")
+    return int(h) * 60 + int(m)
+
+
 async def processar(armazem, enviar, apagar, agora=None, briefing=None):
     """Cumpre o que venceu. Devolve (lembretes enviados, mensagens apagadas).
 
@@ -54,17 +73,31 @@ async def processar(armazem, enviar, apagar, agora=None, briefing=None):
             armazem.marcar_avisada(tarefa_id)
             avisos += 1
         except Exception as erro:
-            log.warning("lembrete não enviado (%s); tenta de novo", type(erro).__name__)
+            if erro_definitivo(erro):
+                # Bot bloqueado ou conversa apagada: marca para não tentar a cada 30 s para sempre.
+                armazem.marcar_avisada(tarefa_id)
+                log.info("lembrete descartado (%s): usuário inacessível", type(erro).__name__)
+            else:
+                log.warning("lembrete não enviado (%s); tenta de novo", type(erro).__name__)
     if briefing is not None:
         local = datetime.datetime.fromtimestamp(agora, tarefas.FUSO_PADRAO)
-        for user_id in armazem.briefings_a_enviar(local.strftime("%Y-%m-%d"), local.strftime("%H:%M")):
+        hoje, agora_hhmm = local.strftime("%Y-%m-%d"), local.strftime("%H:%M")
+        for user_id, hora in armazem.briefings_a_enviar(hoje, agora_hhmm):
+            if _minutos(agora_hhmm) - _minutos(hora) > ATRASO_MAX_BRIEFING_MIN:
+                armazem.marcar_briefing_enviado(user_id, hoje)  # atrasado demais: volta amanhã
+                log.info("resumo da manhã pulado: mais de 3 h de atraso")
+                continue
             try:
                 texto = await briefing(user_id)
                 if texto:
                     await enviar(user_id, texto)
-                armazem.marcar_briefing_enviado(user_id, local.strftime("%Y-%m-%d"))
+                armazem.marcar_briefing_enviado(user_id, hoje)
             except Exception as erro:
-                log.warning("briefing não enviado (%s); tenta de novo", type(erro).__name__)
+                if erro_definitivo(erro):
+                    armazem.marcar_briefing_enviado(user_id, hoje)
+                    log.info("resumo descartado (%s): usuário inacessível", type(erro).__name__)
+                else:
+                    log.warning("briefing não enviado (%s); tenta de novo", type(erro).__name__)
     for excl_id, chat_id, message_id in armazem.exclusoes_vencidas(agora):
         try:
             await apagar(chat_id, message_id)

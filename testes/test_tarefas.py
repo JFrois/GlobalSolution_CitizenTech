@@ -153,6 +153,34 @@ class TestAgendador(unittest.TestCase):
         self.assertIn("atraso", texto)
         self.assertTrue(texto.endswith("trabalho faculdade"))
 
+    def test_usuario_que_bloqueou_o_bot_nao_e_tentado_para_sempre(self):
+        class TelegramForbiddenError(Exception):  # mesmo nome da classe do aiogram
+            pass
+
+        async def bloqueado(uid, texto):
+            raise TelegramForbiddenError("bot was blocked by the user")
+        self.arm.criar_tarefa(1, "x", 1000)
+        asyncio.run(agendador.processar(self.arm, bloqueado, self.apagar, 2000))
+        self.assertEqual(self.processar(2030), (0, 0))  # não tenta de novo
+        self.assertEqual(self.enviados, [])
+
+    def test_erro_de_rede_continua_tentando(self):
+        self.assertFalse(agendador.erro_definitivo(RuntimeError("rede")))
+
+    def test_resumo_da_manha_atrasado_demais_e_pulado(self):
+        resumos = []
+
+        async def briefing(uid):
+            resumos.append(uid)
+            return "Resumo"
+        self.arm.definir_hora_briefing(1, "07:00")
+        dez_da_noite = dt(8, 22).timestamp()
+        asyncio.run(agendador.processar(self.arm, self.enviar, self.apagar, dez_da_noite, briefing))
+        self.assertEqual((resumos, self.enviados), ([], []))
+        oito_e_meia = dt(9, 8, 30).timestamp()  # dia seguinte, 1h30 de atraso: envia
+        asyncio.run(agendador.processar(self.arm, self.enviar, self.apagar, oito_e_meia, briefing))
+        self.assertEqual(resumos, [1])
+
     def test_falha_ao_apagar_nao_repete(self):
         agendador.agendar_exclusao(self.arm, 1, 10, 20, agora=0)
         async def quebra(chat, msg):
@@ -219,6 +247,15 @@ class TestRoteamentoDeTarefas(unittest.TestCase):
             self.assertEqual(f(texto)["args"]["acao"], "criar", texto)
         for texto in ("minhas tarefas", "quais lembretes tenho hoje", "tarefas de amanhã"):
             self.assertEqual(f(texto)["args"]["acao"], "listar", texto)
+
+    def test_erro_de_digitacao_em_tarefa(self):
+        import roteador
+        f = roteador.fallback_por_regras
+        self.assertEqual(f("crie esta tareda")["args"], {"acao": "criar", "titulo": ""})
+        self.assertEqual(f("lembrte pagar conta amanhã 9h")["args"]["acao"], "criar")
+        self.assertEqual(f("minhas tarefs")["args"]["acao"], "listar")
+        # "tarifa" é palavra da base (Tarifa Social de Energia): não pode virar tarefa.
+        self.assertEqual(f("como pedir a tarifa social de energia")["ferramenta"], "buscar_orientacao")
 
     def test_reconciliar_prefere_criar_quando_gemini_so_lista(self):
         import roteador

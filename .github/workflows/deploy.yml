@@ -18,8 +18,20 @@ jobs:
         with:
           python-version: "3.9"
       - run: python -m unittest discover -s testes -t .
+  testes-servidor:
+    # Mesma suíte com as bibliotecas do servidor (FastAPI, cryptography, aiogram...), para os
+    # testes do painel, cofre e bot não serem pulados. Sem o Whisper (pesado; tem teste falso).
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: grep -v '^openai-whisper' requirements.txt > /tmp/req-ci.txt
+      - run: pip install -q -r /tmp/req-ci.txt httpx
+      - run: python -m unittest discover -s testes -t .
   deploy:
-    needs: testes
+    needs: [testes, testes-servidor]
     # PR só roda os testes. O deploy só roda no push na main E depois que a VM existir:
     # crie a variável de repositório DEPLOY_ATIVO=true (Settings > Variables) junto dos secrets.
     if: github.event_name == 'push' && vars.DEPLOY_ATIVO == 'true'
