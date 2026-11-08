@@ -29,6 +29,14 @@ class ArmazenamentoSQLite:
         self._con.execute(
             "CREATE TABLE IF NOT EXISTS usuarios ("
             "user_id INTEGER PRIMARY KEY, uf TEXT, temas_briefing TEXT)")
+        # Cofre (spec §10): só dados já cifrados; o servidor não guarda a senha.
+        self._con.execute(
+            "CREATE TABLE IF NOT EXISTS cofre_config ("
+            "user_id INTEGER PRIMARY KEY, salt BLOB, verificador BLOB, iteracoes INTEGER)")
+        self._con.execute(
+            "CREATE TABLE IF NOT EXISTS cofre_docs ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, "
+            "nome BLOB, conteudo BLOB)")
         self._con.commit()
 
     def _garantir(self, user_id):
@@ -62,8 +70,54 @@ class ArmazenamentoSQLite:
                 "SELECT temas_briefing FROM usuarios WHERE user_id = ?", (int(user_id),)).fetchone()
         return json.loads(linha[0]) if linha and linha[0] else []
 
-    def apagar_usuario(self, user_id):
-        """Remove tudo do usuário (/apagar_meus_dados)."""
+    # --- cofre: toda consulta filtrada por user_id (spec §13, item 3) ---
+
+    def salvar_config_cofre(self, user_id, salt, verificador, iteracoes):
         with self._lock:
-            self._con.execute("DELETE FROM usuarios WHERE user_id = ?", (int(user_id),))
+            self._con.execute(
+                "INSERT OR REPLACE INTO cofre_config VALUES (?, ?, ?, ?)",
+                (int(user_id), salt, verificador, int(iteracoes)))
+            self._con.commit()
+
+    def obter_config_cofre(self, user_id):
+        with self._lock:
+            l = self._con.execute(
+                "SELECT salt, verificador, iteracoes FROM cofre_config WHERE user_id = ?",
+                (int(user_id),)).fetchone()
+        return {"salt": l[0], "verificador": l[1], "iteracoes": l[2]} if l else None
+
+    def salvar_doc(self, user_id, nome_cifrado, conteudo_cifrado):
+        with self._lock:
+            cur = self._con.execute(
+                "INSERT INTO cofre_docs (user_id, nome, conteudo) VALUES (?, ?, ?)",
+                (int(user_id), nome_cifrado, conteudo_cifrado))
+            self._con.commit()
+            return cur.lastrowid
+
+    def listar_docs(self, user_id):
+        """[(id, nome_cifrado)] só do usuário."""
+        with self._lock:
+            return self._con.execute(
+                "SELECT id, nome FROM cofre_docs WHERE user_id = ? ORDER BY id",
+                (int(user_id),)).fetchall()
+
+    def obter_doc(self, user_id, doc_id):
+        with self._lock:
+            return self._con.execute(
+                "SELECT nome, conteudo FROM cofre_docs WHERE id = ? AND user_id = ?",
+                (int(doc_id), int(user_id))).fetchone()
+
+    def apagar_doc(self, user_id, doc_id):
+        with self._lock:
+            cur = self._con.execute(
+                "DELETE FROM cofre_docs WHERE id = ? AND user_id = ?",
+                (int(doc_id), int(user_id)))
+            self._con.commit()
+            return cur.rowcount > 0
+
+    def apagar_usuario(self, user_id):
+        """Remove tudo do usuário (/apagar_meus_dados), inclusive o cofre."""
+        with self._lock:
+            for tabela in ("cofre_docs", "cofre_config", "usuarios"):
+                self._con.execute("DELETE FROM %s WHERE user_id = ?" % tabela, (int(user_id),))
             self._con.commit()
