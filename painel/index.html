@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Citizen Assist AI</title>
+  <link rel="stylesheet" href="/static/tokens.css">
+  <link rel="stylesheet" href="/static/painel.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Citizen Assist AI</h1>
+    <p class="apoio">Orientação não oficial, só com fontes verificadas.</p>
+  </header>
+
+  <nav role="tablist" aria-label="Seções">
+    <button role="tab" id="aba-perguntar" aria-selected="true" aria-controls="tela-perguntar">Perguntar</button>
+    <button role="tab" id="aba-cofre" aria-selected="false" aria-controls="tela-cofre">Cofre</button>
+    <button role="tab" id="aba-ajustes" aria-selected="false" aria-controls="tela-ajustes">Ajustes</button>
+  </nav>
+
+  <main>
+    <p id="aviso" role="alert" hidden></p>
+
+    <!-- Perguntar: conteúdo 100% da base, sem IA (spec §10.5) -->
+    <section id="tela-perguntar" role="tabpanel" aria-labelledby="aba-perguntar">
+      <form id="form-pergunta">
+        <label for="pergunta">Qual é a sua dúvida?</label>
+        <input id="pergunta" type="text" maxlength="300" autocomplete="off"
+               placeholder="Ex.: como tirar a segunda via do RG?">
+        <button type="submit" class="principal">Perguntar</button>
+      </form>
+      <div id="cena" aria-live="polite"></div>
+    </section>
+
+    <!-- Cofre: senha só aqui, nunca no chat (spec §10.1) -->
+    <section id="tela-cofre" role="tabpanel" aria-labelledby="aba-cofre" hidden>
+      <div id="cofre-sem" hidden>
+        <h2>Criar o cofre</h2>
+        <p>Escolha uma senha com pelo menos 10 caracteres. <strong>Se você esquecer, os documentos não podem ser recuperados.</strong> A senha não é guardada no servidor.</p>
+        <form id="form-criar">
+          <label for="senha-nova">Senha do cofre</label>
+          <input id="senha-nova" type="password" minlength="10" autocomplete="new-password" required>
+          <button type="submit" class="principal">Criar cofre</button>
+        </form>
+      </div>
+      <div id="cofre-bloqueado" hidden>
+        <h2>Cofre bloqueado</h2>
+        <form id="form-desbloquear">
+          <label for="senha">Senha do cofre</label>
+          <input id="senha" type="password" autocomplete="current-password" required>
+          <button type="submit" class="principal">Desbloquear</button>
+        </form>
+      </div>
+      <div id="cofre-aberto" hidden>
+        <h2>Seus documentos</h2>
+        <p class="apoio">Bloqueia sozinho em <span id="contador">--:--</span>.</p>
+        <ul id="docs" class="lista"></ul>
+        <p id="docs-vazio" class="apoio" hidden>Nenhum documento. Envie uma foto ou PDF ao bot para guardar.</p>
+        <div id="visualizacao"></div>
+        <button id="bloquear" type="button">Bloquear agora</button>
+      </div>
+    </section>
+
+    <section id="tela-ajustes" role="tabpanel" aria-labelledby="aba-ajustes" hidden>
+      <h2>Onde você mora</h2>
+      <label for="uf">Estado (UF)</label>
+      <select id="uf"><option value="">Escolher</option></select>
+      <h2>Resumo da manhã</h2>
+      <p class="apoio">Temas das manchetes (fonte não oficial).</p>
+      <div id="temas"></div>
+      <button id="salvar" type="button" class="principal">Salvar</button>
+    </section>
+  </main>
+
+  <script src="/static/painel.js"></script>
+</body>
+</html>
