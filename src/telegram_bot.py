@@ -123,7 +123,12 @@ def criar_bot(config, base, armazem, links, cofre=None):
     # GEMINI_MODELO (opcional) vai para o início da fila; os demais vêm da lista da chave.
     modelo_env = config.get("GEMINI_MODELO") or None
     modelo_whisper = transcricao.nome_do_modelo(config)
-    feeds = briefing.carregar_feeds()  # data/feeds.json (EM ABERTO: a equipe escolhe os feeds)
+    feeds = briefing.carregar_feeds()  # data/feeds.json (feeds por tema de interesse)
+    travas = {}  # uma fila por usuário, para responder na ordem em que as mensagens chegaram
+
+    def trava_do_usuario(user_id):
+        return travas.setdefault(user_id, asyncio.Lock())
+
     pendentes = documentos.Pendentes()  # documento esperando confirmação (só na memória)
 
     async def responder(mensagem, resultado, user_id):
@@ -388,7 +393,14 @@ def criar_bot(config, base, armazem, links, cofre=None):
         await processar_texto(m, m.from_user.id, m.text)
 
     async def processar_texto(m: Message, user_id: int, texto: str):
-        """Caminho único para texto digitado e para voz já transcrita."""
+        """Caminho único para texto digitado e para voz já transcrita.
+
+        Uma mensagem por vez por usuário: sem isso, uma pergunta lenta (Gemini) era
+        ultrapassada pela seguinte e as respostas chegavam fora de ordem."""
+        async with trava_do_usuario(user_id):
+            await _processar_texto(m, user_id, texto)
+
+    async def _processar_texto(m: Message, user_id: int, texto: str):
         try:
             if pendentes.esta_pedindo_nome(user_id):  # o texto é o nome do documento, não uma pergunta
                 nome = documentos.limpar_nome(texto)
@@ -428,7 +440,7 @@ def criar_bot(config, base, armazem, links, cofre=None):
             elif chamada["ferramenta"] == "briefing_matinal":
                 # Busca os feeds na rede: em outra thread, para não travar o bot.
                 resultado = await asyncio.to_thread(
-                    briefing.executar, chamada["args"], armazem, user_id, feeds, base["temas"])
+                    briefing.executar, chamada["args"], armazem, user_id, feeds, briefing.TEMAS_BRIEFING)
             else:
                 resultado = roteador.executar(chamada, base, armazem.obter_uf(user_id))
             await responder(m, resultado, user_id)

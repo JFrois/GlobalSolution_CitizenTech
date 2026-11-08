@@ -23,8 +23,9 @@ NOME_MAX = 60
 
 AVISO_CONSENTIMENTO = (
     "Para reconhecer o tipo do documento e sugerir um nome, vou enviar este arquivo ao Gemini "
-    "(Google, plano pago). O Google não usa o arquivo para treinar produtos, mas pode manter "
-    "registros por um tempo limitado para detectar abuso e pode processá-lo em outros países. "
+    "(Google, plano gratuito). Nesse plano o Google pode usar o arquivo para melhorar seus "
+    "produtos, pode permitir que pessoas o revisem e pode processá-lo em outros países. "
+    "Não envie documentos reais se isso for um problema para você. "
     "Se preferir, não precisa usar a sugestão: escolha um nome seu e o arquivo não é enviado.")
 AVISO_ENVIO = ("Vou apagar esta mensagem do chat em 5 minutos. Isso apaga do chat, não do seu "
                "aparelho. Conversas com bots do Telegram não são protegidas de ponta a ponta.")

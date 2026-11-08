@@ -194,15 +194,23 @@ for (const b of document.querySelectorAll("[data-pergunta]")) b.addEventListener
 
 // ---- Tarefas e lembretes (spec §11): o texto de "quando" é lido no servidor, por regras ----
 function desenharTarefas(itens) {
-  const ul = $("tarefas-lista"); ul.textContent = "";
-  $("tarefas-vazio").hidden = itens.length > 0;
+  // Lembretes já enviados pelo bot ficam numa seção própria, abaixo dos que ainda vão avisar.
+  const pendentes = itens.filter((t) => !t.avisada), avisadas = itens.filter((t) => t.avisada);
+  desenharLista($("tarefas-lista"), pendentes);
+  desenharLista($("tarefas-avisadas"), avisadas);
+  $("tarefas-vazio").hidden = pendentes.length > 0;
+  $("tarefas-avisadas-titulo").hidden = avisadas.length === 0;
+}
+
+function desenharLista(ul, itens) {
+  ul.textContent = "";
   for (const t of itens) {
     const li = el("li", undefined, "doc");
     const ic = el("span", undefined, "doc-icone azul");
     ic.appendChild(icone(["M12 3a9 9 0 100 18 9 9 0 000-18z", "M8 12.5l3 3 5-6"], 24));
     const texto = el("span", undefined, "doc-nome");
     texto.appendChild(document.createTextNode(t.titulo));
-    if (t.quando_texto) texto.appendChild(el("span", "Aviso em " + t.quando_texto, "tarefa-quando"));
+    if (t.quando_texto) texto.appendChild(el("span", (t.avisada ? "Avisado em " : "Aviso em ") + t.quando_texto, "tarefa-quando"));
     const concluir = el("button", "Concluir", "botao-sec"); concluir.type = "button";
     concluir.setAttribute("aria-label", "Concluir: " + t.titulo);
     concluir.addEventListener("click", () => concluirTarefa(t, li));

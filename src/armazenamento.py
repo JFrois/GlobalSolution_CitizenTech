@@ -147,6 +147,13 @@ class ArmazenamentoSQLite:
                 "SELECT id, titulo, quando FROM tarefas WHERE user_id = ? AND concluida = 0 "
                 "ORDER BY quando IS NULL, quando, id", (int(user_id),)).fetchall()
 
+    def listar_tarefas_avisadas(self, user_id):
+        """Ids das pendentes cujo lembrete já foi enviado (o painel as separa das ainda por vir)."""
+        with self._lock:
+            return {r[0] for r in self._con.execute(
+                "SELECT id FROM tarefas WHERE user_id = ? AND concluida = 0 AND avisada = 1",
+                (int(user_id),)).fetchall()}
+
     def concluir_tarefa(self, user_id, tarefa_id):
         with self._lock:
             cur = self._con.execute(

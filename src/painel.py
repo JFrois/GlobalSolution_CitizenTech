@@ -291,7 +291,7 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
     @app.get("/api/estado")
     def estado(x_telegram_init_data: str = Header(default=""), sessao: str = Cookie(default="")):
         uid = usuario(x_telegram_init_data, sessao)
-        saida = {"temas": base["temas"], "cofre_disponivel": cofre is not None,
+        saida = {"temas": briefing.TEMAS_BRIEFING, "cofre_disponivel": cofre is not None,
                  "cofre_existe": False, "desbloqueado": False, "segundos_restantes": 0,
                  "uf": None, "temas_briefing": [], "hora_briefing": None}
         if armazem is not None:
@@ -310,7 +310,7 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
         uid = usuario(x_telegram_init_data, sessao)
         exigir_cofre()
         try:
-            uf, temas, hora = validar_config(await json_ou_400(request), base["temas"])
+            uf, temas, hora = validar_config(await json_ou_400(request), briefing.TEMAS_BRIEFING)
         except ValueError as erro:
             raise HTTPException(status_code=400, detail=str(erro))
         if uf:

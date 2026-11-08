@@ -221,6 +221,15 @@ class TestTarefasParaPainel(unittest.TestCase):
                 self.assertEqual(msg, esperado)
         self.assertEqual(tarefas.lista_para_painel(self.arm, 1), [])
 
+    def test_lembrete_avisado_vem_marcado_para_o_painel(self):
+        tarefas.tentar_criar("a", "amanhã às 9h", self.arm, 1, AGORA)
+        tarefas.tentar_criar("b", "", self.arm, 1, AGORA)
+        antes = tarefas.lista_para_painel(self.arm, 1)
+        self.assertEqual([i["avisada"] for i in antes], [False, False])
+        self.arm.marcar_avisada(antes[0]["id"])
+        depois = {i["titulo"]: i["avisada"] for i in tarefas.lista_para_painel(self.arm, 1)}
+        self.assertEqual(depois, {"a": True, "b": False})
+
     def test_lista_so_do_proprio_usuario(self):
         tarefas.tentar_criar("tarefa de A", "", self.arm, 1, AGORA)
         self.assertEqual(tarefas.lista_para_painel(self.arm, 2), [])

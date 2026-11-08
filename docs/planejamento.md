@@ -24,7 +24,7 @@
 | C2 | Parcial | SQLite atrás de `armazenamento.py`; Supabase **não** adotado (decisão EM ABERTO) |
 | C1, C3, C4 | **Pendente** | DuckDNS/Caddy, VM e deploy nunca testados; deploy só liga com `DEPLOY_ATIVO=true` |
 | C9 | Parcial | Testes de isolamento, senha errada, expiração e `initData` existem; falta revisão humana de segurança |
-| B2, B3, B11, B12 | **Pendente** | Faturamento do Gemini, nota de clareza A × B (coluna `clareza_1a5` vazia), usabilidade (`testes/usabilidade.md` vazio), perguntas do público (nenhuma ainda) |
+| B2, B3, B11, B12 | **Pendente** | ~~Faturamento do Gemini~~ (decidido em 08/11: plano gratuito), nota de clareza A × B (coluna `clareza_1a5` vazia), usabilidade (`testes/usabilidade.md` vazio), perguntas do público (nenhuma ainda) |
 | E6 a E10 | **Pendente** | README (seções 1, 2, 8, 9, 10 e "Participação na Competição"), relatório PDF, `uso_ia.md` (consolidar), vídeo, `link_video.txt`, envio |
 | E12 (novo) | Planejado, opcional | Números de contexto da Base dos Dados para o relatório (seção 5) |
 
@@ -55,7 +55,7 @@
 
 **Integrante B (Flávia):**
 1. B12 (até 14/11): coletar ≥ 10 perguntas do público, anônimas, no conjunto `publico`, e medir **antes** de ajustar a busca. B11 (até 15/11): teste de usabilidade (`docs/ux.md` §8 e SUS). B3: notas de clareza 1 a 5 (rótulos X/Y).
-2. B2: confirmar faturamento do Gemini. Escolher os feeds RSS por tema (`data/feeds.json`).
+2. ~~B2~~ decidido em 08/11: Gemini no plano gratuito (sem faturamento). Feeds RSS feitos em 08/11 (5 temas do usuário); reavaliar só a fonte de Filmes.
 3. Testar no Telegram real: foto/PDF, cofre pelo chat, resumo da manhã e "Sim, apagar tudo" (o lembrete pelo chat já foi testado em 08/11).
 4. E2: revisar `documentacao`, incluindo os links por estado do DOC-001. E8: consolidar `docs/uso_ia.md`.
 
@@ -65,7 +65,7 @@
 3. C9: revisão humana de segurança (cripto, `initData`, isolamento por `user_id`, `.env`).
 4. E2: revisar `servicos`. E7: consolidar o relatório PDF; se der tempo, E12 (Base dos Dados).
 
-**Melhorias conhecidas (não bloqueiam a entrega):** respostas do Gemini podem chegar fora de ordem; a aba Tarefas mantém em "Pendentes" os lembretes já avisados até serem concluídos; `pyright` e `httpx` não estão no `.venv`; Windows não testado.
+**Melhorias conhecidas (não bloqueiam a entrega):** (resolvidos em 08/11: respostas do Gemini fora de ordem e lembretes já avisados na aba Tarefas); `pyright` e `httpx` não estão no `.venv`; Windows não testado.
 
 ---
 
@@ -102,7 +102,7 @@
 | Código | Atividade | Spec | Prazo | Critério de aceite |
 |---|---|---|---|---|
 | B1 | `testes/perguntas.json`: 14 perguntas (conjunto `equipe`), limites L1–L3 e extras (opção inexistente, `"???"`, texto longo). **Commit antes de A preencher `palavras_chave` e `sinonimos`** | §14.1 | 08/11 (cedo) | Formato `{id, conjunto, tipo, pergunta, esperado}`; tudo fictício; commit anterior ao das palavras-chave |
-| B2 | Confirmar faturamento ativo do projeto da chave Gemini (AI Studio) | §12, §17 | 07/11 | Print/registro da confirmação para a equipe |
+| B2 ~~(dispensado em 08/11: plano gratuito, aviso de consentimento atualizado)~~ | Confirmar faturamento ativo do projeto da chave Gemini (AI Studio) | §12, §17 | 07/11 | Print/registro da confirmação para a equipe |
 | B3 | Comparação A × B pela rubrica da spec §8: critérios automáticos + nota de clareza 1–5 (3 integrantes e a pessoa do teste de usabilidade, sem saber qual é o modelo) | §8 | 10/11 (notas até 15/11) | Tabela comparativa e modelo padrão escolhido (fecha item EM ABERTO) |
 | B4 | `telegram_bot.py`: interface, `user_id`, `/localizacao`, `/painel`, `/apagar_meus_dados` | §9, §11 | 10/11 | Bot responde na VM |
 | B5 | `roteador.py`: Gemini com function calling (4 ferramentas), validação estrita dos argumentos e fallback por regras | §9 | 10/11 | Com o Gemini desligado, o bot continua respondendo pelo fallback |
@@ -193,8 +193,8 @@ Estes itens são decisões humanas, não da IA (spec §17).
 | ~~Quem é A, B e C~~ (resolvido em 07/11) · suplentes | — | Equipe |
 | Teste DuckDNS + Caddy | C3, C4, C8 | C |
 | Armazenamento (Supabase ou equivalente) | C6, C7, C8, B7 | C |
-| Faturamento do Gemini | B5, C7, B10 | B |
-| Feeds RSS por tema e fuso horário padrão | B9, B7 | B |
+| ~~Faturamento do Gemini~~ (plano gratuito, 08/11) | B5, C7, B10 | B |
+| ~~Feeds RSS por tema~~ (feito 08/11) e fuso horário padrão | B9, B7 | B |
 | Modelo de resposta padrão (A ou B) | Default do produto | B, após os testes |
 | Ferramenta para coletar perguntas do público de forma anônima | B12 | B |
 | ~~Aprovar a aba "Perguntar"~~ (aprovada em 07/11) | — | — |

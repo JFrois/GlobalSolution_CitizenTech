@@ -36,9 +36,12 @@ class TestFeeds(unittest.TestCase):
             self.assertEqual(briefing.carregar_feeds(ruim), {})
             self.assertEqual(briefing.carregar_feeds(Path(d) / "nao-existe.json"), {})
 
-    def test_feeds_do_projeto_comecam_vazios(self):
+    def test_feeds_do_projeto_cobrem_os_5_temas(self):
         feeds = briefing.carregar_feeds()
-        self.assertTrue(all(v == [] for v in feeds.values()))
+        self.assertEqual(set(feeds), set(briefing.TEMAS_BRIEFING))
+        for tema, urls in feeds.items():
+            self.assertTrue(urls, tema)
+            self.assertTrue(all(u.startswith("https://") for u in urls), tema)
 
     def test_maximo_de_3_e_feed_com_erro_e_pulado(self):
         itens = briefing.manchetes_do_tema(["https://ruim.org/a", "https://x.org/b"], coletor_falso)
@@ -49,6 +52,13 @@ class TestFeeds(unittest.TestCase):
 class TestMontar(unittest.TestCase):
     def setUp(self):
         self.arm = armazenamento.ArmazenamentoSQLite(":memory:")
+
+    def test_tema_antigo_guardado_e_ignorado(self):
+        self.arm.definir_temas_briefing(1, ["servicos", "musica"])
+        texto = briefing.montar(1, self.arm, {"musica": ["https://x.org/a"]}, briefing.TEMAS_BRIEFING,
+                                AGORA, coletor_falso)
+        self.assertIn("Música:", texto)
+        self.assertNotIn("servicos", texto)
 
     def montar(self, uid=1, feeds=None):
         return briefing.montar(uid, self.arm, feeds or {}, TEMAS, AGORA, coletor_falso)

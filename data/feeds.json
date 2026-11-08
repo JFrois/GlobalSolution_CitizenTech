@@ -1,6 +1,21 @@
 {
-  "_aviso": "TODO (EM ABERTO, spec §11 e §17): a equipe escolhe 1 ou 2 feeds RSS por tema, de preferência veículos públicos ou governamentais. Enquanto a lista estiver vazia, o briefing mostra só as tarefas do dia. Não precisa mexer no código: basta preencher as listas com URLs de feeds RSS.",
-  "documentacao": [],
-  "servicos": [],
-  "direitos": []
+  "_aviso": "Feeds RSS por tema de interesse do resumo da manhã (decisão de 08/11). Os temas são os de briefing.TEMAS_BRIEFING. Para trocar um feed, edite a lista; não precisa mexer no código. Preferir veículos públicos. Feeds conferidos em 08/11/2026; 'filmes' tem fonte fraca (g1 Cinema vinha vazio) e vale reavaliar.",
+  "cultura": [
+    "https://agenciabrasil.ebc.com.br/rss/cultura/feed.xml"
+  ],
+  "tecnologia": [
+    "https://tecnoblog.net/feed/",
+    "https://olhardigital.com.br/feed/"
+  ],
+  "saude": [
+    "https://agenciabrasil.ebc.com.br/rss/saude/feed.xml",
+    "https://g1.globo.com/rss/g1/bemestar/"
+  ],
+  "musica": [
+    "https://g1.globo.com/rss/g1/pop-arte/musica/"
+  ],
+  "filmes": [
+    "https://g1.globo.com/rss/g1/pop-arte/cinema/",
+    "https://www.papelpop.com/feed/"
+  ]
 }

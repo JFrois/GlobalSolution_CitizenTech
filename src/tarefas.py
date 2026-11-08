@@ -175,9 +175,14 @@ def tentar_criar(titulo, pedido_quando, armazem, user_id, agora=None):
 
 
 def lista_para_painel(armazem, user_id):
-    """Pendentes do usuário em formato de dados: [{id, titulo, quando, quando_texto}]."""
+    """Pendentes do usuário em formato de dados: [{id, titulo, quando, quando_texto, avisada}].
+
+    `avisada` é True quando o lembrete já foi enviado pelo bot; o painel mostra essas
+    numa seção à parte, em vez de misturá-las com o que ainda vai avisar."""
+    avisadas = armazem.listar_tarefas_avisadas(user_id)
     return [{"id": i, "titulo": t, "quando": q,
-             "quando_texto": formatar_quando(q) if q else None}
+             "quando_texto": formatar_quando(q) if q else None,
+             "avisada": i in avisadas}
             for i, t, q in armazem.listar_tarefas(user_id)]
 
 

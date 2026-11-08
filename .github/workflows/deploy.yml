@@ -1,5 +1,8 @@
 # Deploy automático: a cada push na main, atualiza a VM por SSH (spec §12).
 # Secrets necessários no GitHub: HOST, USER, KEY (chave SSH dedicada ao deploy).
+# O .env da VM é gravado a cada deploy a partir dos secrets TELEGRAM_BOT_TOKEN, GEMINI_API_KEY,
+# GEMINI_MODELO, SESSAO_SEGREDO e (quando existirem) SUPABASE_URL, SUPABASE_KEY, PAINEL_URL,
+# DUCKDNS_TOKEN, WHISPER_MODELO, PAINEL_PORTA. Para mudar um valor: altere o secret e refaça o deploy.
 name: deploy
 on:
   push:
@@ -36,15 +39,34 @@ jobs:
     # crie a variável de repositório DEPLOY_ATIVO=true (Settings > Variables) junto dos secrets.
     if: github.event_name == 'push' && vars.DEPLOY_ATIVO == 'true'
     runs-on: ubuntu-latest
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_MODELO: ${{ secrets.GEMINI_MODELO }}
+      SESSAO_SEGREDO: ${{ secrets.SESSAO_SEGREDO }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      PAINEL_URL: ${{ secrets.PAINEL_URL }}
+      DUCKDNS_TOKEN: ${{ secrets.DUCKDNS_TOKEN }}
+      WHISPER_MODELO: ${{ secrets.WHISPER_MODELO }}
+      PAINEL_PORTA: ${{ secrets.PAINEL_PORTA }}
     steps:
       - uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.KEY }}
+          envs: TELEGRAM_BOT_TOKEN,GEMINI_API_KEY,GEMINI_MODELO,SESSAO_SEGREDO,SUPABASE_URL,SUPABASE_KEY,PAINEL_URL,DUCKDNS_TOKEN,WHISPER_MODELO,PAINEL_PORTA
           script: |
             cd ~/citizen-assist
             git pull --ff-only origin main
+            # Grava o .env só com os valores preenchidos, legível apenas pelo dono do arquivo.
+            umask 077
+            : > .env.novo
+            for k in TELEGRAM_BOT_TOKEN GEMINI_API_KEY GEMINI_MODELO SESSAO_SEGREDO SUPABASE_URL SUPABASE_KEY PAINEL_URL DUCKDNS_TOKEN WHISPER_MODELO PAINEL_PORTA; do
+              v=$(printenv "$k") && [ -n "$v" ] && printf '%s=%s\n' "$k" "$v" >> .env.novo
+            done
+            mv .env.novo .env
             command -v ffmpeg >/dev/null || echo 'AVISO: instale o ffmpeg na VM (sudo apt install ffmpeg) para ativar a voz'
             # O openai-whisper não compila com o setuptools novo (falta pkg_resources):
             # instala as ferramentas antigas e o Whisper sem isolamento de build, antes do resto.
