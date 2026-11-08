@@ -325,6 +325,8 @@ cp .env.example .env           # preencha TELEGRAM_BOT_TOKEN e, se quiser IA, GE
 python src/sistema.py --servidor
 ```
 
+Para parar: **Ctrl+C** no terminal do servidor desliga o bot, o painel e o agendador juntos. Se aparecer "A porta 8000 já está em uso", ainda há um servidor rodando: `lsof -i :8000` mostra o número do processo.
+
 Variáveis do `.env` (nomes em `.env.example`; **nunca** commitar o `.env`):
 
 | Variável | Para quê |

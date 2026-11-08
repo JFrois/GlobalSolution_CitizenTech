@@ -408,5 +408,47 @@ class TestServidor(unittest.TestCase):
         self.assertNotIn("Traceback", r.stdout + r.stderr)
 
 
+
+class TestDesligamento(unittest.TestCase):
+    """Ctrl+C para o bot (o aiogram fica com os sinais); o painel e o agendador têm de parar junto."""
+
+    def _rodar(self, polling):
+        import asyncio
+
+        class Dp:
+            async def start_polling(self, bot):
+                await polling()
+
+        class ServidorWeb:
+            should_exit = False
+
+        class Agenda:
+            desligada = False
+
+            def shutdown(self, wait=True):
+                self.desligada = True
+
+        web, agenda = ServidorWeb(), Agenda()
+        try:
+            asyncio.run(servidor.polling_que_desliga_tudo(Dp(), None, web, agenda))
+        except RuntimeError:
+            pass
+        return web, agenda
+
+    def test_fim_do_polling_desliga_painel_e_agendador(self):
+        async def para():
+            return None
+        web, agenda = self._rodar(para)
+        self.assertTrue(web.should_exit)
+        self.assertTrue(agenda.desligada)
+
+    def test_erro_no_polling_tambem_desliga(self):
+        async def quebra():
+            raise RuntimeError("rede")
+        web, agenda = self._rodar(quebra)
+        self.assertTrue(web.should_exit)
+        self.assertTrue(agenda.desligada)
+
+
 if __name__ == "__main__":
     unittest.main()
