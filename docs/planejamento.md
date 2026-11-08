@@ -9,16 +9,17 @@
 
 ---
 
-## Status em 08/11/2026 (`main` até o PR #38)
+## Status em 08/11/2026 (`main` até o PR #44)
 
 | Código | Situação | Observação |
 |---|---|---|
-| A1 a A11 | **Concluído** | Base, validação, busca (índice × linear, C·A·B, digitação, sinônimos), grafo/Dijkstra, modelos A e B, terminal, `--avaliar` (19/19), 231 testes, `scripts/verificacoes_antigas.py`. Falta só conferir numa máquina limpa e no Windows |
+| A1 a A11 | **Concluído** | Base, validação, busca (índice × linear, C·A·B, digitação, sinônimos), grafo/Dijkstra, modelos A e B, terminal, `--avaliar` (19/19), 242 testes, `scripts/verificacoes_antigas.py`. Falta conferir numa máquina limpa e no Windows e corrigir o bug "tarifa de ônibus" → Tarifa Social de Energia (palavra "tarifa" sozinha passa do limiar) |
 | B1 | Concluído | `testes/perguntas.json` (19 perguntas, conjunto `equipe`), congelado antes das palavras-chave |
 | E1 (redigir as 17 orientações) | **Rascunho feito pela IA** | Todas com `data_verificacao` 2026-11-07; falta revisão humana (E2) |
 | E2 (revisão cruzada da base) | **Pendente** | Inclui `referencias_estaduais` de DOC-001 (hoje vazio) |
 | B4, B5, B6, B10 (voz) | **Concluído e testado no Telegram real** (07/11) | Bot, `/localizacao`, `/apagar_meus_dados`, roteador com cascata do Gemini, UF e voz (Whisper local) |
-| B7, B8, B9, B10 (foto/PDF) | Código pronto e testado por testes; **falta teste no Telegram real** | Tarefas, agendador, autodestruição, resumo da manhã, foto/PDF no cofre |
+| B7 (tarefas e lembretes) | **Testado com o servidor local** (08/11) | Lembrete pelo chat chega no Telegram na hora (PRs #42 e #44); lembrete pelo painel local disparado pelo agendador |
+| B8, B9, B10 (foto/PDF) | Código pronto e testado por testes; **falta teste no Telegram real** | Autodestruição, resumo da manhã, foto/PDF no cofre |
 | C5 a C8, C10 | Código pronto e testado por testes e no navegador local; **falta teste real** | Criptografia, cofre, classificador, painel (abas Perguntar, **Tarefas**, Cofre e Ajustes) |
 | C2 | Parcial | SQLite atrás de `armazenamento.py`; Supabase **não** adotado (decisão EM ABERTO) |
 | C1, C3, C4 | **Pendente** | DuckDNS/Caddy, VM e deploy nunca testados; deploy só liga com `DEPLOY_ATIVO=true` |
@@ -36,7 +37,7 @@
 
 ### Onde parou e o que cada um faz agora
 
-**Como retomar:** `git pull origin main`; crie o ambiente do README §6 ("Rodar o bot") e instale também `httpx` para os testes do painel; rode `python -m unittest discover -s testes -t .` (231 testes) e `python src/sistema.py --avaliar` (19/19). Uma branch por tarefa a partir da `main`; PR citando a seção da spec; commits sem segredos.
+**Como retomar:** `git pull origin main`; crie o ambiente do README §6 ("Rodar o bot") e instale também `httpx` para os testes do painel; rode `python -m unittest discover -s testes -t .` (242 testes; sem `httpx`, 18 são pulados) e `python src/sistema.py --avaliar` (19/19). Uma branch por tarefa a partir da `main`; PR citando a seção da spec; commits sem segredos.
 
 **Já feito que vale conhecer antes de mexer:**
 - A IA só entra no texto livre quando a base não resolve (`roteador.resposta_direta_basta`) e a escolha do Gemini é conferida com as regras (`roteador.reconciliar`). Botões nunca chamam IA.
@@ -48,13 +49,14 @@
 **Integrante A (Juan), até 13/11:**
 1. E2: revisar as orientações de `direitos`; consolidar o README (§3, 4, 6 e 8) e o bloco "Estado do projeto".
 2. Conferir `python src/sistema.py` numa máquina limpa e no Windows; rodar `--validar-entrega` antes de congelar (E5).
-3. ~~Atualizar `cryptography`~~ feito em 08/11: `cryptography==50.0.2` (fecha os 6 alertas do Dependabot). Reinstale no ambiente do servidor: `pip install -r requirements.txt`.
-4. Decidir o formato padrão A ou B depois das notas de clareza (B3); antes da VM, gerar novo token do bot e nova chave do Gemini.
+3. ~~Atualizar `cryptography`~~ feito em 08/11: `cryptography==50.0.2` (fecha os 6 alertas do Dependabot; em 08/11 não há alerta aberto). Para atualizar um ambiente já criado: `.venv/bin/python -m pip install cryptography==50.0.2` (ver README §6).
+4. Corrigir na busca o caso "tarifa de ônibus" (responde DIR-006, Tarifa Social de Energia, em vez de "fora da base"), sem quebrar o 19/19 do `--avaliar`.
+5. Decidir o formato padrão A ou B depois das notas de clareza (B3); antes da VM, gerar novo token do bot e nova chave do Gemini.
 
 **Integrante B (Flávia):**
 1. B12 (até 14/11): coletar ≥ 10 perguntas do público, anônimas, no conjunto `publico`, e medir **antes** de ajustar a busca. B11 (até 15/11): teste de usabilidade (`docs/ux.md` §8 e SUS). B3: notas de clareza 1 a 5 (rótulos X/Y).
 2. B2: confirmar faturamento do Gemini. Escolher os feeds RSS por tema (`data/feeds.json`).
-3. Testar no Telegram real: foto/PDF, cofre pelo chat, lembrete, resumo da manhã e "Sim, apagar tudo".
+3. Testar no Telegram real: foto/PDF, cofre pelo chat, resumo da manhã e "Sim, apagar tudo" (o lembrete pelo chat já foi testado em 08/11).
 4. E2: revisar `documentacao`, incluindo os links por estado do DOC-001. E8: consolidar `docs/uso_ia.md`.
 
 **Integrante C (Pedro):**
@@ -63,7 +65,7 @@
 3. C9: revisão humana de segurança (cripto, `initData`, isolamento por `user_id`, `.env`).
 4. E2: revisar `servicos`. E7: consolidar o relatório PDF; se der tempo, E12 (Base dos Dados).
 
-**Melhorias conhecidas (não bloqueiam a entrega):** respostas do Gemini podem chegar fora de ordem; `pyright` não está no `.venv`; Windows não testado.
+**Melhorias conhecidas (não bloqueiam a entrega):** respostas do Gemini podem chegar fora de ordem; a aba Tarefas mantém em "Pendentes" os lembretes já avisados até serem concluídos; `pyright` e `httpx` não estão no `.venv`; Windows não testado.
 
 ---
 
