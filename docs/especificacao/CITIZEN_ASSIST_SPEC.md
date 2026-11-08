@@ -137,8 +137,10 @@ src/
   servidor.py               modo --servidor: lê .env e sobe bot e painel           (extra)
   ponte.py                  liga o servidor ao núcleo (busca.py e respostas.py)    (extra)
   armazenamento.py          interface de armazenamento (SQLite local; Supabase = EM ABERTO) (extra)
+  documentos.py             fluxo de foto/PDF do bot sem aiogram (testável)        (extra)
 data/
   base.json
+  feeds.json                feeds RSS por tema do briefing (a equipe preenche; EM ABERTO)  (extra)
 docs/
   relatorio.pdf  link_video.txt  uso_ia.md          entregáveis da GS (Tabela 2)
   Solicitação GS.md                                  enunciado oficial
@@ -307,7 +309,7 @@ Dois modelos documentados, comparados nos testes (clareza, consistência, presen
 - A **senha nunca** trafega pelo chat do Telegram nem é gravada no servidor. Senha perdida = documentos perdidos (avisar na criação).
 
 ### 10.2 Criptografia **(sugestão de parâmetros; documentar os usados)**
-- Derivação: **Argon2id** (ou PBKDF2-HMAC-SHA256 com ≥ 600 000 iterações se Argon2 não estiver disponível) com **salt aleatório por usuário** → chave de 256 bits.
+- Derivação: **Argon2id** (ou PBKDF2-HMAC-SHA256 com ≥ 600 000 iterações se Argon2 não estiver disponível; **usado: PBKDF2, 600 000 iterações**, decisão de 08/11) com **salt aleatório por usuário** → chave de 256 bits.
 - Cifra: **AES-256-GCM**, nonce aleatório de 96 bits por arquivo, nome do arquivo e metadados também cifrados ou, no mínimo, sem dados pessoais em claro.
 - **Verificador de senha:** cifrar uma constante conhecida com a chave derivada e guardar; validar a senha decifrando-a. Nunca guardar hash reutilizável da senha em claro.
 - Chave do usuário: só na **memória** do servidor, com **TTL curto** (ex.: 10 min) após desbloqueio no painel; expirou → o bot pede novo desbloqueio (botão que abre o painel).
@@ -343,7 +345,7 @@ Dois modelos documentados, comparados nos testes (clareza, consistência, presen
 
 ## 11. Tarefas, lembretes, briefing, UF, autodestruição
 
-- **Tarefas/lembretes (`tarefas.py`):** título, data/hora (fuso do usuário **(EM ABERTO: assumir America/Sao_Paulo por padrão)**), status. Alertas via APScheduler **persistente**.
+- **Tarefas/lembretes (`tarefas.py`):** título, data/hora (fuso do usuário **(EM ABERTO: assumir America/Sao_Paulo por padrão)**), status. Alertas via APScheduler. **Persistência (decisão de 08/11):** o estado fica nas tabelas `tarefas` e `exclusoes` do armazenamento; o APScheduler só dispara um tick a cada 30 s que cumpre o que venceu, então a subida do servidor já executa o vencido, sem jobstore próprio. O fuso é America/Sao_Paulo para todos (fuso por usuário = roadmap).
 - **Briefing (`briefing.py`):** todo dia no horário configurado, envia (1) tarefas/lembretes do dia e (2) até **3 manchetes por tema** do usuário, de feeds RSS, com rótulo **"Notícias — fonte não oficial"**. Lista curada de feeds por tema **(EM ABERTO: equipe escolher 1–2 feeds por tema; preferir veículos públicos/governamentais)**. Falha de um feed não derruba o briefing.
 - **UF:** `/localizacao` (teclado com UFs) ou painel. Ao responder um registro `abrangencia: estadual`, usar `referencias_estaduais[UF]` se existir; senão o link nacional gov.br e um aviso de que o procedimento varia por estado. Se a UF não foi informada, perguntar uma vez.
 - **Autodestruição (`agendador.py`):** job por mensagem com documento, em 5 min. Só apaga mensagens com < 48 h (limite do Telegram). **Ao iniciar o servidor, executar exclusões vencidas** (persistência).
@@ -478,7 +480,7 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 - [ ] README com as 10 seções; relatório 4–8 páginas; `uso_ia.md`; `link_video.txt`.
 - [ ] Repositório público, sem segredos (verificar histórico do Git).
 - [ ] Vídeo Não Listado; `.txt` com os dois links enviado na FIAP ON.
-- [ ] Onda 2: cofre testado com senha errada, expiração de desbloqueio e isolamento por usuário; ou movida para o roadmap. (07/11: bot, UF, voz com Whisper e roteador testados no Telegram real, 147 testes; cofre, tarefas, agendador, briefing, foto/PDF, front do painel e VM ainda não existem ou não foram testados)
+- [ ] Onda 2: cofre testado com senha errada, expiração de desbloqueio e isolamento por usuário; ou movida para o roadmap. (08/11: cofre, cripto, classificador, tarefas, agendador, briefing, foto/PDF no bot e front do painel **implementados e cobertos por 214 testes automatizados** — senha errada, expiração e isolamento por usuário testados; bot, UF, voz e roteador testados no Telegram real em 07/11. **Falta testar no Telegram real** foto/PDF, cofre, lembretes, resumo e Mini App, e **VM/HTTPS/deploy**; feeds RSS por tema e fuso por usuário seguem EM ABERTO.)
 
 ---
 
