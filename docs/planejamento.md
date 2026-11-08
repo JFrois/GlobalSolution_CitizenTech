@@ -9,7 +9,7 @@
 
 ---
 
-## Status em 08/11/2026 (`main` até o PR #37; PR #38 aberto)
+## Status em 08/11/2026 (`main` até o PR #38)
 
 | Código | Situação | Observação |
 |---|---|---|
@@ -30,7 +30,7 @@
 ### Branches no GitHub
 
 - `main`: única branch de integração. Cada tarefa vira uma branch curta (`feat/…`, `fix/…`, `docs/…`) e entra por PR com revisão de outro integrante (E3). **Depois do merge, apague a branch.**
-- `feat/painel-tarefas-aba` (PR #38): complemento da aba Tarefas (proteção contra envio duplo e testes). Teste automático passou; **falta revisão e merge**.
+- `feat/painel-tarefas-aba` (PR #38): complemento da aba Tarefas; revisado, na `main` desde 08/11 e branch apagada.
 - `arquivo/servidor-implementacao-paralela`: implementação paralela **arquivada de propósito**. **Não fazer merge**: conflita com o núcleo da `main`; o que servia dela já entrou pelo PR #5. Pode ficar como arquivo ou virar uma tag.
 - `main` não está protegida no GitHub. Recomendado: em Settings > Branches, exigir PR e o teste `testes` passando antes do merge.
 
@@ -60,7 +60,7 @@
 **Integrante C (Pedro):**
 1. C1, C3, C4 (prioridade): teste DuckDNS + Caddy, VM, `ffmpeg` e Whisper na VM, secrets e `DEPLOY_ATIVO=true`.
 2. Testar o Mini App no Telegram real (todas as abas, incluindo Tarefas) com `PAINEL_URL` em https.
-3. C9: revisão humana de segurança (cripto, `initData`, isolamento por `user_id`, `.env`); revisar e fazer merge do PR #38.
+3. C9: revisão humana de segurança (cripto, `initData`, isolamento por `user_id`, `.env`).
 4. E2: revisar `servicos`. E7: consolidar o relatório PDF; se der tempo, E12 (Base dos Dados).
 
 **Melhorias conhecidas (não bloqueiam a entrega):** respostas do Gemini podem chegar fora de ordem; `pyright` não está no `.venv`; Windows não testado.
