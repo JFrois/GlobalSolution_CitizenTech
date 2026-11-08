@@ -205,10 +205,15 @@ def fallback_por_regras(texto):
         return {"ferramenta": "cofre_documento", "args": args}
     if re.search(r"\b(cofre|meus documentos)\b", palavras) or "meus documentos" in cru:
         return {"ferramenta": "cofre_documento", "args": {"acao": "listar"}}
-    if re.search(r"\b(lembrete|lembretes|lembre|tarefa|tarefas)\b", palavras):
+    # "me lembra de pagar a luz" e "lembrar de ligar" também são pedidos de lembrete. Sem isso
+    # caíam na busca e "luz" puxava a Tarifa Social. "lembra" sozinho não basta ("não lembro a senha").
+    pede_lembrete = re.search(r"\bme (lembra|lembrar|lembre|avisa|avise)\b|\blembrar de\b", cru)
+    if pede_lembrete or re.search(r"\b(lembrete|lembretes|lembre|tarefa|tarefas)\b", palavras):
         resto = texto.strip()[:TAMANHO_MAX_TEXTO]
         if re.search(r"\b(conclui|concluir|concluida|concluido|feita|feito)\b", palavras):
             return {"ferramenta": "gerenciar_tarefas", "args": {"acao": "concluir", "titulo": resto}}
+        if pede_lembrete:
+            return {"ferramenta": "gerenciar_tarefas", "args": {"acao": "criar", "titulo": resto}}
         verbos = r"\b(lembre|lembrar|criar|crie|cria|nova|novo|anotar|anote|adicionar|adicione|agendar|marcar)\b"
         if re.search(verbos, palavras):
             # Só o pedido, sem o que anotar ("crie esta tareda"): título vazio faz a tarefa perguntar qual é.

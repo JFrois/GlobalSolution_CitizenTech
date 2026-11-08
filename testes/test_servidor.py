@@ -399,10 +399,13 @@ class TestServidor(unittest.TestCase):
 
     def test_modo_servidor_sem_env_mostra_mensagem_clara(self):
         # Pasta temporária como HOME e cwd: não deixa lixo (ex.: Library/) dentro de testes/.
+        # O servidor lê o .env da raiz do projeto; variáveis vazias no ambiente vencem o arquivo,
+        # então o teste passa também na máquina de quem já tem .env (e com o bot rodando).
+        vazias = {nome: "" for nome in servidor.OBRIGATORIAS}
         with tempfile.TemporaryDirectory() as pasta:
             r = subprocess.run([sys.executable, str(RAIZ / "src" / "sistema.py"), "--servidor"],
                                capture_output=True, text=True, encoding="utf-8",
-                               env={"PATH": "", "HOME": pasta}, cwd=pasta)
+                               env={"PATH": "", "HOME": pasta, **vazias}, cwd=pasta)
         self.assertEqual(r.returncode, 1)
         self.assertIn("faltam no .env", r.stdout)
         self.assertNotIn("Traceback", r.stdout + r.stderr)
