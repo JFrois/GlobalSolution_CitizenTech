@@ -34,7 +34,7 @@ Existe uma implementação paralela arquivada na branch `arquivo/servidor-implem
 
 ### Onde parou e o que cada um faz agora
 
-**Como retomar:** `git pull origin main`, crie o ambiente do README §6 ("Rodar o bot"), rode `python -m unittest discover -s testes -t .` (147 testes) e `python src/sistema.py --avaliar` (19/19). Uma branch por tarefa a partir da `main`, PR com a seção da spec; commits sem segredos.
+**Como retomar:** `git pull origin main`, crie o ambiente do README §6 ("Rodar o bot"), rode `python -m unittest discover -s testes -t .` (214 testes com o ambiente do servidor) e `python src/sistema.py --avaliar` (19/19). Uma branch por tarefa a partir da `main`, PR com a seção da spec; commits sem segredos.
 
 **Já feito que vale conhecer antes de mexer:**
 - A IA só entra no texto livre quando a base não resolve (`roteador.resposta_direta_basta`) e a escolha do Gemini é conferida com as regras (`roteador.reconciliar`). Botões nunca chamam IA.
@@ -102,10 +102,10 @@ Existe uma implementação paralela arquivada na branch `arquivo/servidor-implem
 | B4 | `telegram_bot.py`: interface, `user_id`, `/localizacao`, `/painel`, `/apagar_meus_dados` | §9, §11 | 10/11 | Bot responde na VM |
 | B5 | `roteador.py`: Gemini com function calling (4 ferramentas), validação estrita dos argumentos e fallback por regras | §9 | 10/11 | Com o Gemini desligado, o bot continua respondendo pelo fallback |
 | B6 | UF: usa `referencias_estaduais[UF]`, senão gov.br com aviso; pergunta a UF uma vez | §11 | 10/11 | Teste com UF com e sem link estadual |
-| B7 | `tarefas.py` e `agendador.py` (APScheduler persistente; executa jobs vencidos na subida) | §11 | 12/11 | Lembrete dispara após reiniciar o servidor |
-| B8 | Autodestruição das mensagens com documento em 5 min (só < 48 h) | §11 | 12/11 | Mensagem apagada após 5 min, inclusive depois de reiniciar |
-| B9 | `briefing.py`: até 3 manchetes RSS por tema, rótulo "não oficial"; feed com falha não derruba o briefing | §11 | 12/11 | Feeds por tema: **EM ABERTO** (decidir com a equipe) |
-| B10 | Voz (transcrição), foto e PDF: oferecer "guardar no cofre?" | §9 | 12/11 | Conteúdo do arquivo nunca vira instrução |
+| B7 ✔ código pronto (08/11), falta teste real | `tarefas.py` e `agendador.py` (APScheduler persistente; executa jobs vencidos na subida) | §11 | 12/11 | Lembrete dispara após reiniciar o servidor |
+| B8 ✔ código pronto (08/11), falta teste real | Autodestruição das mensagens com documento em 5 min (só < 48 h) | §11 | 12/11 | Mensagem apagada após 5 min, inclusive depois de reiniciar |
+| B9 ✔ código pronto (08/11), falta teste real | `briefing.py`: até 3 manchetes RSS por tema, rótulo "não oficial"; feed com falha não derruba o briefing | §11 | 12/11 | Feeds por tema: **EM ABERTO** (decidir com a equipe) |
+| B10 ✔ código pronto (08/11), falta teste real | Voz (transcrição), foto e PDF: oferecer "guardar no cofre?" | §9 | 12/11 | Conteúdo do arquivo nunca vira instrução |
 | B11 | Teste de usabilidade com pessoa de fora da equipe, pelo roteiro de `docs/ux.md` §8 (+ SUS) | §14.2 | 15/11 | `testes/usabilidade.md` com tarefas, tempo, sucesso, dificuldades e nota SUS |
 | B12 | Coletar perguntas do público (meta ≥ 10), **anônimas**, definir o `esperado` de cada uma e rodar **antes** de qualquer ajuste da busca | §14.1 | 14/11 | Perguntas no conjunto `publico` de `testes/perguntas.json`, sem dado pessoal; taxa "antes do ajuste" registrada |
 
@@ -117,12 +117,12 @@ Existe uma implementação paralela arquivada na branch `arquivo/servidor-implem
 | C2 | Confirmar armazenamento (Supabase ou equivalente) e criar a interface de armazenamento | §5.2, §17 | 08/11 | Decisão registrada na spec; interface trocável |
 | C3 | VM (Oracle Always Free), serviço `systemd` e `.env` somente na VM | §12 | 09/11 | Serviço reinicia sozinho após falha |
 | C4 | GitHub Actions: deploy por SSH com chave dedicada e Secrets `HOST`, `USER`, `KEY` | §12 | 10/11 | Push na `main` atualiza a VM (Action verde) |
-| C5 | `criptografia.py`: derivação da chave, AES-256-GCM e verificador de senha | §10.2 | 11/11 | Round-trip funciona; senha errada falha |
-| C6 | `cofre.py`: salvar, listar e abrir filtrando por `user_id`; chave em memória com TTL | §10 | 11/11 | Usuário A não lê dados do B (teste) |
-| C7 | `classificador.py`: Gemini sugere tipo e nome, com consentimento; em caso de falha usa `documento-AAAAMMDD` | §4.4, §10.3 | 11/11 | Funciona com a API desligada |
-| C8 | `painel.py` e `painel/`: validação de `initData`, link de uso único, telas, apagar de verdade, cabeçalhos, CORS e rate limit | §10.4 | 12/11 | `initData` inválido é recusado (teste) |
+| C5 ✔ código pronto (08/11), falta teste real | `criptografia.py`: derivação da chave, AES-256-GCM e verificador de senha | §10.2 | 11/11 | Round-trip funciona; senha errada falha |
+| C6 ✔ código pronto (08/11), falta teste real | `cofre.py`: salvar, listar e abrir filtrando por `user_id`; chave em memória com TTL | §10 | 11/11 | Usuário A não lê dados do B (teste) |
+| C7 ✔ código pronto (08/11), falta teste real | `classificador.py`: Gemini sugere tipo e nome, com consentimento; em caso de falha usa `documento-AAAAMMDD` | §4.4, §10.3 | 11/11 | Funciona com a API desligada |
+| C8 ✔ código pronto (08/11), falta teste real | `painel.py` e `painel/`: validação de `initData`, link de uso único, telas, apagar de verdade, cabeçalhos, CORS e rate limit | §10.4 | 12/11 | `initData` inválido é recusado (teste) |
 | C9 | Testes de segurança: isolamento, criptografia, `initData`, expiração do desbloqueio | §14.2, §13 | 12/11 | Suíte de segurança passando |
-| C10 | Aba "Perguntar" com a cena da verificação: `POST /api/perguntar` usando o núcleo (A4–A7), 4 saídas da decisão, "reduzir movimento", pergunta não gravada | §10.5 | 12/11 | Mesma pergunta dá a mesma resposta no terminal e no painel; com "reduzir movimento" não há animação |
+| C10 ✔ código pronto (08/11), falta teste real | Aba "Perguntar" com a cena da verificação: `POST /api/perguntar` usando o núcleo (A4–A7), 4 saídas da decisão, "reduzir movimento", pergunta não gravada | §10.5 | 12/11 | Mesma pergunta dá a mesma resposta no terminal e no painel; com "reduzir movimento" não há animação |
 
 ## 5. Atividades da equipe toda
 

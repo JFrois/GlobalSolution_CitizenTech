@@ -32,7 +32,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 
 > Global Solution 2026.2 · Desafio CitizenTech
 
-## Estado do projeto (atualizado em 07/11/2026, `main` até o PR #23)
+## Estado do projeto (atualizado em 08/11/2026, `main` até o PR #31)
 
 **Concluído e testado (Onda 1, núcleo avaliado):**
 
@@ -41,14 +41,22 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 - Modelos de resposta A e B, aviso de limitação e mensagens de entrada inválida (`src/respostas.py`).
 - Terminal completo (`python src/sistema.py`), com cores e texto puro de reserva, `--validar-entrega` e `--avaliar`.
 - Perguntas de teste da equipe congeladas antes das palavras-chave: **19/19 (100%)**; resultados em `testes/resultados.csv` e `testes/comparacao_modelos.csv`.
-- 147 testes automatizados (`python -m unittest discover -s testes -t .`). O CI roda no Python 3.9.
+- 214 testes automatizados (`python -m unittest discover -s testes -t .`). O CI roda no Python 3.9; os testes de FastAPI, aiogram e cryptography só rodam com o ambiente do servidor (Python 3.11–3.13).
 
 **Concluído e testado no Telegram real (Onda 2, camada de produto), em 07/11:**
 
 - Bot `@CitizenAssistAIBot` rodando localmente: `/start`, `/menu` (temas, assuntos e "Voltar aos temas"), perguntas por texto para os 17 assuntos, pergunta ambígua (candidatos em botões), entrada inválida, fora da base, erro de digitação, `/localizacao` (UF), `/apagar_meus_dados` (confirmação), botões de assuntos relacionados.
 - **Voz:** o áudio é transcrito localmente pelo Whisper (`src/transcricao.py`), o bot avisa "Recebi seu áudio…" e depois mostra "Entendi: …". Testado com um áudio real em português.
 - Roteador com cascata de modelos do Gemini: a IA só entra quando a base não resolve (fora da base) ou há pedido de cofre/tarefa/briefing; botões, perguntas respondidas e ambíguas **nunca** chamam a IA.
-- Cofre, tarefas e briefing respondem "função ainda não está disponível" (ainda não existem).
+
+**Implementado em 08/11 (Onda 2), testado só por testes automatizados e no navegador local; nunca no Telegram real nem na VM:**
+
+- **Criptografia e cofre** (`src/criptografia.py`, `src/cofre.py`): PBKDF2-SHA256 (600 mil iterações, salt por usuário), AES-256-GCM, verificador de senha, chave só na memória com validade de 10 min; nome e conteúdo cifrados; tudo filtrado por `user_id`.
+- **Classificador** (`src/classificador.py`): o Gemini escolhe um tipo de uma lista fechada; o nome é montado pelo código, nunca copiado do texto do modelo; falha vira `documento-AAAAMMDD`.
+- **Painel** (`painel/` + rotas em `src/painel.py`): abas Perguntar (cena da verificação), Cofre (criar, desbloquear, ver, apagar em dois passos) e Ajustes (UF, temas e horário do resumo). Conferido no navegador local; Mini App no Telegram real não.
+- **Tarefas e agendador** (`src/tarefas.py`, `src/agendador.py`): lembretes com data lida por regras (fuso de Brasília) e autodestruição das mensagens com documento em 5 min. O estado fica no SQLite e o APScheduler só dispara o tick; assim, ao subir, o servidor cumpre o que venceu.
+- **Resumo da manhã** (`src/briefing.py`, `data/feeds.json`): tarefas do dia + até 3 manchetes por tema, rotuladas "não oficial". **Os feeds por tema estão vazios (EM ABERTO): a equipe preenche `data/feeds.json`.**
+- **Foto/PDF e cofre no chat** (`src/documentos.py`, `src/telegram_bot.py`): cofre fechado não guarda nada (botão para o painel); consentimento do Gemini; nome confirmado ou editado; "me envie meu RG" envia e apaga em 5 min.
 
 **Rascunho, precisa de revisão humana:**
 
@@ -58,9 +66,11 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 
 - Revisão humana das 17 orientações e links por estado da 2ª via da CIN (`referencias_estaduais` de DOC-001; hoje todos os estados caem no link `gov.br`).
 - Perguntas do público (≥ 10, anônimas) e a taxa de acerto delas **antes** de qualquer ajuste da busca; teste de usabilidade com pessoa de fora (`testes/usabilidade.md`); nota de clareza A × B. Só depois se escolhe o formato padrão (hoje o passo a passo é provisório).
-- Onda 2 restante: cofre, criptografia, classificador, tarefas, agendador, briefing, foto/PDF, front do painel (`/painel` responde "não está configurado" sem `PAINEL_URL`), VM, DuckDNS/Caddy e deploy automático (nunca testados).
-- Foto e PDF no bot (hoje o bot responde "Por enquanto só entendo mensagens de texto"); botão "Sim, apagar tudo" não foi exercitado no Telegram real.
-- Melhorias conhecidas: respostas da IA chegam fora de ordem quando a pergunta cai no Gemini; a mensagem "função não disponível" é igual para cofre, tarefas e briefing.
+- **Teste no Telegram real** (com documentos fictícios) de: foto/PDF, cofre pelo chat, lembrete, resumo da manhã e Mini App; `/painel` precisa de `PAINEL_URL` com https.
+- VM, DuckDNS/Caddy e deploy automático (nunca testados); `ffmpeg` e Whisper na VM.
+- Feeds RSS por tema em `data/feeds.json` e fuso por usuário (hoje todos em America/Sao_Paulo).
+- Botão "Sim, apagar tudo" (agora apaga também cofre, tarefas e exclusões) não foi exercitado no Telegram real.
+- Melhorias conhecidas: respostas da IA chegam fora de ordem quando a pergunta cai no Gemini.
 - Textos das seções 1, 2, 8, 9 e 10 deste README, relatório PDF (`docs/relatorio.pdf`), vídeo e `docs/link_video.txt`.
 - Antes de colocar na VM: gerar **novo** token do bot e **nova** chave do Gemini (os de teste foram compartilhados fora do `.env`) e conferir o histórico do Git.
 
