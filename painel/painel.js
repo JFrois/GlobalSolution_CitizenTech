@@ -1,11 +1,12 @@
 // Front do painel (Mini App e navegador). Sem eval, sem innerHTML com dado da rede:
 // todo texto vindo do servidor entra por textContent. O front só desenha; o conteúdo
-// das orientações vem pronto da base (spec §10.5).
+// das orientações vem pronto da base (spec §10.5). Identidade Azul Telegram (docs/ux.md §9).
 "use strict";
 
 const tg = window.Telegram && window.Telegram.WebApp;
 if (tg) { tg.ready(); tg.expand(); }
 const SEM_ANIMACAO = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const NS_SVG = "http://www.w3.org/2000/svg";
 const $ = (id) => document.getElementById(id);
 let estado = null;
 let contadorId = null;
@@ -32,9 +33,9 @@ async function json(r) {
 }
 
 function avisar(texto) {
-  const el = $("aviso");
-  el.textContent = texto || "";
-  el.hidden = !texto;
+  const e = $("aviso");
+  e.textContent = texto || "";
+  e.hidden = !texto;
 }
 
 function el(tag, texto, classe) {
@@ -44,76 +45,131 @@ function el(tag, texto, classe) {
   return e;
 }
 
+// Ícone SVG montado pelo DOM (sem innerHTML). Cada item de "tracos" é um atributo d de <path>.
+function icone(tracos, tamanho, extra) {
+  const s = document.createElementNS(NS_SVG, "svg");
+  s.setAttribute("width", tamanho); s.setAttribute("height", tamanho); s.setAttribute("viewBox", "0 0 24 24");
+  s.setAttribute("fill", "none"); s.setAttribute("stroke", "currentColor"); s.setAttribute("stroke-width", extra || "2");
+  s.setAttribute("stroke-linecap", "round"); s.setAttribute("stroke-linejoin", "round"); s.setAttribute("aria-hidden", "true");
+  for (const d of tracos) { const p = document.createElementNS(NS_SVG, "path"); p.setAttribute("d", d); s.appendChild(p); }
+  return s;
+}
+const ICONES_DOC = [
+  { classe: "azul", tracos: ["M3 8a3 3 0 013-3h12a3 3 0 013 3v8a3 3 0 01-3 3H6a3 3 0 01-3-3z", "M14 10h4M14 14h3"] },
+  { classe: "teal", tracos: ["M7 3h7l5 5v13H7z", "M14 3v5h5"] },
+  { classe: "coral", tracos: ["M7 3h7l5 5v13H7z", "M14 3v5h5M10 13h6M10 17h4"] },
+];
+
+// Atraso da animação de entrada (CSSOM: a CSP não deixa estilo inline no HTML).
+function atrasar(e, segundos) { e.style.animationDelay = segundos + "s"; return e; }
+
 // ---- Abas ----
+const TELAS = {
+  perguntar: ["Qual a sua dúvida hoje?", "Respostas simples, sempre com a fonte oficial."],
+  cofre: ["Seu cofre", "Só você abre, com a sua senha."],
+  ajustes: ["Ajustes", "Do seu jeito, e só o necessário."],
+};
 function abrirAba(nome) {
-  for (const a of ["perguntar", "cofre", "ajustes"]) {
+  for (const a of Object.keys(TELAS)) {
     $("aba-" + a).setAttribute("aria-selected", String(a === nome));
     $("tela-" + a).hidden = a !== nome;
   }
+  $("titulo-tela").textContent = TELAS[nome][0];
+  $("sub-tela").textContent = TELAS[nome][1];
+  $("form-pergunta").hidden = nome !== "perguntar";
   avisar("");
   if (nome !== "perguntar") carregarEstado();
 }
-for (const a of ["perguntar", "cofre", "ajustes"]) $("aba-" + a).addEventListener("click", () => abrirAba(a));
+for (const a of Object.keys(TELAS)) $("aba-" + a).addEventListener("click", () => abrirAba(a));
 
 // ---- Perguntar: cena da verificação (≈3 s no máximo, docs/ux.md §9) ----
-const esperar = (ms) => new Promise((ok) => setTimeout(ok, SEM_ANIMACAO ? 0 : ms));
+// Contagem até o total de orientações (a barra e os blocos seguintes entram por CSS).
+function contar(destino, total) {
+  if (SEM_ANIMACAO || total < 2) { destino.textContent = String(total); return; }
+  const inicio = performance.now(), duracao = 1100;
+  const passo = (agora) => {
+    const t = Math.min(1, (agora - inicio) / duracao);
+    destino.textContent = String(Math.round(total * (1 - Math.pow(1 - t, 3))));
+    if (t < 1) requestAnimationFrame(passo);
+  };
+  requestAnimationFrame(passo);
+}
 
-function cartao() { const c = el("div", undefined, "cartao entra"); $("cena").appendChild(c); return c; }
+function adicionar(c, atraso) { $("cena").appendChild(atrasar(c, atraso)); return c; }
 
-async function desenharResposta(d) {
+function linkExterno(texto, url, classe) {
+  // Só vira link se for http(s): nunca javascript: vindo de dado (defesa extra).
+  if (!/^https?:\/\//.test(url)) return document.createTextNode(url);
+  const a = el("a", texto, classe); a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer";
+  return a;
+}
+
+function botaoDeAssunto(titulo) {
+  const b = el("button", titulo, "chip-botao"); b.type = "button";
+  b.addEventListener("click", () => perguntar(titulo));
+  return b;
+}
+
+function desenharResposta(d) {
   const cena = $("cena");
   cena.textContent = "";
+  $("exemplos").hidden = true;
   if (d.decisao === "RESPONDER") {
-    const c1 = cartao();
-    c1.appendChild(el("p", "Consultando " + d.total_orientacoes + " orientações verificadas…", "consulta"));
-    await esperar(700);
-    const c2 = cartao();
-    c2.appendChild(el("h2", d.titulo));
-    const lista = el("ol");
-    for (const p of d.passos) { lista.appendChild(el("li", p)); }
-    c2.appendChild(lista);
-    if (d.atencao) c2.appendChild(el("p", "Atenção: " + d.atencao, "atencao"));
-    await esperar(900);
-    const c3 = cartao();
-    c3.appendChild(el("span", "Fonte conferida em " + d.verificado_em, "selo"));
-    const fonte = el("p", undefined, "fonte");
-    fonte.appendChild(document.createTextNode("Fonte: "));
-    // Só vira link se for http(s): nunca javascript: vindo de dado (defesa extra).
-    if (/^https?:\/\//.test(d.fonte)) {
-      const a = el("a", d.fonte); a.href = d.fonte; a.target = "_blank"; a.rel = "noopener noreferrer";
-      fonte.appendChild(a);
-    } else { fonte.appendChild(document.createTextNode(d.fonte)); }
-    c3.appendChild(fonte);
-    await esperar(700);
-    const c4 = cartao();
+    const consulta = el("div", undefined, "consulta entra");
+    const linha = el("p"); linha.append("Consultando ");
+    const numero = el("span", "0"); linha.append(numero, " orientações verificadas");
+    const trilho = el("div", undefined, "trilho"); trilho.appendChild(el("div", undefined, "enche"));
+    consulta.append(linha, trilho); adicionar(consulta, 0);
+    contar(numero, d.total_orientacoes);
+
+    adicionar(el("h2", d.titulo, "resposta-titulo entra"), 1.2);
+    d.passos.forEach((p, i) => {
+      const cartao = el("div", undefined, "passo entra");
+      cartao.append(el("span", String(i + 1), "numero"), el("p", p));
+      adicionar(cartao, 1.45 + i * 0.22);
+    });
+    const depois = 1.45 + d.passos.length * 0.22;
+    if (d.atencao) {
+      const a = el("div", undefined, "atencao entra");
+      const t = el("p"); // O texto da base já pode vir com o prefixo "Atenção:"; não repetir.
+      t.append(el("strong", "Atenção: "), document.createTextNode(d.atencao.replace(/^Atenção:\s*/, ""))); a.appendChild(t);
+      adicionar(a, depois);
+    }
+
+    // Selo "Fonte conferida": pop, com o check desenhado.
+    const selo = el("div", undefined, "selo");
+    const ic = el("span", undefined, "selo-icone");
+    const check = icone(["M5 12.5l4.5 4.5L19 7.5"], 24, "2.8"); check.setAttribute("stroke", "#fff");
+    ic.appendChild(check);
+    const txt = el("div");
+    txt.appendChild(el("strong", "Fonte conferida"));
+    const fonte = el("span"); fonte.append("Verificado em " + d.verificado_em + " · ", linkExterno(d.fonte, d.fonte));
+    txt.appendChild(fonte);
+    selo.append(ic, txt); adicionar(selo, depois + 0.3);
+
+    const fim = el("div", undefined, "entra");
     if (d.relacionados.length) {
-      c4.appendChild(el("p", "Continue consultando:", "apoio"));
-      for (const r of d.relacionados) {
-        const b = el("button", r.titulo, "opcao");
-        b.type = "button";
-        b.addEventListener("click", () => perguntar(r.titulo));
-        c4.appendChild(b);
-      }
+      const vt = el("div", undefined, "veja-tambem");
+      vt.appendChild(el("span", "Veja também", "rotulo-exemplos"));
+      for (const r of d.relacionados) vt.appendChild(botaoDeAssunto(r.titulo));
+      fim.appendChild(vt);
     }
-    c4.appendChild(el("p", d.aviso, "apoio"));
+    fim.appendChild(el("p", d.aviso, "nota"));
+    adicionar(fim, depois + 0.65);
   } else if (d.decisao === "PEDIR_ESCOLHA") {
-    const c = cartao();
+    const c = el("div", undefined, "cartao entra");
     c.appendChild(el("p", "Encontrei mais de um assunto parecido. Qual deles você procura?"));
-    for (const x of d.candidatos) {
-      const b = el("button", x.titulo, "opcao"); b.type = "button";
-      b.addEventListener("click", () => perguntar(x.titulo));
-      c.appendChild(b);
-    }
+    const vt = el("div", undefined, "veja-tambem");
+    for (const x of d.candidatos) vt.appendChild(botaoDeAssunto(x.titulo));
+    c.appendChild(vt); adicionar(c, 0);
   } else if (d.decisao === "SEM_BASE") {
-    const c = cartao();
+    const c = el("div", undefined, "cartao entra");
     c.appendChild(el("p", d.mensagem));
     c.appendChild(el("p", "Assuntos disponíveis: " + d.temas.join(", ") + ".", "apoio"));
-    if (/^https?:\/\//.test(d.portal)) {
-      const a = el("a", "Portal oficial gov.br"); a.href = d.portal; a.target = "_blank"; a.rel = "noopener noreferrer";
-      c.appendChild(a);
-    }
+    if (/^https?:\/\//.test(d.portal)) c.appendChild(linkExterno("Portal oficial gov.br", d.portal, "link"));
+    adicionar(c, 0);
   } else {
-    cartao().appendChild(el("p", d.mensagem));
+    adicionar(el("div", undefined, "cartao entra"), 0).appendChild(el("p", d.mensagem));
   }
 }
 
@@ -128,6 +184,7 @@ async function perguntar(texto) {
   } catch (e) { avisar(e.message); } finally { perguntando = false; }
 }
 $("form-pergunta").addEventListener("submit", (ev) => { ev.preventDefault(); perguntar($("pergunta").value); });
+for (const b of document.querySelectorAll("[data-pergunta]")) b.addEventListener("click", () => perguntar(b.dataset.pergunta));
 
 // ---- Estado, cofre e ajustes ----
 async function carregarEstado() {
@@ -140,14 +197,20 @@ function formatarTempo(seg) {
   return String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
 }
 
+// Contador de bloqueio do cofre, com o anel esvaziando (circunferência do anel = 151).
 function iniciarContador() {
   clearInterval(contadorId);
+  const total = Math.max(1, estado.segundos_restantes);
   let resta = estado.segundos_restantes;
-  $("contador").textContent = formatarTempo(resta);
+  const atualizar = () => {
+    $("contador").textContent = formatarTempo(resta);
+    $("anel-tempo").style.strokeDashoffset = String(151 * (1 - resta / total));
+  };
+  atualizar();
   contadorId = setInterval(() => {
     resta -= 1;
     if (resta <= 0) { clearInterval(contadorId); carregarEstado(); return; }  // venceu: pede a senha de novo
-    $("contador").textContent = formatarTempo(resta);
+    atualizar();
   }, 1000);
 }
 
@@ -165,16 +228,18 @@ async function listarDocs() {
     const d = await json(await api("GET", "/api/cofre/docs"));
     const ul = $("docs"); ul.textContent = "";
     $("docs-vazio").hidden = d.docs.length > 0;
-    for (const doc of d.docs) {
-      const li = el("li");
-      li.appendChild(el("span", doc.nome));
-      const ver = el("button", "Ver"); ver.type = "button";
+    d.docs.forEach((doc, i) => {
+      const li = el("li", undefined, "doc");
+      atrasar(li, i * 0.1);
+      const tipo = ICONES_DOC[i % ICONES_DOC.length];
+      const ic = el("span", undefined, "doc-icone " + tipo.classe); ic.appendChild(icone(tipo.tracos, 24));
+      const ver = el("button", "Ver", "botao-sec"); ver.type = "button";
       ver.addEventListener("click", () => visualizar(doc));
-      const apagar = el("button", "Apagar"); apagar.type = "button";
+      const apagar = el("button", "Apagar", "botao-sec perigo"); apagar.type = "button";
       apagar.addEventListener("click", () => apagarDoc(doc, apagar));
-      li.append(ver, apagar);
+      li.append(ic, el("span", doc.nome, "doc-nome"), ver, apagar);
       ul.appendChild(li);
-    }
+    });
   } catch (e) { if (e.status === 423) carregarEstado(); else avisar(e.message); }
 }
 
@@ -188,7 +253,7 @@ async function visualizar(doc) {
     if (blob.type.startsWith("image/")) {
       const img = el("img"); img.src = url; img.alt = "Documento " + doc.nome; caixa.appendChild(img);
     } else {
-      const a = el("a", "Baixar " + doc.nome); a.href = url; a.download = doc.nome; caixa.appendChild(a);
+      const a = el("a", "Baixar " + doc.nome, "link"); a.href = url; a.download = doc.nome; caixa.appendChild(a);
     }
   } catch (e) { avisar(e.message); }
 }
@@ -226,15 +291,16 @@ $("bloquear").addEventListener("click", async () => {
 const UFS = "AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO".split(" ");
 for (const uf of UFS) { const o = el("option", uf); o.value = uf; $("uf").appendChild(o); }
 
+// Temas do resumo da manhã como chips (a marca de check aparece no chip marcado, não só a cor).
 function desenharAjustes() {
   $("uf").value = estado.uf || "";
   $("hora").value = estado.hora_briefing || "";
-  const caixa = $("temas"); caixa.textContent = ""; caixa.className = "temas";
+  const caixa = $("temas"); caixa.textContent = "";
   for (const [chave, nome] of Object.entries(estado.temas)) {
-    const rotulo = el("label");
+    const rotulo = el("label", undefined, "chip");
     const c = el("input"); c.type = "checkbox"; c.value = chave;
     c.checked = estado.temas_briefing.includes(chave);
-    rotulo.append(c, document.createTextNode(nome));
+    rotulo.append(c, el("span", nome));
     caixa.appendChild(rotulo);
   }
 }

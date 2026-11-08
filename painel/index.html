@@ -3,79 +3,128 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1676B0">
   <title>Citizen Assist AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="/static/tokens.css">
   <link rel="stylesheet" href="/static/painel.css">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-  <header>
-    <h1>Citizen Assist AI</h1>
-    <p class="apoio">Orientação não oficial, só com fontes verificadas.</p>
-  </header>
-
-  <nav role="tablist" aria-label="Seções">
-    <button role="tab" id="aba-perguntar" aria-selected="true" aria-controls="tela-perguntar">Perguntar</button>
-    <button role="tab" id="aba-cofre" aria-selected="false" aria-controls="tela-cofre">Cofre</button>
-    <button role="tab" id="aba-ajustes" aria-selected="false" aria-controls="tela-ajustes">Ajustes</button>
-  </nav>
-
-  <main>
-    <p id="aviso" role="alert" hidden></p>
+<div class="app">
+  <!-- Faixa azul (hero): marca, título da tela e, na aba Perguntar, a caixa de pergunta -->
+  <header class="hero">
+    <div class="topo">
+      <div class="marca">
+        <span class="marca-icone" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12689E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M8 11l2.2 2.2L14.5 9"/><path d="M20 20l-3.5-3.5"/></svg>
+        </span>
+        <span>Citizen Assist</span>
+      </div>
+      <span class="vidro">Não oficial</span>
+    </div>
+    <h1 id="titulo-tela">Qual a sua dúvida hoje?</h1>
+    <p id="sub-tela" class="sub">Respostas simples, sempre com a fonte oficial.</p>
 
     <!-- Perguntar: conteúdo 100% da base, sem IA (spec §10.5) -->
-    <section id="tela-perguntar" role="tabpanel" aria-labelledby="aba-perguntar">
-      <form id="form-pergunta">
-        <label for="pergunta">Qual é a sua dúvida?</label>
+    <form id="form-pergunta" class="busca">
+      <label for="pergunta">Sua pergunta</label>
+      <div class="campo">
         <input id="pergunta" type="text" maxlength="300" autocomplete="off"
                placeholder="Ex.: como tirar a segunda via do RG?">
-        <button type="submit" class="principal">Perguntar</button>
-      </form>
+        <button type="submit" class="enviar" aria-label="Perguntar">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </form>
+  </header>
+
+  <main class="folha">
+    <p id="aviso" role="alert" hidden></p>
+
+    <section id="tela-perguntar" role="tabpanel" aria-labelledby="aba-perguntar">
+      <div id="exemplos" class="exemplos">
+        <span class="rotulo-exemplos">Experimente</span>
+        <button type="button" class="chip-botao" data-pergunta="Como pedir segunda via do título de eleitor?">Título de eleitor</button>
+        <button type="button" class="chip-botao" data-pergunta="Como acessar o Meu INSS?">Meu INSS</button>
+        <button type="button" class="chip-botao" data-pergunta="Como me inscrever no CadÚnico?">CadÚnico</button>
+      </div>
       <div id="cena" aria-live="polite"></div>
     </section>
 
     <!-- Cofre: senha só aqui, nunca no chat (spec §10.1) -->
     <section id="tela-cofre" role="tabpanel" aria-labelledby="aba-cofre" hidden>
-      <div id="cofre-sem" hidden>
+      <div id="cofre-sem" class="cartao" hidden>
         <h2>Criar o cofre</h2>
         <p>Escolha uma senha com pelo menos 10 caracteres. <strong>Se você esquecer, os documentos não podem ser recuperados.</strong> A senha não é guardada no servidor.</p>
         <form id="form-criar">
           <label for="senha-nova">Senha do cofre</label>
           <input id="senha-nova" type="password" minlength="10" autocomplete="new-password" required>
-          <button type="submit" class="principal">Criar cofre</button>
+          <button type="submit" class="botao">Criar cofre</button>
         </form>
       </div>
-      <div id="cofre-bloqueado" hidden>
+      <div id="cofre-bloqueado" class="cartao" hidden>
         <h2>Cofre bloqueado</h2>
         <form id="form-desbloquear">
           <label for="senha">Senha do cofre</label>
           <input id="senha" type="password" autocomplete="current-password" required>
-          <button type="submit" class="principal">Desbloquear</button>
+          <button type="submit" class="botao">Desbloquear</button>
         </form>
       </div>
       <div id="cofre-aberto" hidden>
-        <h2>Seus documentos</h2>
-        <p class="apoio">Bloqueia sozinho em <span id="contador">--:--</span>.</p>
+        <div class="faixa-cofre">
+          <span class="anel" aria-hidden="true">
+            <svg width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="26" r="24" class="anel-fundo"/><circle id="anel-tempo" cx="26" cy="26" r="24" class="anel-tempo"/></svg>
+            <svg class="cadeado" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="3"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
+          </span>
+          <div class="faixa-texto">
+            <strong><span class="ponto" aria-hidden="true"></span>Cofre aberto</strong>
+            <span>Bloqueia sozinho em <span id="contador">--:--</span></span>
+          </div>
+          <button id="bloquear" type="button" class="botao-claro">Bloquear</button>
+        </div>
+        <h2>Documentos</h2>
         <ul id="docs" class="lista"></ul>
         <p id="docs-vazio" class="apoio" hidden>Nenhum documento. Envie uma foto ou PDF ao bot para guardar.</p>
         <div id="visualizacao"></div>
-        <button id="bloquear" type="button">Bloquear agora</button>
       </div>
     </section>
 
     <section id="tela-ajustes" role="tabpanel" aria-labelledby="aba-ajustes" hidden>
-      <h2>Onde você mora</h2>
-      <label for="uf">Estado (UF)</label>
-      <select id="uf"><option value="">Escolher</option></select>
-      <h2>Resumo da manhã</h2>
-      <p class="apoio">Temas das manchetes (fonte não oficial).</p>
-      <div id="temas"></div>
-      <label for="hora">Horário do resumo</label>
-      <input id="hora" type="time">
-      <button id="salvar" type="button" class="principal">Salvar</button>
+      <div class="cartao">
+        <label for="uf">Seu estado (UF)</label>
+        <select id="uf"><option value="">Escolher</option></select>
+        <p class="apoio">Usado quando o procedimento muda de estado para estado.</p>
+      </div>
+      <div class="cartao">
+        <h2>Resumo da manhã</h2>
+        <p class="apoio">Temas das manchetes (notícias, fonte não oficial).</p>
+        <div id="temas" class="temas"></div>
+        <label for="hora">Horário do resumo</label>
+        <input id="hora" type="time">
+      </div>
+      <button id="salvar" type="button" class="botao">Salvar</button>
     </section>
   </main>
 
-  <script src="/static/painel.js"></script>
+  <!-- Barra flutuante: a aba ativa mostra o rótulo (nunca só a cor) -->
+  <nav class="barra" role="tablist" aria-label="Seções">
+    <button role="tab" id="aba-perguntar" aria-selected="true" aria-controls="tela-perguntar">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <span class="rotulo">Perguntar</span>
+    </button>
+    <button role="tab" id="aba-cofre" aria-selected="false" aria-controls="tela-cofre">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="3"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>
+      <span class="rotulo">Cofre</span>
+    </button>
+    <button role="tab" id="aba-ajustes" aria-selected="false" aria-controls="tela-ajustes">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>
+      <span class="rotulo">Ajustes</span>
+    </button>
+  </nav>
+</div>
+<script src="/static/painel.js"></script>
 </body>
 </html>
