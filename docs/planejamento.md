@@ -30,9 +30,9 @@
 ### Branches no GitHub
 
 - `main`: única branch de integração. Cada tarefa vira uma branch curta (`feat/…`, `fix/…`, `docs/…`) e entra por PR com revisão de outro integrante (E3). **Depois do merge, apague a branch.**
-- `feat/painel-tarefas-aba` (PR #38): complemento da aba Tarefas; revisado, na `main` desde 08/11 e branch apagada.
-- `arquivo/servidor-implementacao-paralela`: implementação paralela **arquivada de propósito**. **Não fazer merge**: conflita com o núcleo da `main`; o que servia dela já entrou pelo PR #5. Pode ficar como arquivo ou virar uma tag.
-- `main` não está protegida no GitHub. Recomendado: em Settings > Branches, exigir PR e o teste `testes` passando antes do merge.
+- Em 08/11 só existe a `main`. A antiga implementação paralela (branch `arquivo/servidor-implementacao-paralela`) virou a **tag** `arquivo-servidor-paralelo` e a branch foi apagada; **não fazer merge** dela (conflita com o núcleo; o que servia já entrou pelo PR #5). Para consultar: `git checkout arquivo-servidor-paralelo`.
+- Branches `dependabot/...` são criadas pelo GitHub para atualizar dependências; se a `main` já tiver uma versão igual ou mais nova, o Dependabot fecha o PR e apaga a branch sozinho.
+- `main` não está protegida no GitHub. Recomendado: em Settings > Branches, exigir PR e os testes `testes` e `testes-servidor` passando antes do merge.
 
 ### Onde parou e o que cada um faz agora
 
