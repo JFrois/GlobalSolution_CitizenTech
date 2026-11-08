@@ -1,0 +1,42 @@
+/* Painel: celular primeiro, uma coluna até 480 px (docs/ux.md §5 e §9). */
+* { box-sizing: border-box; }
+body { margin: 0; font: var(--tamanho-texto)/var(--entrelinha-texto) var(--fonte-texto);
+       background: var(--cor-fundo); color: var(--cor-texto); }
+header, main, nav { max-width: 480px; margin: 0 auto; padding: 0 var(--espaco-4); }
+header { padding-top: var(--espaco-5); }
+h1, h2 { font-family: var(--fonte-titulo); font-weight: 800; font-stretch: var(--largura-titulo); margin: 0 0 var(--espaco-2); }
+h1 { font-size: 28px; } h2 { font-size: var(--tamanho-subtitulo); margin-top: var(--espaco-5); }
+.apoio { color: var(--cor-apoio); margin: 0 0 var(--espaco-3); }
+nav { display: flex; gap: var(--espaco-2); margin-top: var(--espaco-4); }
+nav button { flex: 1; }
+button, input, select { font: inherit; min-height: var(--alvo-toque); border-radius: var(--canto-p);
+       border: 2px solid var(--cor-borda); background: var(--cor-superficie); color: var(--cor-texto);
+       padding: 0 var(--espaco-3); }
+input, select { width: 100%; margin: var(--espaco-1) 0 var(--espaco-3); }
+button { cursor: pointer; }
+button.principal { background: var(--cor-acao); color: var(--cor-acao-texto); border-color: var(--cor-acao); font-weight: 700; width: 100%; }
+nav button[aria-selected="true"] { border-color: var(--cor-texto); font-weight: 700; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--cor-ciano); outline-offset: 2px; }
+main { padding-bottom: var(--espaco-6); }
+[hidden] { display: none !important; }
+#aviso { background: var(--cor-ambar-suave); border-left: 4px solid var(--cor-ambar); padding: var(--espaco-3); margin: var(--espaco-4) 0; }
+.lista { list-style: none; padding: 0; }
+.lista li { display: flex; gap: var(--espaco-2); align-items: center; margin-bottom: var(--espaco-2); }
+.lista li span { flex: 1; overflow-wrap: anywhere; }
+.opcao { display: block; width: 100%; text-align: left; margin-bottom: var(--espaco-2); }
+.temas label { display: flex; gap: var(--espaco-3); align-items: center; min-height: var(--alvo-toque); }
+.temas input { width: 24px; min-height: 24px; margin: 0; }
+#visualizacao img { max-width: 100%; border-radius: var(--canto-p); }
+
+/* Cena da verificação: a resposta entra aos poucos (só opacidade e posição). */
+#cena .cartao { background: var(--cor-superficie); border-radius: var(--canto-m); padding: var(--espaco-4); margin-top: var(--espaco-4); }
+#cena .entra { opacity: 0; transform: translateY(8px); animation: entra var(--mov-medio) var(--mov-curva) forwards; }
+@keyframes entra { to { opacity: 1; transform: none; } }
+#cena ol { padding-left: var(--espaco-5); }
+#cena ol li::marker { color: var(--cor-ambar); font-weight: 700; }
+.atencao { color: var(--cor-atencao); font-weight: 700; }
+.fonte { color: var(--cor-ciano); overflow-wrap: anywhere; }
+.selo { display: inline-block; border: 2px solid var(--cor-ciano); color: var(--cor-ciano); border-radius: var(--canto-p);
+        padding: var(--espaco-1) var(--espaco-3); font-weight: 700; margin: var(--espaco-2) 0; }
+.consulta { color: var(--cor-apoio); }
+@media (prefers-reduced-motion: reduce) { #cena .entra { animation: none; opacity: 1; transform: none; } }

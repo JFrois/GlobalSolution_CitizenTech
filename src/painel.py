@@ -17,9 +17,13 @@ import hmac
 import json
 import secrets
 import time
+from pathlib import Path
 from urllib.parse import parse_qsl
 
+import armazenamento
 import ponte
+
+PASTA_FRONT = Path(__file__).resolve().parent.parent / "painel"
 
 IDADE_MAX_INITDATA = 3600      # segundos: initData mais velho que isso é recusado
 VALIDADE_LINK = 300            # link de uso único vale 5 minutos
@@ -122,6 +126,37 @@ class LimitadorTaxa:
         return True
 
 
+def campo_texto(corpo, campo):
+    """Campo de texto de um corpo JSON; formato inesperado vira texto vazio."""
+    if isinstance(corpo, dict) and isinstance(corpo.get(campo), str):
+        return corpo[campo]
+    return ""
+
+
+def tipo_mime(conteudo):
+    """Tipo do arquivo pelos primeiros bytes (o cofre guarda só o conteúdo)."""
+    if conteudo[:4] == b"%PDF":
+        return "application/pdf"
+    if conteudo[:8] == b"\x89PNG\r\n\x1a\n":
+        return "image/png"
+    if conteudo[:3] == b"\xff\xd8\xff":
+        return "image/jpeg"
+    return "application/octet-stream"
+
+
+def validar_config(corpo, temas_validos):
+    """Valida UF e temas do briefing. Devolve (uf ou None, temas ou None) ou levanta ValueError."""
+    if not isinstance(corpo, dict):
+        raise ValueError("Pedido inválido.")
+    uf, temas = corpo.get("uf"), corpo.get("temas")
+    if uf is not None and (not isinstance(uf, str) or uf.upper() not in armazenamento.UFS):
+        raise ValueError("UF inválida.")
+    if temas is not None and (not isinstance(temas, list)
+                              or any(t not in temas_validos for t in temas)):
+        raise ValueError("Tema inválido.")
+    return (uf.upper() if uf else None), temas
+
+
 def pergunta_do_corpo(corpo):
     """Extrai a pergunta do JSON recebido; qualquer formato inesperado vira texto vazio."""
     if isinstance(corpo, dict) and isinstance(corpo.get("pergunta"), str):
@@ -164,11 +199,15 @@ def resposta_estruturada(pergunta, base, uf=None):
 
 
 # ---- Aplicativo web --------------------------------------------------------
-def criar_app(base, token_bot, segredo_sessao, links, painel_url=""):
+def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None, armazem=None,
+              pasta_front=PASTA_FRONT):
     """Monta o app FastAPI. Import tardio: só o modo --servidor precisa dele."""
     from fastapi import Cookie, FastAPI, Header, HTTPException, Request, Response
     from fastapi.middleware.cors import CORSMiddleware
-    from fastapi.responses import JSONResponse
+    from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+    from fastapi.staticfiles import StaticFiles
+    import cofre as modulo_cofre
+    import criptografia
 
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     # CORS restrito ao domínio do painel (spec §10.4).
@@ -176,6 +215,8 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url=""):
                        allow_methods=["POST", "GET"], allow_headers=["content-type"],
                        allow_credentials=True)
     limitador = LimitadorTaxa()
+    # Tentativas de senha: limite bem menor, para travar adivinhação (spec §10.4).
+    limitador_senha = LimitadorTaxa(maximo=5, janela=300)
 
     @app.middleware("http")
     async def cabecalhos(request: Request, call_next):
@@ -183,7 +224,10 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url=""):
         resp.headers["X-Content-Type-Options"] = "nosniff"
         resp.headers["X-Frame-Options"] = "SAMEORIGIN"
         resp.headers["Referrer-Policy"] = "no-referrer"
-        resp.headers["Content-Security-Policy"] = "default-src 'self'; frame-ancestors 'self' https://web.telegram.org"
+        resp.headers["Content-Security-Policy"] = ("default-src 'self'; img-src 'self' blob: data:; "
+            "script-src 'self' https://telegram.org; "
+            "style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; "
+            "frame-ancestors 'self' https://web.telegram.org")
         return resp
 
     def usuario(initdata, cookie):
@@ -196,13 +240,15 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url=""):
         return uid
 
     @app.get("/entrar")
-    def entrar(t: str, response: Response):
+    def entrar(t: str):
         uid = links.consumir(t)
         if uid is None:
             raise HTTPException(status_code=401, detail="Link inválido ou vencido.")
-        response.set_cookie("sessao", assinar_sessao(uid, segredo_sessao), httponly=True,
-                            secure=True, samesite="strict", max_age=VALIDADE_SESSAO)
-        return {"ok": True}
+        # Cookie de sessão e volta para a página inicial (o token some da barra de endereço).
+        resp = RedirectResponse(url="/", status_code=303)
+        resp.set_cookie("sessao", assinar_sessao(uid, segredo_sessao), httponly=True,
+                        secure=True, samesite="strict", max_age=VALIDADE_SESSAO)
+        return resp
 
     @app.post("/api/perguntar")
     async def perguntar(request: Request, x_telegram_init_data: str = Header(default=""),
@@ -216,5 +262,125 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url=""):
             raise HTTPException(status_code=400, detail="Pedido inválido.")
         # A pergunta não é gravada nem logada (spec §10.5 e §13).
         return JSONResponse(resposta_estruturada(pergunta_do_corpo(corpo), base))
+
+    # ---- Configuração e cofre (spec §10.3 e §10.4) ----
+    # Toda rota usa o user_id validado por usuario(); nunca um id vindo do cliente.
+    def exigir_cofre():
+        if cofre is None or armazem is None:
+            raise HTTPException(status_code=503, detail="O cofre não está disponível.")
+
+    async def json_ou_400(request):
+        try:
+            return await request.json()
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Pedido inválido.")
+
+    @app.get("/api/estado")
+    def estado(x_telegram_init_data: str = Header(default=""), sessao: str = Cookie(default="")):
+        uid = usuario(x_telegram_init_data, sessao)
+        saida = {"temas": base["temas"], "cofre_disponivel": cofre is not None,
+                 "cofre_existe": False, "desbloqueado": False, "segundos_restantes": 0,
+                 "uf": None, "temas_briefing": []}
+        if armazem is not None:
+            saida["uf"] = armazem.obter_uf(uid)
+            saida["temas_briefing"] = armazem.obter_temas_briefing(uid)
+        if cofre is not None:
+            saida["cofre_existe"] = cofre.existe(uid)
+            saida["desbloqueado"] = cofre.esta_desbloqueado(uid)
+            saida["segundos_restantes"] = cofre.segundos_restantes(uid)
+        return saida
+
+    @app.put("/api/config")
+    async def configurar(request: Request, x_telegram_init_data: str = Header(default=""),
+                         sessao: str = Cookie(default="")):
+        uid = usuario(x_telegram_init_data, sessao)
+        exigir_cofre()
+        try:
+            uf, temas = validar_config(await json_ou_400(request), base["temas"])
+        except ValueError as erro:
+            raise HTTPException(status_code=400, detail=str(erro))
+        if uf:
+            armazem.definir_uf(uid, uf)
+        if temas is not None:
+            armazem.definir_temas_briefing(uid, temas)
+        return {"ok": True}
+
+    @app.post("/api/cofre/criar")
+    async def cofre_criar(request: Request, x_telegram_init_data: str = Header(default=""),
+                          sessao: str = Cookie(default="")):
+        uid = usuario(x_telegram_init_data, sessao)
+        exigir_cofre()
+        senha = campo_texto(await json_ou_400(request), "senha")
+        try:
+            cofre.criar(uid, senha)
+        except ValueError as erro:
+            codigo = 409 if cofre.existe(uid) else 400
+            raise HTTPException(status_code=codigo, detail=str(erro))
+        return {"ok": True}
+
+    @app.post("/api/cofre/desbloquear")
+    async def cofre_desbloquear(request: Request, x_telegram_init_data: str = Header(default=""),
+                                sessao: str = Cookie(default="")):
+        uid = usuario(x_telegram_init_data, sessao)
+        exigir_cofre()
+        if not limitador_senha.permitir(uid):
+            raise HTTPException(status_code=429, detail="Muitas tentativas. Aguarde alguns minutos.")
+        senha = campo_texto(await json_ou_400(request), "senha")
+        try:
+            cofre.desbloquear(uid, senha)
+        except modulo_cofre.CofreInexistente:
+            raise HTTPException(status_code=404, detail="Você ainda não criou o cofre.")
+        except criptografia.SenhaIncorreta:
+            raise HTTPException(status_code=403, detail="Senha incorreta.")
+        return {"ok": True, "segundos_restantes": cofre.segundos_restantes(uid)}
+
+    @app.post("/api/cofre/bloquear")
+    def cofre_bloquear(x_telegram_init_data: str = Header(default=""), sessao: str = Cookie(default="")):
+        uid = usuario(x_telegram_init_data, sessao)
+        exigir_cofre()
+        cofre.bloquear(uid)
+        return {"ok": True}
+
+    def com_cofre_aberto(funcao):
+        try:
+            return funcao()
+        except modulo_cofre.CofreBloqueado:
+            raise HTTPException(status_code=423, detail="Cofre bloqueado. Digite a senha para abrir.")
+
+    @app.get("/api/cofre/docs")
+    def cofre_listar(x_telegram_init_data: str = Header(default=""), sessao: str = Cookie(default="")):
+        uid = usuario(x_telegram_init_data, sessao)
+        exigir_cofre()
+        docs = com_cofre_aberto(lambda: cofre.listar(uid))
+        return {"docs": [{"id": i, "nome": n} for i, n in docs]}
+
+    @app.get("/api/cofre/docs/{doc_id}")
+    def cofre_abrir(doc_id: int, x_telegram_init_data: str = Header(default=""),
+                    sessao: str = Cookie(default="")):
+        uid = usuario(x_telegram_init_data, sessao)
+        exigir_cofre()
+        achado = com_cofre_aberto(lambda: cofre.abrir(uid, doc_id))
+        if achado is None:
+            raise HTTPException(status_code=404, detail="Documento não encontrado.")
+        return Response(content=achado[1], media_type=tipo_mime(achado[1]),
+                        headers={"Cache-Control": "no-store"})
+
+    @app.delete("/api/cofre/docs/{doc_id}")
+    def cofre_apagar(doc_id: int, x_telegram_init_data: str = Header(default=""),
+                     sessao: str = Cookie(default="")):
+        uid = usuario(x_telegram_init_data, sessao)
+        exigir_cofre()
+        if not cofre.apagar(uid, doc_id):
+            raise HTTPException(status_code=404, detail="Documento não encontrado.")
+        return {"ok": True}
+
+    # ---- Front estático (HTML/JS/CSS em painel/) ----
+    if Path(pasta_front).is_dir():
+        app.mount("/static", StaticFiles(directory=str(pasta_front)), name="static")
+
+        @app.get("/")
+        def pagina_inicial():
+            return FileResponse(str(Path(pasta_front) / "index.html"),
+                                headers={"Cache-Control": "no-cache"})
 
     return app

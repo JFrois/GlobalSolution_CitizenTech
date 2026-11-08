@@ -20,4 +20,6 @@ Mapa curto do repositório (atualizar ao criar ou mover módulos).
 | `src/transcricao.py` | Voz -> texto com Whisper local (import tardio, precisa de ffmpeg) | Testado com Whisper falso e com áudio real no Telegram (07/11); falta testar na VM |
 | `src/roteador.py`, `telegram_bot.py`, `painel.py`, `armazenamento.py`, `servidor.py` | Servidor base: roteador Gemini + regras, bot, API do painel, SQLite, `--servidor` | Bot, UF, voz e roteador **testados no Telegram real** (07/11); painel (`/painel`), Supabase e VM ainda não |
 | `deploy/`, `.github/workflows/deploy.yml`, `requirements.txt` | Caddy, systemd e deploy por SSH | Não testados em VM |
-| Onda 2 restante (`cofre`, `criptografia`, `classificador`, `tarefas`, `agendador`, `briefing`, front do painel) | Não existem ainda | Pendente |
+| `src/criptografia.py`, `src/cofre.py`, `src/classificador.py` | PBKDF2 + AES-GCM, cofre por `user_id`, tipo do documento via Gemini (lista fechada) | Testados (unitários); Gemini real e Telegram ainda não |
+| `painel/` (`index.html`, `painel.js`, `painel.css`, `tokens.css`) + rotas em `src/painel.py` | Front estático: Perguntar (cena da verificação), Cofre, Ajustes; API do cofre e config | Testado no navegador local e por testes; Mini App no Telegram real não |
+| Onda 2 restante (`tarefas`, `agendador`, `briefing`, foto/PDF no bot) | Não existem ainda | Pendente |

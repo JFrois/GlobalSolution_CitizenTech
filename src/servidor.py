@@ -83,6 +83,7 @@ def iniciar(caminho_base=None):
     import armazenamento
     import base as modulo_base
     import ponte
+    import cofre
     import painel
     import telegram_bot
 
@@ -96,8 +97,9 @@ def iniciar(caminho_base=None):
     armazem = armazenamento.ArmazenamentoSQLite()
     links = painel.LinksUnicos()
     bot, dp = telegram_bot.criar_bot(config, dados, armazem, links)
+    cofre_usuarios = cofre.Cofre(armazem)  # chaves só em memória, TTL de 10 min
     app = painel.criar_app(dados, config["TELEGRAM_BOT_TOKEN"], config["SESSAO_SEGREDO"],
-                           links, config.get("PAINEL_URL", ""))
+                           links, config.get("PAINEL_URL", ""), cofre_usuarios, armazem)
 
     async def rodar():
         # Registra os comandos no menu do Telegram. Se falhar (rede), o bot segue sem eles.
