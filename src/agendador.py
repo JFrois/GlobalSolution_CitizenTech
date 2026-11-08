@@ -29,6 +29,17 @@ def agendar_exclusao(armazem, user_id, chat_id, message_id, agora=None):
     armazem.agendar_exclusao(user_id, chat_id, message_id, agora + ATRASO_EXCLUSAO_S)
 
 
+# Atraso a partir do qual o lembrete avisa o horário original (servidor fora do ar, máquina dormindo).
+ATRASO_AVISADO_SEG = 5 * 60
+
+
+def texto_do_lembrete(titulo, quando, agora):
+    """"Lembrete: X"; se chegar com mais de 5 min de atraso, diz o horário que estava marcado."""
+    if quando is not None and agora - quando > ATRASO_AVISADO_SEG:
+        return "Lembrete (marcado para %s, enviado com atraso): %s" % (tarefas.formatar_quando(quando), titulo)
+    return "Lembrete: %s" % titulo
+
+
 async def processar(armazem, enviar, apagar, agora=None, briefing=None):
     """Cumpre o que venceu. Devolve (lembretes enviados, mensagens apagadas).
 
@@ -37,9 +48,9 @@ async def processar(armazem, enviar, apagar, agora=None, briefing=None):
     Falha de um item não derruba os outros: o lembrete fica pendente e tenta no próximo tick."""
     agora = time.time() if agora is None else agora
     avisos = apagadas = 0
-    for tarefa_id, user_id, titulo in armazem.tarefas_a_avisar(agora):
+    for tarefa_id, user_id, titulo, quando in armazem.tarefas_a_avisar(agora):
         try:
-            await enviar(user_id, "Lembrete: %s" % titulo)
+            await enviar(user_id, texto_do_lembrete(titulo, quando, agora))
             armazem.marcar_avisada(tarefa_id)
             avisos += 1
         except Exception as erro:

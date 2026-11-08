@@ -144,6 +144,15 @@ class TestAgendador(unittest.TestCase):
         self.assertEqual(self.apagados, [(10, 20)])
         self.assertEqual(self.processar(10**6), (0, 0))
 
+    def test_lembrete_atrasado_diz_o_horario_marcado(self):
+        quando = int(dt(8, 18, 10).timestamp())
+        self.arm.criar_tarefa(1, "trabalho faculdade", quando)
+        self.processar(quando + 39 * 60)  # máquina dormiu: chegou 39 min depois
+        [(uid, texto)] = self.enviados
+        self.assertIn("08/11 às 18:10", texto)
+        self.assertIn("atraso", texto)
+        self.assertTrue(texto.endswith("trabalho faculdade"))
+
     def test_falha_ao_apagar_nao_repete(self):
         agendador.agendar_exclusao(self.arm, 1, 10, 20, agora=0)
         async def quebra(chat, msg):
@@ -201,3 +210,24 @@ class TestRoteamentoDeTarefas(unittest.TestCase):
         self.assertEqual(f("meus lembretes")["args"]["acao"], "listar")
         self.assertEqual(f("concluir tarefa 1")["args"]["acao"], "concluir")
         self.assertEqual(f("como pagar o IPVA")["ferramenta"], "buscar_orientacao")
+
+    def test_tarefa_sem_verbo_com_conteudo_cria(self):
+        import roteador
+        f = roteador.fallback_por_regras
+        for texto in ("tarefa - trabalho faculdade as 18:10", "tarefa: pagar luz amanhã 9h",
+                      "crie uma tarefa estudar 20h", "lembrete consulta dia 15 às 10h"):
+            self.assertEqual(f(texto)["args"]["acao"], "criar", texto)
+        for texto in ("minhas tarefas", "quais lembretes tenho hoje", "tarefas de amanhã"):
+            self.assertEqual(f(texto)["args"]["acao"], "listar", texto)
+
+    def test_reconciliar_prefere_criar_quando_gemini_so_lista(self):
+        import roteador
+        llm = {"ferramenta": "gerenciar_tarefas", "args": {"acao": "listar"}}
+        self.assertEqual(roteador.reconciliar(llm, "tarefa - trabalho faculdade as 18:10")["args"]["acao"], "criar")
+        self.assertEqual(roteador.reconciliar(llm, "minhas tarefas")["args"]["acao"], "listar")
+
+    def test_titulo_sem_o_pedido(self):
+        for texto, esperado in (("crie uma tarefa estudar", "estudar"), ("adicionar tarefa revisar base", "revisar base"),
+                                ("criar tarefa - trabalho faculdade", "trabalho faculdade"),
+                                ("agendar lembrete de dentista", "dentista"), ("tarefas da casa", "tarefas da casa")):
+            self.assertEqual(tarefas._limpar_titulo(texto), esperado)
