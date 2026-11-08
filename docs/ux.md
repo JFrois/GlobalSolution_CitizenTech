@@ -276,6 +276,7 @@ As notícias ficam **sempre** depois das tarefas e com o rótulo "fonte não ofi
 | # | Tela | Conteúdo principal | Ação principal |
 |---|---|---|---|
 | P0 | **Perguntar (spec §10.5)** | Campo "Sua pergunta", três exemplos tocáveis; ao enviar, a cena: consulta → título e passos em sequência → selo "Fonte conferida" → próximos assuntos. Também as telas de pedir escolha, sem base e entrada inválida | Perguntar |
+| P8 | **Tarefas (spec §11)** | Cartão "O que você precisa fazer?" + "Quando avisar (opcional)" com exemplos (`amanhã às 9h`, `hoje 18:30`, `dia 15 às 10h`, `daqui a 2 horas`); lista "Pendentes" com cartões (título, `Aviso em dd/mm às hh:mm`) e botão `Concluir` | Anotar |
 | P1 | Criar cofre (primeiro acesso) | 3 frases: só você abre com a sua senha; nem a equipe consegue abrir; **se esquecer a senha, perde os documentos**. Campo de senha (mín. 10 caracteres, com botão mostrar/ocultar e medidor), confirmação, caixa "Entendi que não dá para recuperar a senha" | Criar cofre |
 | P2 | Desbloquear | Campo de senha | Desbloquear |
 | P3 | Documentos (início) | Faixa "Cofre aberto · bloqueia em 9:42" + `Bloquear agora`; lista de cartões (tipo, nome, data); barra inferior Documentos · Configurações | — |
@@ -285,7 +286,8 @@ As notícias ficam **sempre** depois das tarefas e com o rótulo "fonte não ofi
 | P7 | Link expirado | `Este link já foi usado ou expirou. Peça um novo com /painel no bot.` | — |
 
 ### 5.3 Estados e mensagens
-- **Barra inferior:** Perguntar · Documentos · Configurações. A aba Perguntar é a primeira e funciona sem o cofre.
+- **Barra inferior:** Perguntar · Tarefas · Cofre · Ajustes. A aba Perguntar é a primeira e funciona sem o cofre.
+- **Tarefas (P8):** sem tarefas: `Você não tem tarefas pendentes.`; data que não entendi: `Não entendi quando devo te avisar. Escreva, por exemplo: amanhã às 9h, hoje 18:30, dia 15 às 10h ou daqui a 2 horas.` (o texto digitado fica no campo); ao concluir, o cartão sai da lista.
 - **Lista vazia (P3):** `Seu cofre está vazio. Mande a foto de um documento para o bot e ela aparece aqui.`
 - **Senha errada (P2):** `Senha incorreta.` (mensagem genérica). Depois de várias tentativas: `Muitas tentativas. Espere 1 minuto e tente de novo.` (rate limit, spec §10.4).
 - **Cofre bloqueou sozinho:** volta para P2 com `Seu cofre foi bloqueado por segurança. Digite a senha para abrir de novo.`
@@ -359,12 +361,12 @@ Protótipo animado (6 telas: painel em 5, mais o terminal) no canvas de revisão
 | `--cor-link` | `#0B5E94` | Links e "Abrir →" | 6,9 no branco |
 | `--cor-fundo` | `#F2F8FC` | Folha clara | — |
 | `--cor-superficie` | `#FFFFFF` | Cartões | — |
-| `--cor-texto` | `#0E2233` | Títulos e texto | 16,5 |
-| `--cor-apoio` | `#4A6176` | Legendas e rótulos | 5,9 |
+| `--cor-texto` | `#0E2233` | Títulos e texto | 15,1 |
+| `--cor-apoio` | `#4A6176` | Legendas e rótulos | 6,0 |
 | `--cor-noite` | `#0E2233` | Barra de navegação flutuante e terminal | — |
-| `--cor-verde` | `#0F7A5A` | Selo "Fonte conferida" (fundo `#DDF3EA`) | branco 5,5 |
+| `--cor-verde` | `#0F7A5A` | Selo "Fonte conferida" (fundo `#DDF3EA`) | branco 5,3 |
 | `--cor-teal` / `--cor-coral` | `#0A7C73` / `#B8431F` | Tinta dos temas Serviços e Direitos (Documentos usa o azul) | ícone sobre fundo suave ≥ 4,5 |
-| `--cor-atencao-texto` | `#5E1F0B` | "Atenção:" sobre `#FDE7DF` | 9,5 |
+| `--cor-atencao-texto` | `#5E1F0B` | "Atenção:" sobre `#FDE7DF` | 10,5 |
 | `--cor-borda` | `#6F8CA2` | Bordas de campos e botões secundários | ≥ 3,3 |
 
 - **Vidro:** fundo `rgba(8,40,70,.38)`, borda `rgba(255,255,255,.4)`, blur de 14 px (chips e cartões sobre o azul). Texto branco só sobre vidro ou sobre a parte escura do degradê.

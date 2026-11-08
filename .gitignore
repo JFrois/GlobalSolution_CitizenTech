@@ -12,3 +12,6 @@ venv/
 .pytest_cache/
 .claude/worktrees/
 .claude/settings.local.json
+
+# Saídas do navegador de teste
+.playwright-mcp/

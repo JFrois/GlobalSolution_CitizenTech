@@ -4,7 +4,11 @@
 "use strict";
 
 const tg = window.Telegram && window.Telegram.WebApp;
-if (tg) { tg.ready(); tg.expand(); }
+if (tg) {
+  tg.ready(); tg.expand();
+  // Cores do Mini App combinando com a faixa azul e a folha clara (só em versões que suportam).
+  try { tg.setHeaderColor("#1676B0"); tg.setBackgroundColor("#F2F8FC"); } catch (e) { /* versão antiga do Telegram */ }
+}
 const SEM_ANIMACAO = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const NS_SVG = "http://www.w3.org/2000/svg";
 const $ = (id) => document.getElementById(id);

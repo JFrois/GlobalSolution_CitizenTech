@@ -321,7 +321,7 @@ Dois modelos documentados, comparados nos testes (clareza, consistência, presen
 - **Verdade sobre E2E:** enquanto o cofre está desbloqueado, o servidor vê o arquivo ao enviar. **E2E real existe apenas no painel** (decifrar no navegador com WebCrypto). Dizer isso no README e no relatório, sem exagerar.
 
 ### 10.4 Painel web
-- Telas: **perguntar** (cena da verificação, §10.5) · **tarefas** (anotar com "quando" em texto livre, lido pelas mesmas regras do chat; listar pendentes; concluir) · criar/desbloquear cofre · listar documentos · visualizar · **apagar de verdade** (confirmação, remove arquivo e metadados) · configurar **UF** e **temas do briefing** · horário do briefing.
+- Telas: **perguntar** (cena da verificação, §10.5) · **tarefas** (§11: lista de pendentes, criar com data opcional, concluir) · criar/desbloquear cofre · listar documentos · visualizar · **apagar de verdade** (confirmação, remove arquivo e metadados) · configurar **UF** e **temas do briefing** · horário do briefing.
 - **Login no Mini App:** validar `initData` (HMAC com token do bot, checar `auth_date` recente). **Login no navegador:** link de uso único e curta duração gerado por `/painel`.
 - **HTTPS obrigatório** com certificado válido (certificado autoassinado é rejeitado pelo Telegram).
 - Cabeçalhos de segurança, CORS restrito ao domínio do painel, sem `eval`, sem scripts de terceiros desnecessários, rate limit nas rotas de desbloqueio.
@@ -345,6 +345,7 @@ Dois modelos documentados, comparados nos testes (clareza, consistência, presen
 
 ## 11. Tarefas, lembretes, briefing, UF, autodestruição
 
+- **Tarefas no painel (decisão de 08/11):** aba "Tarefas" com o mesmo núcleo do chat (`tarefas.tentar_criar`, sem IA): `GET /api/tarefas`, `POST /api/tarefas` (`titulo`, `quando` opcional em texto livre, lido por regras) e `POST /api/tarefas/{id}/concluir`. Tudo filtrado por `user_id`, com limite de pedidos; título até 200 e "quando" até 80 caracteres. O aviso no horário continua saindo pelo bot. **Não há tarefas no terminal:** o núcleo avaliado não guarda dado do usuário (§13.4).
 - **Tarefas/lembretes (`tarefas.py`):** título, data/hora (fuso do usuário **(EM ABERTO: assumir America/Sao_Paulo por padrão)**), status. Alertas via APScheduler. **Persistência (decisão de 08/11):** o estado fica nas tabelas `tarefas` e `exclusoes` do armazenamento; o APScheduler só dispara um tick a cada 30 s que cumpre o que venceu, então a subida do servidor já executa o vencido, sem jobstore próprio. O fuso é America/Sao_Paulo para todos (fuso por usuário = roadmap).
 - **Briefing (`briefing.py`):** todo dia no horário configurado, envia (1) tarefas/lembretes do dia e (2) até **3 manchetes por tema** do usuário, de feeds RSS, com rótulo **"Notícias — fonte não oficial"**. Lista curada de feeds por tema **(EM ABERTO: equipe escolher 1–2 feeds por tema; preferir veículos públicos/governamentais)**. Falha de um feed não derruba o briefing.
 - **UF:** `/localizacao` (teclado com UFs) ou painel. Ao responder um registro `abrangencia: estadual`, usar `referencias_estaduais[UF]` se existir; senão o link nacional gov.br e um aviso de que o procedimento varia por estado. Se a UF não foi informada, perguntar uma vez.

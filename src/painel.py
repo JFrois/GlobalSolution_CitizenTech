@@ -234,6 +234,9 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
         resp.headers["X-Content-Type-Options"] = "nosniff"
         resp.headers["X-Frame-Options"] = "SAMEORIGIN"
         resp.headers["Referrer-Policy"] = "no-referrer"
+        if request.url.path.startswith("/static/"):
+            # Revalida sempre (ETag): depois de um deploy ninguém fica com CSS/JS velho.
+            resp.headers["Cache-Control"] = "no-cache"
         resp.headers["Content-Security-Policy"] = ("default-src 'self'; img-src 'self' blob: data:; "
             "script-src 'self' https://telegram.org; "
             "style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; "
