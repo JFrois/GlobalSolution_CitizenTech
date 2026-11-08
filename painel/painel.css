@@ -48,7 +48,7 @@ label { display: block; font-weight: 700; font-size: 15px; }
          padding: var(--espaco-3) var(--espaco-4); margin-bottom: var(--espaco-3); font-weight: 600; }
 
 /* ---- Campos e botões ---- */
-input[type="password"], input[type="time"], select { width: 100%; min-height: 48px; font: inherit; color: var(--cor-texto);
+input[type="password"], .cartao input[type="text"], input[type="time"], select { width: 100%; min-height: 48px; font: inherit; color: var(--cor-texto);
          background: #fff; border: 1.5px solid var(--cor-borda); border-radius: var(--canto-icone); padding: 0 var(--espaco-3);
          margin: var(--espaco-1) 0 var(--espaco-3); }
 .botao, .botao-claro, .botao-sec, .chip-botao, .barra button { font: inherit; cursor: pointer;
@@ -116,6 +116,12 @@ input[type="password"], input[type="time"], select { width: 100%; min-height: 48
 .doc .botao-sec { padding: 0 12px; }
 #visualizacao { margin-top: var(--espaco-3); }
 #visualizacao img { max-width: 100%; border-radius: var(--canto-cartao); }
+
+
+/* ---- Tarefas ---- */
+.tarefa-quando { display: block; font-size: 13px; font-weight: 600; color: var(--cor-link); }
+.doc.saindo { animation: sai var(--mov-medio) var(--mov-curva) both; }
+@keyframes sai { to { opacity: 0; transform: translateX(24px); } }
 
 /* ---- Ajustes ---- */
 .temas { display: flex; flex-wrap: wrap; gap: var(--espaco-2); margin-bottom: var(--espaco-3); }

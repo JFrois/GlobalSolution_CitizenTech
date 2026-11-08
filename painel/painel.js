@@ -4,7 +4,11 @@
 "use strict";
 
 const tg = window.Telegram && window.Telegram.WebApp;
-if (tg) { tg.ready(); tg.expand(); }
+if (tg) {
+  tg.ready(); tg.expand();
+  // Cores do Mini App combinando com a faixa azul e a folha clara (só em versões que suportam).
+  try { tg.setHeaderColor("#1676B0"); tg.setBackgroundColor("#F2F8FC"); } catch (e) { /* versão antiga do Telegram */ }
+}
 const SEM_ANIMACAO = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const NS_SVG = "http://www.w3.org/2000/svg";
 const $ = (id) => document.getElementById(id);
@@ -66,6 +70,7 @@ function atrasar(e, segundos) { e.style.animationDelay = segundos + "s"; return 
 // ---- Abas ----
 const TELAS = {
   perguntar: ["Qual a sua dúvida hoje?", "Respostas simples, sempre com a fonte oficial."],
+  tarefas: ["Suas tarefas", "Anote aqui e eu aviso pelo Telegram na hora marcada."],
   cofre: ["Seu cofre", "Só você abre, com a sua senha."],
   ajustes: ["Ajustes", "Do seu jeito, e só o necessário."],
 };
@@ -78,7 +83,8 @@ function abrirAba(nome) {
   $("sub-tela").textContent = TELAS[nome][1];
   $("form-pergunta").hidden = nome !== "perguntar";
   avisar("");
-  if (nome !== "perguntar") carregarEstado();
+  if (nome === "tarefas") carregarTarefas();
+  else if (nome !== "perguntar") carregarEstado();
 }
 for (const a of Object.keys(TELAS)) $("aba-" + a).addEventListener("click", () => abrirAba(a));
 
@@ -185,6 +191,49 @@ async function perguntar(texto) {
 }
 $("form-pergunta").addEventListener("submit", (ev) => { ev.preventDefault(); perguntar($("pergunta").value); });
 for (const b of document.querySelectorAll("[data-pergunta]")) b.addEventListener("click", () => perguntar(b.dataset.pergunta));
+
+// ---- Tarefas e lembretes (spec §11): o texto de "quando" é lido no servidor, por regras ----
+function desenharTarefas(itens) {
+  const ul = $("tarefas-lista"); ul.textContent = "";
+  $("tarefas-vazio").hidden = itens.length > 0;
+  for (const t of itens) {
+    const li = el("li", undefined, "doc");
+    const ic = el("span", undefined, "doc-icone azul");
+    ic.appendChild(icone(["M12 3a9 9 0 100 18 9 9 0 000-18z", "M8 12.5l3 3 5-6"], 24));
+    const texto = el("span", undefined, "doc-nome");
+    texto.appendChild(document.createTextNode(t.titulo));
+    if (t.quando_texto) texto.appendChild(el("span", "Aviso em " + t.quando_texto, "tarefa-quando"));
+    const concluir = el("button", "Concluir", "botao-sec"); concluir.type = "button";
+    concluir.setAttribute("aria-label", "Concluir: " + t.titulo);
+    concluir.addEventListener("click", () => concluirTarefa(t, li));
+    li.append(ic, texto, concluir);
+    ul.appendChild(li);
+  }
+}
+
+async function carregarTarefas() {
+  try { desenharTarefas((await json(await api("GET", "/api/tarefas"))).tarefas); }
+  catch (e) { avisar(e.message); }
+}
+
+async function concluirTarefa(tarefa, linha) {
+  avisar("");
+  try {
+    const d = await json(await api("POST", "/api/tarefas/" + tarefa.id + "/concluir"));
+    linha.classList.add("saindo");
+    setTimeout(() => desenharTarefas(d.tarefas), SEM_ANIMACAO ? 0 : 300);
+  } catch (e) { avisar(e.message); }
+}
+
+$("form-tarefa").addEventListener("submit", async (ev) => {
+  ev.preventDefault(); avisar(""); $("tarefa-ok").hidden = true;
+  try {
+    const d = await json(await api("POST", "/api/tarefas", { titulo: $("tarefa-titulo").value, quando: $("tarefa-quando").value }));
+    $("tarefa-titulo").value = ""; $("tarefa-quando").value = "";
+    $("tarefa-ok").textContent = d.mensagem; $("tarefa-ok").hidden = false;
+    desenharTarefas(d.tarefas);
+  } catch (e) { avisar(e.message); }
+});
 
 // ---- Estado, cofre e ajustes ----
 async function carregarEstado() {

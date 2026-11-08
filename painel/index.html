@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#1676B0">
   <title>Citizen Assist AI</title>
+  <link rel="icon" type="image/svg+xml" href="/static/icone.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
@@ -52,6 +53,24 @@
         <button type="button" class="chip-botao" data-pergunta="Como me inscrever no CadÚnico?">CadÚnico</button>
       </div>
       <div id="cena" aria-live="polite"></div>
+    </section>
+
+    <!-- Tarefas e lembretes: o aviso chega pelo bot no horário marcado (spec §11) -->
+    <section id="tela-tarefas" role="tabpanel" aria-labelledby="aba-tarefas" hidden>
+      <form id="form-tarefa" class="cartao">
+        <label for="tarefa-titulo">O que você precisa fazer?</label>
+        <input id="tarefa-titulo" type="text" maxlength="200" autocomplete="off" required
+               placeholder="Ex.: pagar a conta de luz">
+        <label for="tarefa-quando">Quando avisar (opcional)</label>
+        <input id="tarefa-quando" type="text" maxlength="80" autocomplete="off"
+               placeholder="Ex.: amanhã às 9h">
+        <p class="apoio">Você pode escrever: amanhã às 9h, hoje 18:30, dia 15 às 10h ou daqui a 2 horas. Sem data, a tarefa fica na lista e não avisa.</p>
+        <button type="submit" class="botao">Anotar</button>
+        <p id="tarefa-ok" class="nota" role="status" hidden></p>
+      </form>
+      <h2>Pendentes</h2>
+      <ul id="tarefas-lista" class="lista"></ul>
+      <p id="tarefas-vazio" class="apoio" hidden>Você não tem tarefas pendentes.</p>
     </section>
 
     <!-- Cofre: senha só aqui, nunca no chat (spec §10.1) -->
@@ -114,6 +133,10 @@
     <button role="tab" id="aba-perguntar" aria-selected="true" aria-controls="tela-perguntar">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
       <span class="rotulo">Perguntar</span>
+    </button>
+    <button role="tab" id="aba-tarefas" aria-selected="false" aria-controls="tela-tarefas">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg>
+      <span class="rotulo">Tarefas</span>
     </button>
     <button role="tab" id="aba-cofre" aria-selected="false" aria-controls="tela-cofre">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="3"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>

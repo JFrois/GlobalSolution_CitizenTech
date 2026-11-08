@@ -140,27 +140,43 @@ def _resp(texto):
 
 
 def _criar(args, armazem, user_id, agora):
-    titulo = (args.get("titulo") or "").strip()
-    pedido_quando = (args.get("quando") or "").strip()
+    _, texto = tentar_criar(args.get("titulo"), args.get("quando"), armazem, user_id, agora)
+    return _resp(texto)
+
+
+def tentar_criar(titulo, pedido_quando, armazem, user_id, agora=None):
+    """Cria a tarefa se o texto for válido. Devolve (criou, mensagem para o usuário).
+
+    Usada pelo chat (via _criar) e pelo painel, que precisa saber se deu certo."""
+    agora = agora or agora_local()
+    titulo = (titulo or "").strip()
+    pedido_quando = (pedido_quando or "").strip()
     try:
         quando, resto = interpretar_quando(pedido_quando, agora) if pedido_quando else (None, "")
         if pedido_quando and quando is None:
-            return _resp(MSG_NAO_ENTENDI_QUANDO)
+            return False, MSG_NAO_ENTENDI_QUANDO
         if quando is None and titulo:  # a data pode estar dentro do próprio título
             quando, resto_titulo = interpretar_quando(titulo, agora)
             if quando is not None:
                 titulo = resto_titulo
     except DataImpossivel:
-        return _resp(MSG_DATA_IMPOSSIVEL)
+        return False, MSG_DATA_IMPOSSIVEL
     titulo = _limpar_titulo(titulo)
     if not titulo:
-        return _resp("Qual é a tarefa? Escreva, por exemplo: me lembre de pagar a conta amanhã às 9h.")
+        return False, "Qual é a tarefa? Escreva, por exemplo: me lembre de pagar a conta amanhã às 9h."
     if quando is not None and quando <= agora:
-        return _resp(MSG_PASSADO)
+        return False, MSG_PASSADO
     armazem.criar_tarefa(user_id, titulo, quando.timestamp() if quando else None)
     if quando:
-        return _resp("Anotado: %s, %s. Aviso você nessa hora." % (titulo, formatar_quando(quando.timestamp())))
-    return _resp("Anotado: %s. (Sem data, então não vou avisar.)" % titulo)
+        return True, "Anotado: %s, %s. Aviso você nessa hora." % (titulo, formatar_quando(quando.timestamp()))
+    return True, "Anotado: %s. (Sem data, então não vou avisar.)" % titulo
+
+
+def lista_para_painel(armazem, user_id):
+    """Pendentes do usuário em formato de dados: [{id, titulo, quando, quando_texto}]."""
+    return [{"id": i, "titulo": t, "quando": q,
+             "quando_texto": formatar_quando(q) if q else None}
+            for i, t, q in armazem.listar_tarefas(user_id)]
 
 
 def _listar(armazem, user_id):
