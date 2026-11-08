@@ -18,7 +18,7 @@
 | E1 (redigir as 17 orientações) | **Rascunho feito pela IA** | Todas com `data_verificacao` 2026-11-07; falta revisão humana (E2) |
 | E2 (revisão cruzada da base) | **Pendente** | Inclui `referencias_estaduais` de DOC-001 (hoje vazio) |
 | B4, B5, B6, B10 (voz) | **Concluído e testado no Telegram real** (07/11) | Bot, `/localizacao`, `/apagar_meus_dados`, roteador com cascata do Gemini, UF e voz (Whisper local) |
-| B7 (tarefas e lembretes) | **Testado com o servidor local** (08/11) | Lembrete pelo chat chega no Telegram na hora (PRs #42 e #44); lembrete pelo painel local disparado pelo agendador |
+| B7 (tarefas e lembretes) | **Testado com o servidor local** (08/11) | Lembrete pelo chat chega no Telegram na hora (PRs #42 e #44); lembrete marcado para 20:10 chegou no Telegram às 20:10 |
 | B8, B9, B10 (foto/PDF) | Código pronto e testado por testes; **falta teste no Telegram real** | Autodestruição, resumo da manhã, foto/PDF no cofre |
 | C5 a C8, C10 | Código pronto e testado por testes e no navegador local; **falta teste real** | Criptografia, cofre, classificador, painel (abas Perguntar, **Tarefas**, Cofre e Ajustes) |
 | C2 | Parcial | SQLite atrás de `armazenamento.py`; Supabase **não** adotado (decisão EM ABERTO) |
