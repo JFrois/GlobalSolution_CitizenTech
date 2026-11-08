@@ -54,7 +54,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 **Testado de ponta a ponta com o servidor local em 08/11 (PRs #42 a #44):**
 
 - **Lembrete pelo chat:** "me lembra de pagar a luz amanhã às 9h" cria a tarefa (antes caía na busca e respondia a Tarifa Social de Energia; corrigido no PR #44). O aviso chega no Telegram na hora certa (o atraso de 39 min foi corrigido no PR #42).
-- **Lembrete pelo painel local:** "daqui a 1 minuto" foi marcado como avisado pelo agendador no tick seguinte (cerca de 30 s depois). A chegada dessa mensagem no Telegram não foi conferida.
+- **Lembrete pelo painel local:** "daqui a 1 minuto" foi marcado como avisado pelo agendador no tick seguinte (cerca de 30 s depois). Lembrete criado para as 20:10 chegou no Telegram real às 20:10 e foi marcado como avisado no banco.
 - **Desligar o servidor:** Ctrl+C agora encerra bot, painel e agendador juntos (PR #43). Se a porta 8000 estiver ocupada, o `--servidor` avisa e não sobe um segundo bot.
 - Painel local: sem sessão ou com link vencido, a API responde 401 e a tela pede um novo link pelo `/painel`.
 
