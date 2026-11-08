@@ -14,6 +14,8 @@ import datetime
 import logging
 import time
 
+import tarefas
+
 log = logging.getLogger("citizen.agendador")
 
 INTERVALO_S = 30
@@ -27,10 +29,11 @@ def agendar_exclusao(armazem, user_id, chat_id, message_id, agora=None):
     armazem.agendar_exclusao(user_id, chat_id, message_id, agora + ATRASO_EXCLUSAO_S)
 
 
-async def processar(armazem, enviar, apagar, agora=None):
+async def processar(armazem, enviar, apagar, agora=None, briefing=None):
     """Cumpre o que venceu. Devolve (lembretes enviados, mensagens apagadas).
 
     `enviar(user_id, texto)` e `apagar(chat_id, message_id)` são corrotinas do bot.
+    `briefing(user_id)` (opcional, corrotina) devolve o texto do resumo da manhã.
     Falha de um item não derruba os outros: o lembrete fica pendente e tenta no próximo tick."""
     agora = time.time() if agora is None else agora
     avisos = apagadas = 0
@@ -41,6 +44,16 @@ async def processar(armazem, enviar, apagar, agora=None):
             avisos += 1
         except Exception as erro:
             log.warning("lembrete não enviado (%s); tenta de novo", type(erro).__name__)
+    if briefing is not None:
+        local = datetime.datetime.fromtimestamp(agora, tarefas.FUSO_PADRAO)
+        for user_id in armazem.briefings_a_enviar(local.strftime("%Y-%m-%d"), local.strftime("%H:%M")):
+            try:
+                texto = await briefing(user_id)
+                if texto:
+                    await enviar(user_id, texto)
+                armazem.marcar_briefing_enviado(user_id, local.strftime("%Y-%m-%d"))
+            except Exception as erro:
+                log.warning("briefing não enviado (%s); tenta de novo", type(erro).__name__)
     for excl_id, chat_id, message_id in armazem.exclusoes_vencidas(agora):
         try:
             await apagar(chat_id, message_id)
@@ -52,11 +65,11 @@ async def processar(armazem, enviar, apagar, agora=None):
     return avisos, apagadas
 
 
-def iniciar(armazem, enviar, apagar, intervalo=INTERVALO_S):
+def iniciar(armazem, enviar, apagar, intervalo=INTERVALO_S, briefing=None):
     """Liga o APScheduler (dentro do loop do asyncio já em execução). Devolve o agendador."""
     from apscheduler.schedulers.asyncio import AsyncIOScheduler
     agendador = AsyncIOScheduler()
-    agendador.add_job(processar, "interval", seconds=intervalo, args=[armazem, enviar, apagar],
+    agendador.add_job(processar, "interval", seconds=intervalo, args=[armazem, enviar, apagar, None, briefing],
                       # Primeiro tick já na subida: cumpre o que venceu com o servidor fora do ar.
                       next_run_time=datetime.datetime.now(), max_instances=1, coalesce=True, id="tick")
     agendador.start()

@@ -22,6 +22,7 @@ from aiogram.types import (CallbackQuery, InlineKeyboardButton, InlineKeyboardMa
                            LinkPreviewOptions, Message)
 
 import armazenamento
+import briefing
 import ponte
 import roteador
 import tarefas
@@ -116,6 +117,7 @@ def criar_bot(config, base, armazem, links):
     # GEMINI_MODELO (opcional) vai para o início da fila; os demais vêm da lista da chave.
     modelo_env = config.get("GEMINI_MODELO") or None
     modelo_whisper = transcricao.nome_do_modelo(config)
+    feeds = briefing.carregar_feeds()  # data/feeds.json (EM ABERTO: a equipe escolhe os feeds)
 
     async def responder(mensagem, resultado, user_id):
         # O bot usa parse_mode HTML. A resposta de um assunto já vem em HTML escapado
@@ -266,6 +268,10 @@ def criar_bot(config, base, armazem, links):
             if chamada["ferramenta"] == "gerenciar_tarefas":
                 # Tarefas e lembretes: o texto de "quando" é lido por regras, sem IA (src/tarefas.py).
                 resultado = tarefas.executar(chamada["args"], armazem, user_id)
+            elif chamada["ferramenta"] == "briefing_matinal":
+                # Busca os feeds na rede: em outra thread, para não travar o bot.
+                resultado = await asyncio.to_thread(
+                    briefing.executar, chamada["args"], armazem, user_id, feeds, base["temas"])
             else:
                 resultado = roteador.executar(chamada, base, armazem.obter_uf(user_id))
             await responder(m, resultado, user_id)

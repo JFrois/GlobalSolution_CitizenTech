@@ -158,7 +158,5 @@ class TestRoteamentoDeTarefas(unittest.TestCase):
 
     def test_mensagem_de_em_breve_diz_qual_funcao(self):
         import roteador
-        r = roteador.executar({"ferramenta": "briefing_matinal", "args": {"acao": "agora"}}, {})
-        self.assertIn("resumo da manhã", r["texto"])
         r = roteador.executar({"ferramenta": "cofre_documento", "args": {"acao": "listar"}}, {})
         self.assertIn("cofre", r["texto"])

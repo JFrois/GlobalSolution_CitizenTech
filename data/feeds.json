@@ -1,0 +1,6 @@
+{
+  "_aviso": "TODO (EM ABERTO, spec §11 e §17): a equipe escolhe 1 ou 2 feeds RSS por tema, de preferência veículos públicos ou governamentais. Enquanto a lista estiver vazia, o briefing mostra só as tarefas do dia. Não precisa mexer no código: basta preencher as listas com URLs de feeds RSS.",
+  "documentacao": [],
+  "servicos": [],
+  "direitos": []
+}

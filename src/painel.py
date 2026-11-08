@@ -15,6 +15,7 @@ A pergunta enviada em /api/perguntar NÃO é gravada nem logada (spec §13).
 import hashlib
 import hmac
 import json
+import re
 import secrets
 import time
 from pathlib import Path
@@ -145,16 +146,19 @@ def tipo_mime(conteudo):
 
 
 def validar_config(corpo, temas_validos):
-    """Valida UF e temas do briefing. Devolve (uf ou None, temas ou None) ou levanta ValueError."""
+    """Valida UF, temas e hora do briefing. Devolve (uf, temas, hora), cada um None se ausente,
+    ou levanta ValueError."""
     if not isinstance(corpo, dict):
         raise ValueError("Pedido inválido.")
-    uf, temas = corpo.get("uf"), corpo.get("temas")
+    uf, temas, hora = corpo.get("uf"), corpo.get("temas"), corpo.get("hora")
+    if hora is not None and (not isinstance(hora, str) or not re.fullmatch(r"([01]\d|2[0-3]):[0-5]\d", hora)):
+        raise ValueError("Horário inválido. Use o formato 07:30.")
     if uf is not None and (not isinstance(uf, str) or uf.upper() not in armazenamento.UFS):
         raise ValueError("UF inválida.")
     if temas is not None and (not isinstance(temas, list)
                               or any(t not in temas_validos for t in temas)):
         raise ValueError("Tema inválido.")
-    return (uf.upper() if uf else None), temas
+    return (uf.upper() if uf else None), temas, hora
 
 
 def pergunta_do_corpo(corpo):
@@ -280,10 +284,11 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
         uid = usuario(x_telegram_init_data, sessao)
         saida = {"temas": base["temas"], "cofre_disponivel": cofre is not None,
                  "cofre_existe": False, "desbloqueado": False, "segundos_restantes": 0,
-                 "uf": None, "temas_briefing": []}
+                 "uf": None, "temas_briefing": [], "hora_briefing": None}
         if armazem is not None:
             saida["uf"] = armazem.obter_uf(uid)
             saida["temas_briefing"] = armazem.obter_temas_briefing(uid)
+            saida["hora_briefing"] = armazem.obter_hora_briefing(uid)
         if cofre is not None:
             saida["cofre_existe"] = cofre.existe(uid)
             saida["desbloqueado"] = cofre.esta_desbloqueado(uid)
@@ -296,13 +301,15 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
         uid = usuario(x_telegram_init_data, sessao)
         exigir_cofre()
         try:
-            uf, temas = validar_config(await json_ou_400(request), base["temas"])
+            uf, temas, hora = validar_config(await json_ou_400(request), base["temas"])
         except ValueError as erro:
             raise HTTPException(status_code=400, detail=str(erro))
         if uf:
             armazem.definir_uf(uid, uf)
         if temas is not None:
             armazem.definir_temas_briefing(uid, temas)
+        if hora:
+            armazem.definir_hora_briefing(uid, hora)
         return {"ok": True}
 
     @app.post("/api/cofre/criar")
