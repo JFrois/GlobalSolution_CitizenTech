@@ -99,8 +99,8 @@ def iniciar(caminho_base=None):
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
     armazem = armazenamento.ArmazenamentoSQLite()
     links = painel.LinksUnicos()
-    bot, dp = telegram_bot.criar_bot(config, dados, armazem, links)
     cofre_usuarios = cofre.Cofre(armazem)  # chaves só em memória, TTL de 10 min
+    bot, dp = telegram_bot.criar_bot(config, dados, armazem, links, cofre_usuarios)
     app = painel.criar_app(dados, config["TELEGRAM_BOT_TOKEN"], config["SESSAO_SEGREDO"],
                            links, config.get("PAINEL_URL", ""), cofre_usuarios, armazem)
 

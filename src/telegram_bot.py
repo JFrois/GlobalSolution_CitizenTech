@@ -18,11 +18,16 @@ from aiogram import Bot, Dispatcher, F, Router
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import Command
-from aiogram.types import (CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup,
-                           LinkPreviewOptions, Message)
+from aiogram.types import (BufferedInputFile, CallbackQuery, InlineKeyboardButton,
+                           InlineKeyboardMarkup, LinkPreviewOptions, Message, WebAppInfo)
 
+import agendador
 import armazenamento
 import briefing
+import classificador
+import cofre as modulo_cofre
+import documentos
+import painel
 import ponte
 import roteador
 import tarefas
@@ -85,6 +90,7 @@ MSG_VOZ_INDISPONIVEL = ("Ainda não consigo ouvir áudios neste servidor. "
 MSG_VOZ_FALHOU = ("Não consegui entender esse áudio. Tente de novo, falando mais perto, "
                   "ou escreva sua dúvida.")
 MSG_VOZ_RECEBIDA = "Recebi seu áudio. Estou transcrevendo, só um instante..."
+MSG_ENVIO_EXPIROU = "Esse envio expirou. Mande o arquivo de novo."
 TEMPO_LIMITE_VOZ_S = 90   # o Whisper em CPU pode demorar; passou disso, avisa e segue
 
 
@@ -105,7 +111,7 @@ def botoes_assuntos(base, ids, voltar=False):
     return teclado(linhas)
 
 
-def criar_bot(config, base, armazem, links):
+def criar_bot(config, base, armazem, links, cofre=None):
     """Cria Bot e Dispatcher com todos os handlers. `config` traz as variáveis do .env."""
     bot = Bot(token=config["TELEGRAM_BOT_TOKEN"],
               default=DefaultBotProperties(parse_mode=ParseMode.HTML,
@@ -118,6 +124,7 @@ def criar_bot(config, base, armazem, links):
     modelo_env = config.get("GEMINI_MODELO") or None
     modelo_whisper = transcricao.nome_do_modelo(config)
     feeds = briefing.carregar_feeds()  # data/feeds.json (EM ABERTO: a equipe escolhe os feeds)
+    pendentes = documentos.Pendentes()  # documento esperando confirmação (só na memória)
 
     async def responder(mensagem, resultado, user_id):
         # O bot usa parse_mode HTML. A resposta de um assunto já vem em HTML escapado
@@ -173,6 +180,142 @@ def criar_bot(config, base, armazem, links):
             except ValueError:
                 await mensagem.answer(MSG_ERRO)
         await c.answer()
+
+    # ---- Cofre no chat (spec §10.3): a senha NUNCA passa por aqui ----
+    def botao_painel(texto):
+        """Botão que abre o painel como Mini App. O Telegram só aceita https."""
+        url = config.get("PAINEL_URL", "").rstrip("/")
+        if not url.startswith("https://"):
+            return None
+        return InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=texto, web_app=WebAppInfo(url=url))]])
+
+    async def avisar_cofre_fechado(mensagem, estado):
+        if estado == "indisponivel":
+            await mensagem.answer(html.escape("O cofre não está disponível agora."))
+        elif estado == "sem_cofre":
+            await mensagem.answer(html.escape(
+                "Você ainda não criou o cofre. Crie no painel: a senha é digitada só lá, nunca aqui no chat."),
+                reply_markup=botao_painel("Criar o cofre no painel"))
+        else:
+            await mensagem.answer(html.escape(
+                "O cofre está bloqueado. Desbloqueie no painel (a senha é digitada só lá) e envie de novo."),
+                reply_markup=botao_painel("Desbloquear no painel"))
+
+    async def sugerir_nome(mensagem, user_id):
+        item = pendentes.obter(user_id)
+        if item is None:
+            await mensagem.answer(html.escape(MSG_ENVIO_EXPIROU))
+            return
+        if chave_gemini and item.get("usar_gemini", True):
+            try:  # o Gemini roda em outra thread; falha vira nome padrão (classificador nunca levanta)
+                _, nome = await asyncio.to_thread(classificador.classificar, item["conteudo"], item["mime"])
+            except Exception:
+                nome = modulo_cofre.nome_padrao()
+        else:
+            nome = modulo_cofre.nome_padrao()
+        item["nome"], item["etapa"] = nome, "confirmar"
+        await mensagem.answer(html.escape("Sugestão de nome: %s. Guardar assim?" % nome), reply_markup=teclado(
+            [[("Guardar com esse nome", "doc:salvar")], [("Escolher outro nome", "doc:nome")],
+             [("Cancelar", "doc:cancelar")]]))
+
+    async def salvar_pendente(mensagem, user_id):
+        item = pendentes.obter(user_id)
+        if item is None:
+            await mensagem.answer(html.escape(MSG_ENVIO_EXPIROU))
+            return
+        try:
+            cofre.guardar(user_id, item["nome"], item["conteudo"])
+        except modulo_cofre.CofreBloqueado:  # o desbloqueio venceu no meio do caminho
+            pendentes.descartar(user_id)
+            await avisar_cofre_fechado(mensagem, "bloqueado")
+            return
+        pendentes.descartar(user_id)
+        await mensagem.answer(html.escape("Guardei como \"%s\". Para ver depois, peça no chat "
+                                          "(por exemplo: me envie meu RG) ou abra o painel." % item["nome"]))
+
+    @rota.message(F.photo | F.document)
+    async def documento(m: Message):
+        if m.from_user is None or m.bot is None:
+            return
+        uid = m.from_user.id
+        if m.photo:
+            anexo, mime = m.photo[-1], "image/jpeg"
+        else:
+            anexo, mime = m.document, (m.document.mime_type or "")
+        # A mensagem com o documento some do chat em 5 minutos (spec §4 item 5).
+        agendador.agendar_exclusao(armazem, uid, m.chat.id, m.message_id)
+        ok, motivo = documentos.arquivo_aceito(mime, anexo.file_size or 0)
+        if not ok:
+            await m.answer(html.escape(motivo))
+            return
+        estado = documentos.estado_do_cofre(cofre, uid)
+        if estado != "aberto":  # cofre fechado: não guarda nada (spec §10.3)
+            await avisar_cofre_fechado(m, estado)
+            return
+        try:
+            conteudo = (await m.bot.download(anexo)).getvalue()
+        except Exception as erro:
+            log.warning("Falha ao baixar o arquivo (%s)", type(erro).__name__)  # sem nome nem conteúdo
+            await m.answer(MSG_ERRO)
+            return
+        pendentes.guardar(uid, conteudo, mime)
+        if chave_gemini and not armazem.tem_consentimento(uid):
+            await m.answer(html.escape(documentos.AVISO_CONSENTIMENTO), reply_markup=teclado(
+                [[("Concordo, sugerir um nome", "doc:ok")], [("Prefiro escolher o nome", "doc:nome")],
+                 [("Cancelar", "doc:cancelar")]]))
+        else:
+            await sugerir_nome(m, uid)
+
+    @rota.callback_query(F.data.startswith("doc:"))
+    async def decidiu_documento(c: CallbackQuery):
+        ctx = contexto_do_botao(c)
+        if ctx:
+            mensagem, dados, uid = ctx
+            acao = dados[4:]
+            item = pendentes.obter(uid)
+            if acao == "cancelar":
+                pendentes.descartar(uid)
+                await mensagem.answer("Tudo bem, não guardei nada.")
+            elif item is None:
+                await mensagem.answer(html.escape(MSG_ENVIO_EXPIROU))
+            elif acao == "ok":
+                armazem.registrar_consentimento(uid)
+                await sugerir_nome(mensagem, uid)
+            elif acao == "nome":
+                # Sem sugestão do Gemini: o arquivo não sai do servidor.
+                item["usar_gemini"], item["etapa"] = False, "nome"
+                await mensagem.answer(html.escape("Digite o nome que você quer usar (até %d caracteres)."
+                                                  % documentos.NOME_MAX))
+            elif acao == "salvar":
+                await salvar_pendente(mensagem, uid)
+        await c.answer()
+
+    async def tratar_cofre(m, uid, args, texto):
+        """Ferramenta cofre_documento: listar, abrir (enviar no chat) e orientar o envio."""
+        estado = documentos.estado_do_cofre(cofre, uid)
+        if estado != "aberto":
+            await avisar_cofre_fechado(m, estado)
+            return
+        acao = args.get("acao")
+        if acao == "enviar":
+            await m.answer(html.escape("Para guardar, envie aqui a foto ou o PDF do documento."))
+            return
+        docs = cofre.listar(uid)
+        lista = "\n".join("- " + nome for _, nome in docs) or "(nenhum ainda)"
+        if acao == "abrir":
+            achado = documentos.localizar(cofre, uid, args.get("nome") or "")
+            if achado is None:
+                await m.answer(html.escape("Não achei esse documento. Seus documentos:\n" + lista))
+                return
+            nome, conteudo = cofre.abrir(uid, achado[0])
+            ext = {"application/pdf": ".pdf", "image/png": ".png", "image/jpeg": ".jpg"}.get(
+                painel.tipo_mime(conteudo), "")
+            enviada = await m.answer_document(BufferedInputFile(conteudo, filename=nome + ext),
+                                              caption=html.escape(documentos.AVISO_ENVIO))
+            agendador.agendar_exclusao(armazem, uid, enviada.chat.id, enviada.message_id)
+            return
+        await m.answer(html.escape("Seus documentos:\n%s\n\nPara receber um, escreva: me envie meu RG."
+                                   % lista))
 
     @rota.message(Command("painel"))
     async def comando_painel(m: Message):
@@ -244,6 +387,14 @@ def criar_bot(config, base, armazem, links):
     async def processar_texto(m: Message, user_id: int, texto: str):
         """Caminho único para texto digitado e para voz já transcrita."""
         try:
+            if pendentes.esta_pedindo_nome(user_id):  # o texto é o nome do documento, não uma pergunta
+                nome = documentos.limpar_nome(texto)
+                if not nome:
+                    await m.answer(html.escape("Não entendi o nome. Digite de novo."))
+                    return
+                pendentes.obter(user_id)["nome"] = nome
+                await salvar_pendente(m, user_id)
+                return
             chamada = None
             # Botões nunca chamam IA. No texto livre, a IA só entra se a base não resolveu sozinha.
             if chave_gemini and roteador.resposta_direta_basta(texto, base):
@@ -265,6 +416,9 @@ def criar_bot(config, base, armazem, links):
                     log.warning("Gemini sem resposta útil (%s); usando regras", type(erro).__name__)
                     chamada = None
             chamada = roteador.reconciliar(chamada, texto)
+            if chamada["ferramenta"] == "cofre_documento":
+                await tratar_cofre(m, user_id, chamada["args"], texto)
+                return
             if chamada["ferramenta"] == "gerenciar_tarefas":
                 # Tarefas e lembretes: o texto de "quando" é lido por regras, sem IA (src/tarefas.py).
                 resultado = tarefas.executar(chamada["args"], armazem, user_id)
@@ -321,7 +475,6 @@ def criar_bot(config, base, armazem, links):
 
     @rota.message()
     async def outros(m: Message):
-        # Foto e PDF entram na próxima rodada (cofre).
-        await m.answer("Por enquanto só entendo mensagens de texto. " + ponte.NAO_OFICIAL)
+        await m.answer("Por enquanto só entendo texto, áudio, foto e PDF. " + ponte.NAO_OFICIAL)
 
     return bot, dp

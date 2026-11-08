@@ -155,8 +155,3 @@ class TestRoteamentoDeTarefas(unittest.TestCase):
         self.assertEqual(f("meus lembretes")["args"]["acao"], "listar")
         self.assertEqual(f("concluir tarefa 1")["args"]["acao"], "concluir")
         self.assertEqual(f("como pagar o IPVA")["ferramenta"], "buscar_orientacao")
-
-    def test_mensagem_de_em_breve_diz_qual_funcao(self):
-        import roteador
-        r = roteador.executar({"ferramenta": "cofre_documento", "args": {"acao": "listar"}}, {})
-        self.assertIn("cofre", r["texto"])
