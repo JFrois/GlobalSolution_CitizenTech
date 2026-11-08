@@ -13,7 +13,7 @@
 
 | Código | Situação | Observação |
 |---|---|---|
-| A1 a A11 | **Concluído** | Base, validação, busca (índice × linear, C·A·B, digitação, sinônimos), grafo/Dijkstra, modelos A e B, terminal, `--avaliar` (19/19), 242 testes, `scripts/verificacoes_antigas.py`. Falta conferir numa máquina limpa e no Windows e corrigir o bug "tarifa de ônibus" → Tarifa Social de Energia (palavra "tarifa" sozinha passa do limiar) |
+| A1 a A11 | **Concluído** | Base, validação, busca (índice × linear, C·A·B, digitação, sinônimos), grafo/Dijkstra, modelos A e B, terminal, `--avaliar` (19/19), 243 testes, `scripts/verificacoes_antigas.py`. Falta conferir numa máquina limpa e no Windows |
 | B1 | Concluído | `testes/perguntas.json` (19 perguntas, conjunto `equipe`), congelado antes das palavras-chave |
 | E1 (redigir as 17 orientações) | **Rascunho feito pela IA** | Todas com `data_verificacao` 2026-11-07; falta revisão humana (E2) |
 | E2 (revisão cruzada da base) | **Pendente** | Inclui `referencias_estaduais` de DOC-001 (hoje vazio) |
@@ -37,7 +37,7 @@
 
 ### Onde parou e o que cada um faz agora
 
-**Como retomar:** `git pull origin main`; crie o ambiente do README §6 ("Rodar o bot") e instale também `httpx` para os testes do painel; rode `python -m unittest discover -s testes -t .` (242 testes; sem `httpx`, 18 são pulados) e `python src/sistema.py --avaliar` (19/19). Uma branch por tarefa a partir da `main`; PR citando a seção da spec; commits sem segredos.
+**Como retomar:** `git pull origin main`; crie o ambiente do README §6 ("Rodar o bot") e instale também `httpx` para os testes do painel; rode `python -m unittest discover -s testes -t .` (243 testes; sem `httpx`, 18 são pulados) e `python src/sistema.py --avaliar` (19/19). Uma branch por tarefa a partir da `main`; PR citando a seção da spec; commits sem segredos.
 
 **Já feito que vale conhecer antes de mexer:**
 - A IA só entra no texto livre quando a base não resolve (`roteador.resposta_direta_basta`) e a escolha do Gemini é conferida com as regras (`roteador.reconciliar`). Botões nunca chamam IA.
@@ -50,7 +50,7 @@
 1. E2: revisar as orientações de `direitos`; consolidar o README (§3, 4, 6 e 8) e o bloco "Estado do projeto".
 2. Conferir `python src/sistema.py` numa máquina limpa e no Windows; rodar `--validar-entrega` antes de congelar (E5).
 3. ~~Atualizar `cryptography`~~ feito em 08/11: `cryptography==50.0.2` (fecha os 6 alertas do Dependabot; em 08/11 não há alerta aberto). Para atualizar um ambiente já criado: `.venv/bin/python -m pip install cryptography==50.0.2` (ver README §6).
-4. Corrigir na busca o caso "tarifa de ônibus" (responde DIR-006, Tarifa Social de Energia, em vez de "fora da base"), sem quebrar o 19/19 do `--avaliar`.
+4. ~~Corrigir na busca o caso "tarifa de ônibus"~~ (feito em 08/11: agora "fora da base"; `--avaliar` segue 19/19).
 5. Decidir o formato padrão A ou B depois das notas de clareza (B3); antes da VM, gerar novo token do bot e nova chave do Gemini.
 
 **Integrante B (Flávia):**

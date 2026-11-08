@@ -4,12 +4,12 @@ Mapa curto do repositório (atualizar ao criar ou mover módulos).
 |---|---|---|
 | `src/sistema.py` | Terminal (padrão), `--avaliar`, `--validar-entrega`; `--servidor` chama `servidor.py` | Pronto |
 | `src/base.py` | Carga e validação de `data/base.json`; pendências de entrega | Pronto |
-| `src/busca.py` | Normalização, pontuação, índice × linear, decisão C·A·B, correção de digitação (só em SEM_BASE), grafo, Dijkstra | Pronto; bug aberto: "tarifa de ônibus" responde DIR-006 (uma palavra do título passa do limiar) |
+| `src/busca.py` | Normalização, pontuação, índice × linear, decisão C·A·B, correção de digitação (só em SEM_BASE), grafo, Dijkstra | Pronto; pergunta com palavra fora da base que só bate em pedaço de palavra-chave composta ("tarifa de ônibus") cai em SEM_BASE |
 | `src/respostas.py` | Modelos A e B, aviso de limitação, mensagens de entrada inválida | Pronto |
 | `src/avaliacao.py` | Taxa de acerto, tempos, escala, rubrica A × B, CSVs | Pronto |
 | `data/base.json` | 17 registros, 3 temas, sinônimos (vazio) | Orientações em rascunho (sem revisão humana) |
 | `testes/perguntas.json` | 19 perguntas do conjunto `equipe` | Congelado; conjunto `publico` pendente |
-| `testes/test_*.py` | 242 testes (`python -m unittest discover -s testes -t .`) | Passando (CI em Python 3.9 e 3.12) |
+| `testes/test_*.py` | 243 testes (`python -m unittest discover -s testes -t .`) | Passando (CI em Python 3.9 e 3.12) |
 | `testes/usabilidade.md` | Modelo do teste de usabilidade (T1 a T5, clareza, SUS) | Modelo vazio; teste pendente |
 | `testes/resultados.csv`, `comparacao_modelos.csv` | Saída de `--avaliar` (versionados com `git add -f`) | Gerados em 07/11 |
 | `scripts/testar_gemini.py` | Testa a chave do Gemini do `.env` e lista os modelos que ela enxerga | Pronto; rodar com o ambiente do servidor |
