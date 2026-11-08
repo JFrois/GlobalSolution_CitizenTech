@@ -321,7 +321,7 @@ Dois modelos documentados, comparados nos testes (clareza, consistência, presen
 - **Verdade sobre E2E:** enquanto o cofre está desbloqueado, o servidor vê o arquivo ao enviar. **E2E real existe apenas no painel** (decifrar no navegador com WebCrypto). Dizer isso no README e no relatório, sem exagerar.
 
 ### 10.4 Painel web
-- Telas: **perguntar** (cena da verificação, §10.5) · criar/desbloquear cofre · listar documentos · visualizar · **apagar de verdade** (confirmação, remove arquivo e metadados) · configurar **UF** e **temas do briefing** · horário do briefing.
+- Telas: **perguntar** (cena da verificação, §10.5) · **tarefas** (anotar com "quando" em texto livre, lido pelas mesmas regras do chat; listar pendentes; concluir) · criar/desbloquear cofre · listar documentos · visualizar · **apagar de verdade** (confirmação, remove arquivo e metadados) · configurar **UF** e **temas do briefing** · horário do briefing.
 - **Login no Mini App:** validar `initData` (HMAC com token do bot, checar `auth_date` recente). **Login no navegador:** link de uso único e curta duração gerado por `/painel`.
 - **HTTPS obrigatório** com certificado válido (certificado autoassinado é rejeitado pelo Telegram).
 - Cabeçalhos de segurança, CORS restrito ao domínio do painel, sem `eval`, sem scripts de terceiros desnecessários, rate limit nas rotas de desbloqueio.

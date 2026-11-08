@@ -152,6 +152,43 @@ class TestAgendador(unittest.TestCase):
         self.assertEqual(self.arm.exclusoes_vencidas(10**7), [])
 
 
+class TestTarefasParaPainel(unittest.TestCase):
+    """tentar_criar e lista_para_painel: o painel precisa saber se criou e receber dados."""
+
+    def setUp(self):
+        self.arm = armazenamento.ArmazenamentoSQLite(":memory:")
+
+    def test_cria_com_data_e_lista_em_dados(self):
+        criou, msg = tarefas.tentar_criar("pagar a conta", "amanhã às 9h", self.arm, 1, AGORA)
+        self.assertTrue(criou)
+        self.assertIn("Anotado", msg)
+        [item] = tarefas.lista_para_painel(self.arm, 1)
+        self.assertEqual(item["titulo"], "pagar a conta")
+        self.assertEqual(item["quando"], int(dt(9, 9).timestamp()))
+        self.assertTrue(item["quando_texto"])
+
+    def test_sem_data_fica_sem_aviso(self):
+        self.assertTrue(tarefas.tentar_criar("ligar para o INSS", "", self.arm, 1, AGORA)[0])
+        [item] = tarefas.lista_para_painel(self.arm, 1)
+        self.assertEqual((item["quando"], item["quando_texto"]), (None, None))
+
+    def test_recusas_nao_criam_nada(self):
+        casos = (("x", "quando der", tarefas.MSG_NAO_ENTENDI_QUANDO),
+                 ("x", "2026-11-01 7:00", tarefas.MSG_PASSADO),
+                 ("x", "31/02 às 9h", tarefas.MSG_DATA_IMPOSSIVEL),
+                 ("", "", None))
+        for titulo, quando, esperado in casos:
+            criou, msg = tarefas.tentar_criar(titulo, quando, self.arm, 1, AGORA)
+            self.assertFalse(criou, (titulo, quando))
+            if esperado:
+                self.assertEqual(msg, esperado)
+        self.assertEqual(tarefas.lista_para_painel(self.arm, 1), [])
+
+    def test_lista_so_do_proprio_usuario(self):
+        tarefas.tentar_criar("tarefa de A", "", self.arm, 1, AGORA)
+        self.assertEqual(tarefas.lista_para_painel(self.arm, 2), [])
+
+
 if __name__ == "__main__":
     unittest.main()
 
