@@ -123,6 +123,18 @@ class TestAgendamento(unittest.TestCase):
         self.rodar(AGORA.replace(hour=10).timestamp())
         self.assertEqual(len(self.enviados), 1)
 
+    def test_hora_que_ja_passou_hoje_comeca_amanha(self):
+        briefing.definir_hora(self.arm, 1, "07:30", AGORA.replace(hour=14))  # 14h: 07:30 já passou
+        self.rodar(AGORA.replace(hour=14, minute=1).timestamp())
+        self.assertEqual(self.enviados, [])
+        self.rodar((AGORA + datetime.timedelta(days=1)).timestamp())
+        self.assertEqual(len(self.enviados), 1)
+
+    def test_hora_que_ainda_nao_chegou_envia_hoje(self):
+        briefing.definir_hora(self.arm, 1, "18:00", AGORA)
+        self.rodar(AGORA.replace(hour=18, minute=1).timestamp())
+        self.assertEqual(len(self.enviados), 1)
+
     def test_apagar_usuario_remove_config(self):
         self.arm.definir_hora_briefing(1, "07:30")
         self.arm.apagar_usuario(1)

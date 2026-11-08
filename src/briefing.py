@@ -98,6 +98,16 @@ def montar(user_id, armazem, feeds, nomes_dos_temas, agora=None, coletor=coletar
     return "\n".join(linhas)
 
 
+def definir_hora(armazem, user_id, hora, agora=None):
+    """Grava o horário do resumo. Se o horário de hoje já passou, o primeiro resumo é o de
+    amanhã: sem isso, quem configura 07:30 às 14:00 receberia o resumo na hora (o agendador
+    também cobre o dia de um servidor que subiu atrasado)."""
+    agora = agora or tarefas.agora_local()
+    armazem.definir_hora_briefing(user_id, hora)
+    if hora <= agora.strftime("%H:%M"):
+        armazem.marcar_briefing_enviado(user_id, agora.strftime("%Y-%m-%d"))
+
+
 def executar(args, armazem, user_id, feeds, nomes_dos_temas, agora=None, coletor=coletar_rss):
     """Ferramenta briefing_matinal. Devolve {"texto", "opcoes", "decisao"}. Pode demorar (rede)."""
     def resp(texto):
@@ -118,6 +128,6 @@ def executar(args, armazem, user_id, feeds, nomes_dos_temas, agora=None, coletor
     if hora:
         if not FORMATO_HORA.fullmatch(hora):
             return resp("Não entendi o horário. Use o formato 07:30.")
-        armazem.definir_hora_briefing(user_id, hora)
+        definir_hora(armazem, user_id, hora, agora)
         partes.append("horário: " + hora)
     return resp("Resumo da manhã configurado (%s)." % "; ".join(partes))

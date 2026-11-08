@@ -331,8 +331,8 @@ def criar_bot(config, base, armazem, links, cofre=None):
 
     @rota.message(Command("apagar_meus_dados"))
     async def comando_apagar(m: Message):
-        await m.answer("Isso apaga tudo o que guardei sobre você (estado, preferências). "
-                       "Confirma?", reply_markup=teclado([[("Sim, apagar tudo", "apagar:sim"),
+        await m.answer("Isso apaga tudo o que guardei sobre você (estado, preferências, tarefas, "
+                       "documentos do cofre e o cofre em si). Confirma?", reply_markup=teclado([[("Sim, apagar tudo", "apagar:sim"),
                                                            ("Cancelar", "apagar:nao")]]))
 
     @rota.callback_query(F.data.startswith("apagar:"))
@@ -342,6 +342,9 @@ def criar_bot(config, base, armazem, links, cofre=None):
             mensagem, dados, user_id = ctx
             if dados == "apagar:sim":
                 armazem.apagar_usuario(user_id)  # inclui cofre, tarefas e exclusões agendadas
+                if cofre is not None:
+                    cofre.bloquear(user_id)  # esquece também a chave que estava na memória
+                pendentes.descartar(user_id)
                 await mensagem.answer("Pronto. Seus dados foram apagados.")
             else:
                 await mensagem.answer("Tudo certo, nada foi apagado.")

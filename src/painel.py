@@ -22,6 +22,7 @@ from pathlib import Path
 from urllib.parse import parse_qsl
 
 import armazenamento
+import briefing
 import ponte
 
 PASTA_FRONT = Path(__file__).resolve().parent.parent / "painel"
@@ -309,7 +310,7 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
         if temas is not None:
             armazem.definir_temas_briefing(uid, temas)
         if hora:
-            armazem.definir_hora_briefing(uid, hora)
+            briefing.definir_hora(armazem, uid, hora)
         return {"ok": True}
 
     @app.post("/api/cofre/criar")
