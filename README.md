@@ -100,7 +100,7 @@ Melhorias conhecidas que não bloqueiam a entrega:
 
 ### Nome do grupo
 
-Citizen Assist AI
+#### _Citizen Assist AI_
 
 ### 👨‍🎓 Integrantes
 
