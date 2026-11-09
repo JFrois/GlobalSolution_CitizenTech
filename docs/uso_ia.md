@@ -76,6 +76,8 @@ Uma linha por uso relevante. **Resultado**: aceito, aceito com ajustes ou rejeit
 | 08/11 | Juan | Claude Code | Corrigir "tarifa de ônibus" respondendo a Tarifa Social de Energia (DIR-006) | Aceito pelo Juan | Regra nova na busca: se a pergunta tem palavra que a base não conhece e o melhor registro só bate por pedaço de palavra-chave composta, não responde (SEM_BASE). Conferido: `--avaliar` segue 19/19; "tarifa social", "tarifa de luz" e "segunda via rg urgente" continuam respondendo; 243 testes passando (1 novo) |
 | 08/11 | Juan | Claude Code | Conferir a chegada de um lembrete no Telegram real: tarefa criada para as 20:10 no banco do servidor local | Aceito pelo Juan | Mensagem "Lembrete: …" chegou às 20:10 (print do Juan); banco marcou como avisada. Um `/start` saiu da conta do Juan 1 s depois sem ele ter enviado; registrado no log do bot, origem não identificada |
 
+| 09/11 | Juan | Claude Code | Auditoria do projeto; preencher README (seções 2 e 10), gerar `docs/relatorio.pdf` a partir dos CSVs, criar folha cega de clareza, roteiros de deploy e de teste no Telegram real, e corrigir spec e mapa desatualizados | Aceito, aguardando revisão da equipe | Números do relatório conferidos contra `testes/*.csv` e `--avaliar`; PDF aberto e lido (7 páginas); suíte passa; textos marcados como pendente onde faltam dados reais |
+
 <!-- Modelo para novas linhas:
 | DD/MM | Nome | Ferramenta | Pedido resumido (sem dados pessoais) | Aceito / Ajustado / Rejeitado | Como foi conferido |
 -->
