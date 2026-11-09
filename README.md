@@ -100,7 +100,7 @@ Melhorias conhecidas que não bloqueiam a entrega:
 
 ### Nome do grupo
 
-_A preencher_
+Citizen Assist AI
 
 ### 👨‍🎓 Integrantes
 
@@ -113,7 +113,7 @@ _A preencher_
 ### 👩‍🏫 Professores
 
 **Tutor(a)**
-- Lucas Gomes Jorge Gonçalez
+- <a href="https://www.linkedin.com/in/lucas-gon%C3%A7alez/">Lucas Gomes Jorge Gonçalez</a> 
 
 **Coordenador(a)**
 - <a href="https://www.linkedin.com/in/andregodoichiovato/">André Godoi Chiovato</a>
