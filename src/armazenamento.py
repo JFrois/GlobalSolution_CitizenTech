@@ -1,9 +1,8 @@
 """Armazenamento mínimo da Onda 2 (UF e temas do briefing), por user_id.
 
-TODO (EM ABERTO, spec §5.2 e §17): o armazenamento definitivo (Supabase ou
-equivalente) ainda não foi confirmado. Esta é a interface que o resto do código
-usa; hoje há uma implementação em SQLite local (biblioteca padrão). Para trocar
-de serviço, basta outra classe com os mesmos métodos.
+Interface que o resto do código usa. Há duas implementações com os mesmos métodos:
+SQLite local (padrão, biblioteca padrão) e Supabase (`armazenamento_supabase.py`, só liga
+com SUPABASE_URL e chave secreta no .env; se falhar, volta para o SQLite). Ver `criar`.
 
 Regra de privacidade (spec §13): TODA consulta é filtrada por user_id e só se
 guarda o mínimo (UF e temas do briefing). Nenhum texto de mensagem é gravado.
@@ -250,3 +249,28 @@ class ArmazenamentoSQLite:
             for tabela in ("cofre_docs", "cofre_config", "tarefas", "exclusoes", "briefing_config", "consentimento_gemini", "usuarios"):
                 self._con.execute("DELETE FROM %s WHERE user_id = ?" % tabela, (int(user_id),))
             self._con.commit()
+
+
+def criar(config, log=None):
+    """Escolhe o armazenamento: Supabase se o .env tiver SUPABASE_URL e uma chave secreta
+    que funcione; em qualquer outro caso (ou se a verificação falhar), SQLite local.
+    Nunca levanta por causa do Supabase: o sistema volta sozinho para o SQLite."""
+    import logging
+    log = log or logging.getLogger("citizen.armazenamento")
+    chave = (config.get("SUPABASE_KEY") or "").strip()
+    if not chave:
+        return ArmazenamentoSQLite()
+    try:
+        import armazenamento_supabase as sb
+        url = sb.normalizar_url(config.get("SUPABASE_URL"))
+        if not url:
+            raise sb.ErroSupabase("SUPABASE_URL inválida (use https://<projeto>.supabase.co)")
+        if not sb.chave_e_secreta(chave):
+            raise sb.ErroSupabase("SUPABASE_KEY não é uma chave secreta (sb_secret_...)")
+        armazem = sb.ArmazenamentoSupabase(url, chave)
+        armazem.verificar()
+    except Exception as erro:  # qualquer falha: SQLite, sem derrubar o servidor
+        log.warning("Supabase desligado, usando SQLite local: %s", erro)
+        return ArmazenamentoSQLite()
+    log.info("Armazenamento: Supabase")
+    return armazem

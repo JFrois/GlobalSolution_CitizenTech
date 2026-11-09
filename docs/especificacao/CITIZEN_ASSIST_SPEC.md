@@ -136,7 +136,8 @@ src/
   avaliacao.py              --avaliar: acerto, tempo, CSVs e comparação A x B
   servidor.py               modo --servidor: lê .env e sobe bot e painel           (extra)
   ponte.py                  liga o servidor ao núcleo (busca.py e respostas.py)    (extra)
-  armazenamento.py          interface de armazenamento (SQLite local; Supabase = EM ABERTO) (extra)
+  armazenamento.py          interface de armazenamento e escolha SQLite/Supabase (`criar`) (extra)
+  armazenamento_supabase.py implementação Supabase (API REST, só biblioteca padrão)      (extra)
   documentos.py             fluxo de foto/PDF do bot sem aiogram (testável)        (extra)
 data/
   base.json
@@ -157,7 +158,7 @@ scripts/                    lista registros com data de verificação antiga    
 ### 5.2 Stack
 - **Python:** o **núcleo** (`base`, `busca`, `respostas`, `sistema` no modo terminal e `--avaliar`) precisa rodar em **Python 3.9 ou superior**, porque não sabemos qual versão o avaliador tem. A **Onda 2** usa **Python 3.11+** (só na VM). Núcleo usa **só biblioteca padrão** (`json`, `unicodedata`, `heapq`, `time`, `re`, `argparse`).
 - **aiogram 3.x** (bot), **APScheduler** com jobstore persistente, **FastAPI/uvicorn** ou equivalente leve para o painel **(sugestão)**, `cryptography` para AES-GCM, `google-genai` para o Gemini, `feedparser` para RSS.
-- **Armazenamento:** Supabase (DB + Storage) **ou equivalente** **(EM ABERTO: confirmar no início)**. Isole atrás de uma interface em `cofre.py`/`tarefas.py` para trocar sem reescrever.
+- **Armazenamento (decisão de 09/11):** interface única em `armazenamento.py` com duas implementações: **SQLite local (padrão)** e **Supabase** (`armazenamento_supabase.py`, Postgres pela API REST, só biblioteca padrão; dados binários do cofre cifrados em base64 em colunas de texto, sem usar o Storage). O Supabase só liga se `SUPABASE_URL` e uma chave **secreta** (`sb_secret_...`) estiverem no `.env` e a verificação da subida passar; senão volta sozinho para o SQLite. Schema em `deploy/supabase_schema.sql` (RLS ligado, sem políticas). Se o Supabase cair **depois** da subida, as operações falham com a mensagem de erro padrão até reiniciar.
 
 ### 5.3 Regra de import (crítica)
 Bibliotecas de Telegram, servidor, Gemini, Supabase e `cryptography` são importadas **somente dentro do modo `--servidor`** (import tardio). `python src/sistema.py` precisa rodar numa máquina limpa, só com Python, **sem `pip install`, sem `.env`, sem internet**. É isso que o avaliador executa.
@@ -461,7 +462,7 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 - **Teste de 15 min do DuckDNS + Caddy** (HTTP-01 com subdomínio DuckDNS) e leitura dos Termos/Privacidade do DuckDNS; se falhar → Cloudflare quick tunnel ou máquina de um integrante.
 - ~~Confirmar faturamento do Gemini~~ — **resolvido em 08/11:** o projeto usa o plano gratuito (ver §12); o aviso de consentimento e o relatório declaram o risco.
 - **Revisar as 17 orientações** (rascunho feito em 07/11 a partir das páginas oficiais, falta conferência humana) — em especial DOC-001 (UFs da equipe), DOC-004 (reconferir suspensões do TSE), DIR-006 (conflito de fontes) e DIR-004/DIR-005 (limites).
-- Armazenamento: confirmar Supabase ou equivalente.
+- ~~Armazenamento~~ — **decidido em 09/11:** SQLite padrão, Supabase opcional com volta automática (§5.2). Falta testar com o projeto Supabase real (rodar `deploy/supabase_schema.sql` e usar a chave secreta).
 - ~~Feeds RSS por tema~~ — **resolvido em 08/11:** o usuário escolhe entre 5 temas (Cultura, Tecnologia, Saúde e bem-estar, Música, Filmes; `briefing.TEMAS_BRIEFING`), com feeds em `data/feeds.json`. Fonte de Filmes é fraca; reavaliar. Fuso horário padrão segue America/Sao_Paulo.
 - Modelo de resposta padrão (A ou B), definido pelos testes.
 - **Whisper na VM (voz):** instalar `ffmpeg` e o `openai-whisper` (comandos no README §6) e conferir CPU e memória da VM gratuita; se pesar, usar `WHISPER_MODELO=tiny` ou voltar ao Gemini para voz. Modelo `base` foi o escolhido em 07/11.

@@ -110,7 +110,7 @@ def iniciar(caminho_base=None):
         return 1
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
-    armazem = armazenamento.ArmazenamentoSQLite()
+    armazem = armazenamento.criar(config)  # Supabase se configurado e funcionando; senão SQLite
     links = painel.LinksUnicos()
     cofre_usuarios = cofre.Cofre(armazem)  # chaves só em memória, TTL de 10 min
     bot, dp = telegram_bot.criar_bot(config, dados, armazem, links, cofre_usuarios)
