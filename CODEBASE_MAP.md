@@ -9,7 +9,7 @@ Mapa curto do repositório (atualizar ao criar ou mover módulos).
 | `src/avaliacao.py` | Taxa de acerto, tempos, escala, rubrica A × B, CSVs | Pronto |
 | `data/base.json` | 17 registros, 3 temas, sinônimos (vazio) | Orientações em rascunho (sem revisão humana) |
 | `testes/perguntas.json` | 19 perguntas do conjunto `equipe` | Congelado; conjunto `publico` pendente |
-| `testes/test_*.py` | 248 testes (`python -m unittest discover -s testes -t .`) | Passando (CI em Python 3.9 e 3.12) |
+| `testes/test_*.py` | 256 testes (`python -m unittest discover -s testes -t .`) | Passando (CI em Python 3.9 e 3.12) |
 | `testes/usabilidade.md` | Modelo do teste de usabilidade (T1 a T5, clareza, SUS) | Modelo vazio; teste pendente |
 | `testes/resultados.csv`, `comparacao_modelos.csv` | Saída de `--avaliar` (versionados com `git add -f`) | Gerados em 07/11 |
 | `scripts/testar_gemini.py` | Testa a chave do Gemini do `.env` e lista os modelos que ela enxerga | Pronto; rodar com o ambiente do servidor |
@@ -18,7 +18,7 @@ Mapa curto do repositório (atualizar ao criar ou mover módulos).
 | `docs/` | Spec (fonte de verdade), planejamento, arquitetura, UX, `uso_ia.md` | Status e pendências atualizados em 08/11 (PR #44) |
 | `src/ponte.py` | Liga o servidor ao núcleo (preparar, buscar, formatar, UF) | Pronto, testado |
 | `src/transcricao.py` | Voz -> texto com Whisper local (import tardio, precisa de ffmpeg) | Testado com Whisper falso e com áudio real no Telegram (07/11); falta testar na VM |
-| `src/roteador.py`, `telegram_bot.py`, `painel.py`, `armazenamento.py`, `servidor.py` | Servidor base: roteador Gemini + regras, bot, API do painel, SQLite, `--servidor` | Bot, UF, voz e roteador **testados no Telegram real** (07/11); painel (`/painel`), Supabase e VM ainda não |
+| `src/roteador.py`, `telegram_bot.py`, `painel.py`, `armazenamento.py`, `armazenamento_supabase.py`, `servidor.py` | Servidor base: roteador Gemini + regras, bot, API do painel, armazenamento (SQLite padrão; Supabase opcional com volta automática), `--servidor` | Bot, UF, voz e roteador **testados no Telegram real** (07/11); painel (`/painel`), Supabase e VM ainda não |
 | `deploy/`, `.github/workflows/deploy.yml`, `requirements.txt` | Caddy, systemd e deploy por SSH | Não testados em VM |
 | `src/criptografia.py`, `src/cofre.py`, `src/classificador.py` | PBKDF2 + AES-GCM, cofre por `user_id`, tipo do documento via Gemini (lista fechada) | Testados (unitários); Gemini real e Telegram ainda não |
 | `painel/` (`index.html`, `painel.js`, `painel.css`, `tokens.css`) + rotas em `src/painel.py` | Front estático na identidade Azul Telegram (hero azul + folha clara + barra flutuante, animações, tokens em `docs/design/`): Perguntar (cena da verificação), Tarefas, Cofre, Ajustes; API do cofre, config e tarefas (`/api/tarefas`) | Testado no navegador local e por testes; Mini App no Telegram real não |

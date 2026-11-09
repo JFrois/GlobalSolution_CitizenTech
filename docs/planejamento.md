@@ -9,11 +9,11 @@
 
 ---
 
-## Status em 08/11/2026 (`main` até o PR #44)
+## Status em 09/11/2026 (`main` até o PR #50)
 
 | Código | Situação | Observação |
 |---|---|---|
-| A1 a A11 | **Concluído** | Base, validação, busca (índice × linear, C·A·B, digitação, sinônimos), grafo/Dijkstra, modelos A e B, terminal, `--avaliar` (19/19), 248 testes, `scripts/verificacoes_antigas.py`. Falta conferir numa máquina limpa e no Windows |
+| A1 a A11 | **Concluído** | Base, validação, busca (índice × linear, C·A·B, digitação, sinônimos), grafo/Dijkstra, modelos A e B, terminal, `--avaliar` (19/19), 256 testes, `scripts/verificacoes_antigas.py`. Falta conferir numa máquina limpa e no Windows |
 | B1 | Concluído | `testes/perguntas.json` (19 perguntas, conjunto `equipe`), congelado antes das palavras-chave |
 | E1 (redigir as 17 orientações) | **Rascunho feito pela IA** | Todas com `data_verificacao` 2026-11-07; falta revisão humana (E2) |
 | E2 (revisão cruzada da base) | **Pendente** | Inclui `referencias_estaduais` de DOC-001 (hoje vazio) |
@@ -21,11 +21,12 @@
 | B7 (tarefas e lembretes) | **Testado com o servidor local** (08/11) | Lembrete pelo chat chega no Telegram na hora (PRs #42 e #44); lembrete marcado para 20:10 chegou no Telegram às 20:10 |
 | B8, B9, B10 (foto/PDF) | Código pronto e testado por testes; **falta teste no Telegram real** | Autodestruição, resumo da manhã, foto/PDF no cofre |
 | C5 a C8, C10 | Código pronto e testado por testes e no navegador local; **falta teste real** | Criptografia, cofre, classificador, painel (abas Perguntar, **Tarefas**, Cofre e Ajustes) |
-| C2 | Código pronto | SQLite padrão atrás de `armazenamento.py`; Supabase opcional (`armazenamento_supabase.py`, volta sozinho para o SQLite). Falta testar no projeto real |
-| C1, C3, C4 | **Pendente** | DuckDNS/Caddy, VM e deploy nunca testados; deploy só liga com `DEPLOY_ATIVO=true` |
+| C2 | **Concluído e testado** (09/11) | SQLite padrão; Supabase opcional (`armazenamento_supabase.py`) liga com `SUPABASE_URL` + chave `sb_secret_`, grava e lê no projeto real, e volta sozinho para o SQLite se falhar. Schema em `deploy/supabase_schema.sql` (já rodado). Falta só pôr os secrets do Supabase no GitHub quando houver VM |
+| C1, C3, C4 | **Pendente (bloqueio: VM)** | Subdomínio DuckDNS existe, mas aponta para um IP residencial e as portas 80/443 não respondem. A conta Oracle não foi criada; alternativas: GitHub Student Pack + DigitalOcean, Google Cloud e2-micro, ou computador + Cloudflare Tunnel. Roteiro em `docs/deploy_vm.md`. Deploy só liga com `DEPLOY_ATIVO=true` |
 | C9 | Parcial | Testes de isolamento, senha errada, expiração e `initData` existem; falta revisão humana de segurança |
 | B2, B3, B11, B12 | **Pendente** | ~~Faturamento do Gemini~~ (decidido em 08/11: plano gratuito), nota de clareza A × B (coluna `clareza_1a5` vazia), usabilidade (`testes/usabilidade.md` vazio), perguntas do público (nenhuma ainda) |
-| E6 a E10 | **Pendente** | README (seções 1, 2, 8, 9, 10 e "Participação na Competição"), relatório PDF, `uso_ia.md` (consolidar), vídeo, `link_video.txt`, envio |
+| E6 a E10 | **Parcial** | README seções 2, 8 e 10 escritas em 09/11 (revisar); `docs/relatorio.pdf` gerado (7 páginas, `scripts/gerar_relatorio.py`; rode de novo depois de medir público, usabilidade e clareza). **Faltam:** nome do grupo e perfis (seção 1), link do vídeo (seção 9), "Participação na Competição", `uso_ia.md` consolidado, vídeo, `docs/link_video.txt` (hoje placeholder), envio na FIAP ON |
+| Materiais prontos (09/11) | **Entregues** | `testes/clareza_folha.md` + `scripts/folha_clareza.py` (nota cega A × B), `testes/roteiro_telegram_real.md` (14 casos), `docs/deploy_vm.md`, página pública `docs/index.html` (GitHub Pages) |
 | E12 (novo) | Planejado, opcional | Números de contexto da Base dos Dados para o relatório (seção 5) |
 
 ### Branches no GitHub
@@ -37,7 +38,7 @@
 
 ### Onde parou e o que cada um faz agora
 
-**Como retomar:** `git pull origin main`; crie o ambiente do README §6 ("Rodar o bot") e instale também `httpx` para os testes do painel; rode `python -m unittest discover -s testes -t .` (243 testes; sem `httpx`, 18 são pulados) e `python src/sistema.py --avaliar` (19/19). Uma branch por tarefa a partir da `main`; PR citando a seção da spec; commits sem segredos.
+**Como retomar:** `git pull origin main`; crie o ambiente do README §6 ("Rodar o bot") e instale também `httpx` para os testes do painel; rode `python -m unittest discover -s testes -t .` (256 testes; sem `httpx`, 18 são pulados) e `python src/sistema.py --avaliar` (19/19). Uma branch por tarefa a partir da `main`; PR citando a seção da spec; commits sem segredos.
 
 **Já feito que vale conhecer antes de mexer:**
 - A IA só entra no texto livre quando a base não resolve (`roteador.resposta_direta_basta`) e a escolha do Gemini é conferida com as regras (`roteador.reconciliar`). Botões nunca chamam IA.
@@ -47,20 +48,20 @@
 - `painel.py` **não** pode usar `from __future__ import annotations` (o FastAPI precisa das anotações em tempo de execução).
 
 **Integrante A (Juan), até 13/11:**
-1. E2: revisar as orientações de `direitos`; consolidar o README (§3, 4, 6 e 8) e o bloco "Estado do projeto".
+1. E2: revisar as orientações de `direitos`; consolidar o README (§3, 4, 6 e 8) e o bloco "Estado do projeto"; conferir o texto das seções 2 e 10 e o `docs/relatorio.pdf` escritos em 09/11; preencher nome do grupo, perfis e "Participação na Competição".
 2. Conferir `python src/sistema.py` numa máquina limpa e no Windows; rodar `--validar-entrega` antes de congelar (E5).
 3. ~~Atualizar `cryptography`~~ feito em 08/11: `cryptography==50.0.2` (fecha os 6 alertas do Dependabot; em 08/11 não há alerta aberto). Para atualizar um ambiente já criado: `.venv/bin/python -m pip install cryptography==50.0.2` (ver README §6).
 4. ~~Corrigir na busca o caso "tarifa de ônibus"~~ (feito em 08/11: agora "fora da base"; `--avaliar` segue 19/19).
 5. Decidir o formato padrão A ou B depois das notas de clareza (B3); antes da VM, gerar novo token do bot e nova chave do Gemini.
 
 **Integrante B (Flávia):**
-1. B12 (até 14/11): coletar ≥ 10 perguntas do público, anônimas, no conjunto `publico`, e medir **antes** de ajustar a busca. B11 (até 15/11): teste de usabilidade (`docs/ux.md` §8 e SUS). B3: notas de clareza 1 a 5 (rótulos X/Y).
+1. B12 (até 14/11): coletar ≥ 10 perguntas do público, anônimas, no conjunto `publico`, e medir **antes** de ajustar a busca. B11 (até 15/11): teste de usabilidade (`docs/ux.md` §8 e SUS). B3: notas de clareza 1 a 5: distribua `testes/clareza_folha.md`, junte as notas em CSV e rode `python scripts/folha_clareza.py calcular notas.csv` (o `gabarito` só depois).
 2. ~~B2~~ decidido em 08/11: Gemini no plano gratuito (sem faturamento). Feeds RSS feitos em 08/11 (5 temas do usuário); reavaliar só a fonte de Filmes.
-3. Testar no Telegram real: foto/PDF, cofre pelo chat, resumo da manhã e "Sim, apagar tudo" (o lembrete pelo chat já foi testado em 08/11).
+3. Testar no Telegram real seguindo `testes/roteiro_telegram_real.md` (14 casos, só documentos fictícios): foto/PDF, cofre, resumo da manhã e "Sim, apagar tudo" (o lembrete pelo chat já foi testado em 08/11).
 4. E2: revisar `documentacao`, incluindo os links por estado do DOC-001. E8: consolidar `docs/uso_ia.md`.
 
 **Integrante C (Pedro):**
-1. C1, C3, C4 (prioridade): teste DuckDNS + Caddy, VM, `ffmpeg` e Whisper na VM, secrets e `DEPLOY_ATIVO=true`.
+1. C1, C3, C4 (prioridade, **bloqueado pela VM**): decidir onde hospedar (ver linha C1/C3/C4 da tabela), depois seguir `docs/deploy_vm.md`: DuckDNS apontando para o IP da VM, Caddy, `ffmpeg` e Whisper (na VM de 1 GB use `WHISPER_MODELO=tiny`), secrets `HOST`/`USER`/`KEY` e `DEPLOY_ATIVO=true`. Os secrets do bot, Gemini e sessão já existem no GitHub; faltam `PAINEL_URL`, `SUPABASE_URL`, `SUPABASE_KEY`.
 2. Testar o Mini App no Telegram real (todas as abas, incluindo Tarefas) com `PAINEL_URL` em https.
 3. C9: revisão humana de segurança (cripto, `initData`, isolamento por `user_id`, `.env`).
 4. E2: revisar `servicos`. E7: consolidar o relatório PDF; se der tempo, E12 (Base dos Dados).
