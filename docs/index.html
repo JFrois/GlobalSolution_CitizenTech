@@ -6,7 +6,7 @@
 <title>Citizen Assist AI</title>
 <meta name="description" content="Assistente de orientação cidadã sobre documentos, serviços públicos e direitos, com base em registros verificados e fonte oficial. Global Solution 2026.2 · FIAP · CitizenTech.">
 <meta name="theme-color" content="#1676B0">
-<link rel="icon" href="design/imagens/avatar-bot.svg" type="image/svg+xml">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%221024%22 height=%221024%22 viewBox=%220 0 1024 1024%22 role=%22img%22 aria-label=%22Citizen Assist AI: lente com sinal de conferido%22%3E %3Cdefs%3E %3ClinearGradient id=%22fundo%22 x1=%220%22 y1=%220%22 x2=%220%22 y2=%221%22%3E %3Cstop offset=%220%22 stop-color=%22%232AABEE%22/%3E %3Cstop offset=%221%22 stop-color=%22%231A86C2%22/%3E %3C/linearGradient%3E %3C/defs%3E %3Crect width=%221024%22 height=%221024%22 fill=%22url%28%23fundo%29%22/%3E %3Ccircle cx=%22512%22 cy=%22512%22 r=%22298%22 fill=%22none%22 stroke=%22%23FFFFFF%22 stroke-width=%2264%22/%3E %3Cpolyline points=%22352,520 470,640 690,400%22 fill=%22none%22 stroke=%22%23FFFFFF%22 stroke-width=%2272%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E %3C/svg%3E" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -93,6 +93,7 @@ button,input,select{font-family:inherit}
 .seg button[aria-pressed="true"]{background:var(--acao);color:#fff}
 .seg button[aria-pressed="true"]::before{content:"✓ "}
 
+body.troca [data-nivel]{animation:sobe .45s var(--curva) both}
 body[data-visao="simples"] [data-nivel="tecnico"]{display:none!important}
 body[data-visao="tecnico"] [data-nivel="simples"]{display:none!important}
 
@@ -406,7 +407,7 @@ footer a{color:#fff}
 <div class="wrap">
 
   <nav class="nav" id="nav" aria-label="Seções da página">
-    <a href="#projeto">Projeto</a><a href="#como">Como funciona</a><a href="#telas">Telas</a><a href="#identidade">Identidade</a><a href="#base">Orientações</a><a href="#seguranca">Segurança</a><a href="#tecnica">Técnica</a><a href="#qualidade">Resultados</a><a href="#status">Status</a><a href="#equipe">Equipe</a><a href="#faq">Perguntas</a><a href="#docs">Documentos</a>
+    <a href="#projeto">Projeto</a><a href="#como">Como funciona</a><a href="#telas">Telas</a><a href="#identidade">Identidade</a><a href="#base">Orientações</a><a href="#seguranca">Segurança</a><a href="#tecnica" data-nivel="tecnico">Técnica</a><a href="#qualidade">Resultados</a><a href="#status">Status</a><a href="#equipe">Equipe</a><a href="#faq">Perguntas</a><a href="#docs">Documentos</a>
   </nav>
 
   <div class="visao">
@@ -416,6 +417,7 @@ footer a{color:#fff}
       <button type="button" data-v="tudo" aria-pressed="true">Tudo</button>
       <button type="button" data-v="tecnico" aria-pressed="false">Técnico</button>
     </div>
+    <p id="visao-info" class="nota" role="status" aria-live="polite" style="width:100%;text-align:center;margin:0"></p>
   </div>
 
   <!-- ===== PROJETO ===== -->
@@ -513,6 +515,7 @@ footer a{color:#fff}
         </div>
         <div class="explica">
           <h3>Perguntar: a porta de entrada</h3>
+          <p class="nota" data-nivel="tecnico" style="margin:0 0 8px;padding:10px 14px;border-radius:14px;background:var(--azul-suave);color:var(--texto)"><b>Técnico:</b> POST /api/perguntar chama busca.buscar() e devolve JSON (título, passos, fonte, data, relacionados e decisão). Sem LLM nessa rota, com limite de pedidos.</p>
           <p class="nota" style="font-size:16px">Primeira aba do painel. O cidadão digita a dúvida, escolhe um exemplo ou explora por tema. Funciona sem cofre e sem senha, e a pergunta não é gravada.</p>
           <div class="cartao"><h3>O que tem</h3><ul><li>Faixa azul com o título e o campo de pergunta</li><li>Atalhos de exemplo e três temas com ícone colorido</li><li>Barra de navegação flutuante: Perguntar · Tarefas · Cofre · Ajustes</li></ul></div>
           <div class="etq"><span>Sem login de senha</span><span>Pergunta não gravada</span><span>Conteúdo 100% da base</span></div>
@@ -545,6 +548,7 @@ footer a{color:#fff}
         </div>
         <div class="explica">
           <h3>Resposta e "cena da verificação"</h3>
+          <p class="nota" data-nivel="tecnico" style="margin:0 0 8px;padding:10px 14px;border-radius:14px;background:var(--azul-suave);color:var(--texto)"><b>Técnico:</b> A cena dura no máximo cerca de 3,2 s e o front só desenha o JSON. Com prefers-reduced-motion a resposta aparece pronta.</p>
           <p class="nota" style="font-size:16px">A resposta entra em cena: título, passos em sequência e o selo <b>Fonte conferida</b> com a data. Texto de exemplo ilustrativo; no produto o conteúdo vem do <code>base.json</code>.</p>
           <div class="cartao"><h3>Ordem fixa em todas as interfaces</h3><ul><li>Conteúdo (passos)</li><li>Atenção, se for preciso confirmar</li><li>Fonte com data de verificação</li><li>Próximos assuntos para continuar</li><li>Aviso de que não é canal oficial</li></ul></div>
           <div class="etq"><span>Selo com pop e check desenhado</span><span>Sem animação com "reduzir movimento"</span></div>
@@ -572,6 +576,7 @@ footer a{color:#fff}
         </div>
         <div class="explica">
           <h3>Tarefas e lembretes</h3>
+          <p class="nota" data-nivel="tecnico" style="margin:0 0 8px;padding:10px 14px;border-radius:14px;background:var(--azul-suave);color:var(--texto)"><b>Técnico:</b> GET e POST /api/tarefas, POST /api/tarefas/{id}/concluir. tarefas.tentar_criar lê a data por regras; o agendador dispara um tick a cada 30 s.</p>
           <p class="nota" style="font-size:16px">Anote uma tarefa com data em texto livre ("amanhã às 9h"). O aviso chega pelo Telegram na hora marcada. A data é lida por regras, sem IA.</p>
           <div class="cartao"><h3>Detalhes</h3><ul><li>Lembretes já enviados vão para "Já avisadas"</li><li>Tudo filtrado por usuário</li><li>Fuso de Brasília para todos</li><li>Funciona também pelo chat: "me lembra de pagar a luz amanhã às 9h"</li></ul></div>
           <div class="etq"><span>Testado no Telegram real</span><span>Persiste após reiniciar</span></div>
@@ -600,6 +605,7 @@ footer a{color:#fff}
         </div>
         <div class="explica">
           <h3>Cofre de documentos</h3>
+          <p class="nota" data-nivel="tecnico" style="margin:0 0 8px;padding:10px 14px;border-radius:14px;background:var(--azul-suave);color:var(--texto)"><b>Técnico:</b> AES-256-GCM, chave PBKDF2 (600 mil iterações) só na memória por 10 min. Rotas com limite de pedidos; apagar remove arquivo e metadados.</p>
           <p class="nota" style="font-size:16px">Guarda fotos e PDFs cifrados. A senha é criada só no painel, nunca no chat, e o servidor não a guarda. O cofre fecha sozinho depois de alguns minutos. Toque em "Bloquear" para ver.</p>
           <div class="cartao"><h3>Como protege</h3><ul><li>Cifrado antes de armazenar</li><li>Contador visível de bloqueio</li><li>Apagar em dois passos, de verdade</li><li>Só documentos fictícios nas demonstrações</li></ul></div>
           <div class="etq"><span>Estado nunca só pela cor</span><span>Texto sempre visível</span></div>
@@ -625,6 +631,7 @@ footer a{color:#fff}
         </div>
         <div class="explica">
           <h3>Ajustes e privacidade</h3>
+          <p class="nota" data-nivel="tecnico" style="margin:0 0 8px;padding:10px 14px;border-radius:14px;background:var(--azul-suave);color:var(--texto)"><b>Técnico:</b> PUT /api/config valida UF, temas (5) e horário HH:MM. /apagar_meus_dados remove tudo do user_id.</p>
           <p class="nota" style="font-size:16px">O usuário informa só o estado (UF), escolhe os temas das manchetes e o horário do resumo, e pode apagar tudo. Os chips mostram a marca de check, não só a cor. Toque neles.</p>
           <div class="cartao"><h3>Temas do resumo da manhã</h3><p>Cultura, Tecnologia, Saúde e bem-estar, Música e Filmes. Até 3 manchetes por tema, sempre rotuladas "Notícias — fonte não oficial" e separadas das orientações verificadas.</p></div>
           <div class="etq"><span>Dados mínimos</span><span>Apagar em dois passos</span></div>
@@ -637,7 +644,7 @@ footer a{color:#fff}
       <div class="tela-grid">
         <div class="fone anim" style="background:#DCE9F2">
           <div class="tg">
-            <div class="tg-top"><img src="design/imagens/avatar-bot.svg" alt="" width="40" height="40"><span><b>Citizen Assist AI</b><small>bot</small></span></div>
+            <div class="tg-top"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%221024%22 height=%221024%22 viewBox=%220 0 1024 1024%22 role=%22img%22 aria-label=%22Citizen Assist AI: lente com sinal de conferido%22%3E %3Cdefs%3E %3ClinearGradient id=%22fundo%22 x1=%220%22 y1=%220%22 x2=%220%22 y2=%221%22%3E %3Cstop offset=%220%22 stop-color=%22%232AABEE%22/%3E %3Cstop offset=%221%22 stop-color=%22%231A86C2%22/%3E %3C/linearGradient%3E %3C/defs%3E %3Crect width=%221024%22 height=%221024%22 fill=%22url%28%23fundo%29%22/%3E %3Ccircle cx=%22512%22 cy=%22512%22 r=%22298%22 fill=%22none%22 stroke=%22%23FFFFFF%22 stroke-width=%2264%22/%3E %3Cpolyline points=%22352,520 470,640 690,400%22 fill=%22none%22 stroke=%22%23FFFFFF%22 stroke-width=%2272%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E %3C/svg%3E" alt="" width="40" height="40"><span><b>Citizen Assist AI</b><small>bot</small></span></div>
             <div class="tg-msgs">
               <div class="bolha eu">como tirar a segunda via do título de eleitor?</div>
               <div class="bolha bot"><b>2ª via do título de eleitor</b><br>1. Entre no site do atendimento eleitoral.<br>2. Informe os dados e leve um documento com foto.<br><span class="a">Atenção:</span> confirme no site oficial antes de ir.<br><span class="f">Fonte:</span> tse.jus.br (verificado em 07/11/2026)</div>
@@ -650,6 +657,7 @@ footer a{color:#fff}
         </div>
         <div class="explica">
           <h3>Bot no Telegram</h3>
+          <p class="nota" data-nivel="tecnico" style="margin:0 0 8px;padding:10px 14px;border-radius:14px;background:var(--azul-suave);color:var(--texto)"><b>Técnico:</b> aiogram 3 com parse_mode HTML e html.escape. As respostas de cada usuário saem em ordem (lock por user_id) e o Gemini só entra se a base não resolver.</p>
           <p class="nota" style="font-size:16px">A conversa acontece no app que a pessoa já usa. As escolhas vêm em botões, o áudio é transcrito e mostrado antes da resposta, e o bot nunca fica mudo.</p>
           <div class="cartao"><h3>O que o bot entende</h3><ul><li>Texto, voz (Whisper local), foto e PDF</li><li>Comandos <code>/start</code> <code>/menu</code> <code>/localizacao</code> <code>/painel</code> <code>/apagar_meus_dados</code></li><li>Lembretes por texto livre</li><li>Roteador com Gemini e reserva por regras</li></ul></div>
           <div class="cartao"><h3>Identidade no Telegram</h3><p>Títulos em negrito, avatar com a lente azul, mesmo azul da marca. O avatar é o <code>design/imagens/avatar-bot.png</code>.</p></div>
@@ -664,6 +672,7 @@ footer a{color:#fff}
         <div class="term" aria-label="Terminal de demonstração"><div class="term-top"><i style="background:#FF7A66"></i><i style="background:#FFC857"></i><i style="background:#5BD68F"></i><span>python src/sistema.py</span></div><div class="term-corpo" id="term-corpo" role="log" aria-live="polite"></div></div>
         <div class="explica">
           <h3>Terminal (o que a GS avalia)</h3>
+          <p class="nota" data-nivel="tecnico" style="margin:0 0 8px;padding:10px 14px;border-radius:14px;background:var(--azul-suave);color:var(--texto)"><b>Técnico:</b> Cores ANSI de 24 bits com COLORTERM=truecolor, 16 cores nos demais. Texto puro sem TTY, com NO_COLOR ou --simples.</p>
           <p class="nota" style="font-size:16px">Roda offline, só com Python. Digite a pergunta direto no menu. As cores seguem a identidade e, sem terminal (testes, arquivos) ou com <code>--simples</code>, vira texto puro.</p>
           <div class="cartao"><h3>Detalhes</h3><ul><li>Moldura com caracteres de caixa e cartela azul</li><li>"Fonte:" em verde e "Atenção:" em laranja, sempre escritos</li><li>Linhas de até 80 colunas, sem emoji</li><li><code>Ctrl+C</code> sai sem erro</li></ul></div>
           <div class="etq"><span>Python 3.9+</span><span>Sem internet</span><span>Sem pip install</span></div>
@@ -681,14 +690,14 @@ footer a{color:#fff}
 
     <h3>Cores <span class="nota" style="font-size:13px">(toque para copiar)</span></h3>
     <div class="swatches" id="swatches">
-      <button class="sw press" type="button" data-hex="#229ED9"><div class="cor" style="background:#229ED9"></div><div class="tx"><b>Azul da marca</b><code>#229ED9</code><small>Decoração e degradê. Nunca texto pequeno.</small></div></button>
-      <button class="sw press" type="button" data-hex="#12689E"><div class="cor" style="background:#12689E"></div><div class="tx"><b>Ação</b><code>#12689E</code><small>Botão principal e item ativo. Branco sobre ele: 6,0:1.</small></div></button>
-      <button class="sw press" type="button" data-hex="#F2F8FC"><div class="cor" style="background:#F2F8FC;border-bottom:1px solid var(--linha)"></div><div class="tx"><b>Folha</b><code>#F2F8FC</code><small>Fundo claro das telas.</small></div></button>
-      <button class="sw press" type="button" data-hex="#0E2233"><div class="cor" style="background:#0E2233"></div><div class="tx"><b>Texto e noite</b><code>#0E2233</code><small>Títulos, texto e barra flutuante. 15:1.</small></div></button>
-      <button class="sw press" type="button" data-hex="#4A6176"><div class="cor" style="background:#4A6176"></div><div class="tx"><b>Apoio</b><code>#4A6176</code><small>Legendas e rótulos. 6:1.</small></div></button>
-      <button class="sw press" type="button" data-hex="#0F7A5A"><div class="cor" style="background:#0F7A5A"></div><div class="tx"><b>Verde "Fonte conferida"</b><code>#0F7A5A</code><small>Selo sobre #DDF3EA.</small></div></button>
-      <button class="sw press" type="button" data-hex="#0A7C73"><div class="cor" style="background:#0A7C73"></div><div class="tx"><b>Teal: Serviços</b><code>#0A7C73</code><small>Tinta do tema Serviços públicos.</small></div></button>
-      <button class="sw press" type="button" data-hex="#B8431F"><div class="cor" style="background:#B8431F"></div><div class="tx"><b>Coral: Direitos</b><code>#B8431F</code><small>Tinta do tema Direitos. Atenção usa #5E1F0B sobre #FDE7DF.</small></div></button>
+      <button class="sw press" type="button" data-hex="#229ED9"><div class="cor" style="background:#229ED9"></div><div class="tx"><b>Azul da marca</b><code>#229ED9</code><code data-nivel="tecnico" style="margin-left:4px">--cor-azul</code><small>Decoração e degradê. Nunca texto pequeno.</small></div></button>
+      <button class="sw press" type="button" data-hex="#12689E"><div class="cor" style="background:#12689E"></div><div class="tx"><b>Ação</b><code>#12689E</code><code data-nivel="tecnico" style="margin-left:4px">--cor-acao</code><small>Botão principal e item ativo. Branco sobre ele: 6,0:1.</small></div></button>
+      <button class="sw press" type="button" data-hex="#F2F8FC"><div class="cor" style="background:#F2F8FC;border-bottom:1px solid var(--linha)"></div><div class="tx"><b>Folha</b><code>#F2F8FC</code><code data-nivel="tecnico" style="margin-left:4px">--cor-fundo</code><small>Fundo claro das telas.</small></div></button>
+      <button class="sw press" type="button" data-hex="#0E2233"><div class="cor" style="background:#0E2233"></div><div class="tx"><b>Texto e noite</b><code>#0E2233</code><code data-nivel="tecnico" style="margin-left:4px">--cor-texto e --cor-noite</code><small>Títulos, texto e barra flutuante. 15:1.</small></div></button>
+      <button class="sw press" type="button" data-hex="#4A6176"><div class="cor" style="background:#4A6176"></div><div class="tx"><b>Apoio</b><code>#4A6176</code><code data-nivel="tecnico" style="margin-left:4px">--cor-apoio</code><small>Legendas e rótulos. 6:1.</small></div></button>
+      <button class="sw press" type="button" data-hex="#0F7A5A"><div class="cor" style="background:#0F7A5A"></div><div class="tx"><b>Verde "Fonte conferida"</b><code>#0F7A5A</code><code data-nivel="tecnico" style="margin-left:4px">--cor-verde</code><small>Selo sobre #DDF3EA.</small></div></button>
+      <button class="sw press" type="button" data-hex="#0A7C73"><div class="cor" style="background:#0A7C73"></div><div class="tx"><b>Teal: Serviços</b><code>#0A7C73</code><code data-nivel="tecnico" style="margin-left:4px">--cor-teal</code><small>Tinta do tema Serviços públicos.</small></div></button>
+      <button class="sw press" type="button" data-hex="#B8431F"><div class="cor" style="background:#B8431F"></div><div class="tx"><b>Coral: Direitos</b><code>#B8431F</code><code data-nivel="tecnico" style="margin-left:4px">--cor-coral</code><small>Tinta do tema Direitos. Atenção usa #5E1F0B sobre #FDE7DF.</small></div></button>
     </div>
     <div class="cartao" style="margin-top:14px;padding:0;overflow:hidden"><div style="height:90px;background:var(--hero)"></div><div style="padding:14px 18px"><b>Degradê do hero</b> <code>#229ED9 → #1676B0 → #0F5C93 (170°)</code> <span class="nota">Texto branco só sobre a parte escura ou sobre o vidro <code>rgba(8,40,70,.38)</code> com blur de 14 px.</span></div></div>
 
@@ -722,7 +731,7 @@ footer a{color:#fff}
 
     <h3 style="margin-top:28px">Logo e avatar</h3>
     <div class="cartao" style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
-      <img src="design/imagens/avatar-bot.svg" alt="Avatar do bot: lente azul com sinal de conferido" width="96" height="96" style="border-radius:50%;box-shadow:var(--sombra)">
+      <img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%221024%22 height=%221024%22 viewBox=%220 0 1024 1024%22 role=%22img%22 aria-label=%22Citizen Assist AI: lente com sinal de conferido%22%3E %3Cdefs%3E %3ClinearGradient id=%22fundo%22 x1=%220%22 y1=%220%22 x2=%220%22 y2=%221%22%3E %3Cstop offset=%220%22 stop-color=%22%232AABEE%22/%3E %3Cstop offset=%221%22 stop-color=%22%231A86C2%22/%3E %3C/linearGradient%3E %3C/defs%3E %3Crect width=%221024%22 height=%221024%22 fill=%22url%28%23fundo%29%22/%3E %3Ccircle cx=%22512%22 cy=%22512%22 r=%22298%22 fill=%22none%22 stroke=%22%23FFFFFF%22 stroke-width=%2264%22/%3E %3Cpolyline points=%22352,520 470,640 690,400%22 fill=%22none%22 stroke=%22%23FFFFFF%22 stroke-width=%2272%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E %3C/svg%3E" alt="Avatar do bot: lente azul com sinal de conferido" width="96" height="96" style="border-radius:50%;box-shadow:var(--sombra)">
       <div style="flex:1;min-width:220px"><b>Lente com sinal de conferido</b><p>Branco sobre o degradê azul (#2AABEE → #1A86C2). O símbolo fica dentro do círculo central, então o recorte redondo do Telegram não corta nada. Mínimos: símbolo 24 px, avatar 40 px, logotipo 140 px.</p></div>
     </div>
     <div class="baixar">
@@ -782,6 +791,11 @@ footer a{color:#fff}
     <span class="rot">Arquitetura</span>
     <h2>Por dentro do sistema</h2>
     <p class="lead" data-nivel="simples">Por baixo, o Citizen Assist tem uma base verificada, um mecanismo de busca e três formas de falar com você. A IA só ajuda a escolher a ferramenta certa; quem responde é a base.</p>
+    <div class="grade" data-nivel="simples">
+      <div class="cartao lift"><div class="ic"><svg class="i" aria-hidden="true"><use href="#i-escudo"/></svg></div><h3>A base verificada</h3><p>17 orientações escritas pela equipe a partir de páginas oficiais, cada uma com fonte e data de verificação.</p></div>
+      <div class="cartao lift"><div class="ic t"><svg class="i" aria-hidden="true"><use href="#i-lupa"/></svg></div><h3>A busca</h3><p>Compara a sua pergunta com a base e decide se responde, se pergunta qual assunto você quer ou se avisa que não sabe.</p></div>
+      <div class="cartao lift"><div class="ic c"><svg class="i" aria-hidden="true"><use href="#i-chat"/></svg></div><h3>Os três canais</h3><p>Terminal, Telegram e painel no navegador. Os três dão a mesma resposta, com o mesmo cuidado.</p></div>
+    </div>
     <div data-nivel="tecnico">
       <div class="fluxo"><span>Usuário</span><span class="s">→</span><span>Telegram</span><span class="s">→</span><span>telegram_bot.py</span><span class="s">→</span><span>roteador.py (Gemini + regras)</span><span class="s">→</span><span>ferramenta</span><span class="s">→</span><span>base.json / armazenamento</span></div>
       <div class="arq" id="arq">
@@ -881,12 +895,12 @@ footer a{color:#fff}
   <section class="sec rev" id="faq">
     <span class="rot">Perguntas frequentes</span>
     <h2>Dúvidas comuns</h2>
-    <details><summary>É um canal oficial do governo?</summary><div class="resp">Não. O Citizen Assist é um projeto acadêmico e não representa nenhum órgão público. Cada resposta mostra a fonte oficial para você confirmar.</div></details>
-    <details><summary>Posso confiar nas respostas?</summary><div class="resp">As respostas vêm de orientações verificadas, com fonte e data. Elas foram escritas com apoio de IA a partir das páginas oficiais e <b>ainda passam por revisão humana</b>. Informações públicas mudam, por isso confirme no site oficial.</div></details>
-    <details><summary>E se o assunto não estiver na base?</summary><div class="resp">O assistente diz que não encontrou orientação verificada, que não é canal oficial, e aponta o portal gov.br e os temas disponíveis. Ele não inventa.</div></details>
-    <details><summary>Preciso instalar alguma coisa?</summary><div class="resp">Para o terminal, só o Python 3.9 ou superior. Sem internet, sem chaves, sem <code>pip install</code>. O Telegram e o painel dependem de um servidor ligado.</div></details>
-    <details><summary>Meus documentos ficam seguros?</summary><div class="resp">O cofre cifra antes de guardar e só abre com a sua senha, mas tem limites: no chat o servidor vê o arquivo ao enviar, e o Gemini (plano gratuito) pode reter o que for enviado para classificar. Por isso, nas demonstrações, usamos só documentos fictícios.</div></details>
-    <details><summary>O que a IA faz exatamente?</summary><div class="resp">Escolhe qual ferramenta usar e sugere o nome de um documento do cofre. Ela <b>não escreve</b> a resposta ao cidadão. A voz é transcrita localmente, sem IA na nuvem.</div></details>
+    <details data-nivel="simples"><summary>É um canal oficial do governo?</summary><div class="resp">Não. O Citizen Assist é um projeto acadêmico e não representa nenhum órgão público. Cada resposta mostra a fonte oficial para você confirmar.</div></details>
+    <details data-nivel="simples"><summary>Posso confiar nas respostas?</summary><div class="resp">As respostas vêm de orientações verificadas, com fonte e data. Elas foram escritas com apoio de IA a partir das páginas oficiais e <b>ainda passam por revisão humana</b>. Informações públicas mudam, por isso confirme no site oficial.</div></details>
+    <details data-nivel="simples"><summary>E se o assunto não estiver na base?</summary><div class="resp">O assistente diz que não encontrou orientação verificada, que não é canal oficial, e aponta o portal gov.br e os temas disponíveis. Ele não inventa.</div></details>
+    <details data-nivel="simples"><summary>Preciso instalar alguma coisa?</summary><div class="resp">Para o terminal, só o Python 3.9 ou superior. Sem internet, sem chaves, sem <code>pip install</code>. O Telegram e o painel dependem de um servidor ligado.</div></details>
+    <details data-nivel="simples"><summary>Meus documentos ficam seguros?</summary><div class="resp">O cofre cifra antes de guardar e só abre com a sua senha, mas tem limites: no chat o servidor vê o arquivo ao enviar, e o Gemini (plano gratuito) pode reter o que for enviado para classificar. Por isso, nas demonstrações, usamos só documentos fictícios.</div></details>
+    <details data-nivel="simples"><summary>O que a IA faz exatamente?</summary><div class="resp">Escolhe qual ferramenta usar e sugere o nome de um documento do cofre. Ela <b>não escreve</b> a resposta ao cidadão. A voz é transcrita localmente, sem IA na nuvem.</div></details>
     <details data-nivel="tecnico"><summary>Como a busca decide entre responder e perguntar?</summary><div class="resp">Pela pontuação: se a melhor passa de 3 e a diferença para a segunda é de pelo menos 2, responde; se passa mas a diferença é menor, mostra até 3 candidatos; se não passa, avisa que não há base.</div></details>
     <details data-nivel="tecnico"><summary>Como rodo os testes e a avaliação?</summary><div class="resp"><code>python -m unittest discover -s testes -t .</code> roda os 256 testes e <code>python src/sistema.py --avaliar</code> mede acerto e tempo e grava os CSVs em <code>testes/</code>.</div></details>
     <details data-nivel="tecnico"><summary>Como trocar o armazenamento para o Supabase?</summary><div class="resp">Rode o schema (<code>deploy/supabase_schema.sql</code>) no SQL Editor e coloque <code>SUPABASE_URL</code> e a chave <code>sb_secret_...</code> no <code>.env</code>. Se algo falhar, o sistema usa o SQLite sozinho.</div></details>
@@ -941,14 +955,46 @@ footer a{color:#fff}
   function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt) e.textContent = txt; return e; }
   function toast(t) { var x = $("#toast"); x.textContent = t; x.classList.add("on"); clearTimeout(toast.t); toast.t = setTimeout(function () { x.classList.remove("on"); }, 1800); }
 
+
+  /* ---------- Links: funcionam no site publicado e também ao abrir o arquivo solto ---------- */
+  var SITE = "https://jfrois.github.io/GlobalSolution_CitizenTech/";
+  if (!/^https?:$/.test(location.protocol)) {
+    $$("a[href]").forEach(function (a) {
+      var h = a.getAttribute("href");
+      if (h && !/^(#|https?:|mailto:|data:)/.test(h)) a.setAttribute("href", SITE + h);
+    });
+  }
+  /* Âncoras: rolagem própria (compensa a barra fixa e não depende do endereço da página) */
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest ? e.target.closest("a[href^=\"#\"]") : null;
+    if (!a) return;
+    var id = a.getAttribute("href").slice(1);
+    var alvo = id ? document.getElementById(id) : null;
+    if (id && !alvo) return;
+    e.preventDefault();
+    var y = alvo && id !== "topo" ? alvo.getBoundingClientRect().top + window.pageYOffset - 76 : 0;
+    window.scrollTo({ top: Math.max(0, y), behavior: reduz ? "auto" : "smooth" });
+    try { history.replaceState(null, "", "#" + id); } catch (x) {}
+    if (alvo) { alvo.setAttribute("tabindex", "-1"); try { alvo.focus({ preventScroll: true }); } catch (x) {} }
+  });
+
   /* ---------- Visão: Para todos / Tudo / Técnico ---------- */
-  function visao(v) {
+  function topoNivel(n) { return $$("[data-nivel=\"" + n + "\"]").filter(function (e) { return !e.parentElement.closest("[data-nivel=\"" + n + "\"]"); }).length; }
+  var MSG = {
+    simples: function () { return "Visão para todos: " + topoNivel("tecnico") + " blocos técnicos ocultos (algoritmos, arquitetura, módulos)."; },
+    tecnico: function () { return "Visão técnica: " + topoNivel("simples") + " blocos introdutórios ocultos; os detalhes de implementação aparecem."; },
+    tudo: function () { return "Mostrando tudo: " + topoNivel("simples") + " blocos para todos e " + topoNivel("tecnico") + " técnicos."; }
+  };
+  function visao(v, anima) {
     document.body.setAttribute("data-visao", v);
     $$(".seg button").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-v") === v ? "true" : "false"); });
+    $("#visao-info").textContent = MSG[v]();
+    if (anima && !reduz) { document.body.classList.add("troca"); setTimeout(function () { document.body.classList.remove("troca"); }, 500); }
     guardar("visao", v);
+    if (typeof secs !== "undefined" && secs) ativo();
   }
-  $$(".seg button").forEach(function (b) { b.addEventListener("click", function () { visao(b.getAttribute("data-v")); }); });
-  var vs = ler("visao"); if (vs === "simples" || vs === "tecnico" || vs === "tudo") visao(vs);
+  $$(".seg button").forEach(function (b) { b.addEventListener("click", function () { visao(b.getAttribute("data-v"), true); }); });
+  var vs = ler("visao"); visao(vs === "simples" || vs === "tecnico" ? vs : "tudo", false);
 
   /* ---------- Revelar ao rolar, contadores e barras ---------- */
   function conta(e) {
