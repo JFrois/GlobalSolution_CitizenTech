@@ -21,7 +21,7 @@
 | B7 (tarefas e lembretes) | **Testado com o servidor local** (08/11) | Lembrete pelo chat chega no Telegram na hora (PRs #42 e #44); lembrete marcado para 20:10 chegou no Telegram às 20:10 |
 | B8, B9, B10 (foto/PDF) | Código pronto e testado por testes; **falta teste no Telegram real** | Autodestruição, resumo da manhã, foto/PDF no cofre |
 | C5 a C8, C10 | Código pronto e testado por testes e no navegador local; **falta teste real** | Criptografia, cofre, classificador, painel (abas Perguntar, **Tarefas**, Cofre e Ajustes) |
-| C2 | Parcial | SQLite atrás de `armazenamento.py`; Supabase **não** adotado (decisão EM ABERTO) |
+| C2 | Código pronto | SQLite padrão atrás de `armazenamento.py`; Supabase opcional (`armazenamento_supabase.py`, volta sozinho para o SQLite). Falta testar no projeto real |
 | C1, C3, C4 | **Pendente** | DuckDNS/Caddy, VM e deploy nunca testados; deploy só liga com `DEPLOY_ATIVO=true` |
 | C9 | Parcial | Testes de isolamento, senha errada, expiração e `initData` existem; falta revisão humana de segurança |
 | B2, B3, B11, B12 | **Pendente** | ~~Faturamento do Gemini~~ (decidido em 08/11: plano gratuito), nota de clareza A × B (coluna `clareza_1a5` vazia), usabilidade (`testes/usabilidade.md` vazio), perguntas do público (nenhuma ainda) |

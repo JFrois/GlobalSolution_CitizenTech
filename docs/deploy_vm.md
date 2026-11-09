@@ -58,3 +58,11 @@ sudo systemctl status citizen-assist
 journalctl -u citizen-assist -n 50 --no-pager   # sem tokens nem conteúdo de documentos
 ```
 No Telegram: `/start`, uma pergunta, `/painel` (abre o painel em https).
+
+## 8. Supabase (opcional)
+1. No projeto Supabase: **SQL Editor → New query**, cole `deploy/supabase_schema.sql` e rode **uma vez**.
+2. Em **Project Settings → API Keys**, copie a chave **secret** (`sb_secret_...`). Ela contorna o RLS: **nunca** vai para o front nem para o chat.
+3. No `.env` (local) e nos GitHub Secrets: `SUPABASE_URL=https://<projeto>.supabase.co` e `SUPABASE_KEY=<chave secret>`. Use **uma** linha por variável.
+4. Ao subir, o log mostra `Armazenamento: Supabase`. Se aparecer `Supabase desligado, usando SQLite local: ...`, o motivo vem na mesma linha (chave pública, URL errada, schema não criado).
+5. Atenção: o plano gratuito do Supabase pausa o projeto após cerca de 7 dias sem uso. Se pausar, reative no dashboard e reinicie o serviço.
+6. Migrar dados do SQLite para o Supabase **não** é automático: o Supabase começa vazio.
