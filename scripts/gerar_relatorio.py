@@ -142,7 +142,7 @@ agendador.py: lembretes, resumo da manhã e exclusão de mensagens (ao subir, cu
 <h3>Resultados por pergunta (esperado × obtido)</h3>
 %(t_res)s
 <p><strong>Usabilidade:</strong> <span class="pendente">pendente</span> (roteiro de 5 tarefas e SUS em <code>docs/ux.md</code> §8; registro em <code>testes/usabilidade.md</code>). Metas: primeira resposta útil em menos de 1 min e pelo menos 4 de 5 tarefas sem ajuda.</p>
-<p><strong>Testes automatizados:</strong> 248 (<code>python -m unittest discover -s testes -t .</code>), cobrindo validação da base, normalização, busca, 4 saídas da decisão, Dijkstra, isolamento por usuário, criptografia (ida e volta; senha errada falha), <code>initData</code>, agendador, briefing e painel. O CI roda a suíte no Python 3.9 (só biblioteca padrão) e no 3.12 (com as bibliotecas do servidor).</p>
+<p><strong>Testes automatizados:</strong> 256 (<code>python -m unittest discover -s testes -t .</code>), cobrindo validação da base, normalização, busca, 4 saídas da decisão, Dijkstra, isolamento por usuário, criptografia (ida e volta; senha errada falha), <code>initData</code>, agendador, briefing e painel. O CI roda a suíte no Python 3.9 (só biblioteca padrão) e no 3.12 (com as bibliotecas do servidor).</p>
 
 <h2 class="pg">7. Privacidade, cofre e limites</h2>
 <ul>

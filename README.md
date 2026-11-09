@@ -32,7 +32,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 
 > Global Solution 2026.2 · Desafio CitizenTech
 
-## Estado do projeto (atualizado em 09/11/2026, `main` até o PR #48)
+## Estado do projeto (atualizado em 09/11/2026, `main` até o PR #50)
 
 > Resumo para quem está chegando agora. O detalhe de quem faz o quê está em [`docs/planejamento.md`](docs/planejamento.md) (seção "Status e onde parou"). Prazos: **código congelado em 13/11**, **entrega em 19/11**.
 
@@ -43,7 +43,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 - Modelos de resposta A e B, aviso de limitação e mensagens de entrada inválida (`src/respostas.py`).
 - Terminal completo (`python src/sistema.py`), com cores e texto puro de reserva, `--validar-entrega` e `--avaliar`.
 - Perguntas de teste da equipe congeladas antes das palavras-chave: **19/19 (100%)**; índice invertido cerca de 100 vezes mais rápido que a busca linear. Resultados em `testes/resultados.csv` e `testes/comparacao_modelos.csv`.
-- **248 testes automatizados** (`python -m unittest discover -s testes -t .`), todos passando. O CI roda a suíte duas vezes: no Python 3.9 só com a biblioteca padrão (o que o avaliador usa) e no 3.12 com as bibliotecas do servidor, sem pular os testes do painel, cofre e bot.
+- **256 testes automatizados** (`python -m unittest discover -s testes -t .`), todos passando. O CI roda a suíte duas vezes: no Python 3.9 só com a biblioteca padrão (o que o avaliador usa) e no 3.12 com as bibliotecas do servidor, sem pular os testes do painel, cofre e bot.
 
 **Concluído e testado no Telegram real (Onda 2, camada de produto), em 07/11:**
 
@@ -67,6 +67,12 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 - **Resumo da manhã** (`src/briefing.py`, `data/feeds.json`): tarefas do dia + até 3 manchetes por tema, rotuladas "não oficial". O usuário escolhe entre 5 temas (Cultura, Tecnologia, Saúde e bem-estar, Música, Filmes); os feeds de cada um ficam em `data/feeds.json` e podem ser trocados sem mexer no código. A fonte de Filmes é fraca (reavaliar).
 - **Foto/PDF e cofre no chat** (`src/documentos.py`, `src/telegram_bot.py`): cofre fechado não guarda nada (botão para o painel); consentimento do Gemini; nome confirmado ou editado; "me envie meu RG" envia e apaga em 5 min.
 
+**Armazenamento (09/11):** SQLite é o padrão. O Supabase (`src/armazenamento_supabase.py`) liga sozinho quando `SUPABASE_URL` e uma chave `sb_secret_` estão no `.env`; foi testado no projeto real (grava e lê) e, se falhar, o sistema volta para o SQLite. Schema: `deploy/supabase_schema.sql`.
+
+**Página pública do projeto:** `docs/index.html`, servida pelo GitHub Pages (Settings > Pages > Branch `main`, pasta `/docs`); o endereço fica em `https://jfrois.github.io/GlobalSolution_CitizenTech/`. Ao mudar o estado do projeto, atualize também essa página.
+
+**Páginas e materiais (09/11):** relatório em `docs/relatorio.pdf`; folha cega de clareza `testes/clareza_folha.md`; roteiro de teste real `testes/roteiro_telegram_real.md`; roteiro de VM `docs/deploy_vm.md`; página pública do projeto em `docs/index.html` (GitHub Pages).
+
 **Rascunho, precisa de revisão humana:**
 
 - As 17 orientações de `data/base.json` foram redigidas pela IA a partir das páginas oficiais lidas em 07/11/2026 (todas com `data_verificacao` 2026-11-07). Cada orientação precisa ser conferida por um integrante (atividade E2 do planejamento). Pontos de atenção em `docs/uso_ia.md`.
@@ -76,7 +82,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 1. **Antes do congelamento (13/11), Onda 1:** revisão humana das 17 orientações (E2) e links por estado da 2ª via da CIN (`referencias_estaduais` de DOC-001 está vazio; todos os estados caem no `gov.br`); conferir `python src/sistema.py` numa máquina limpa e no Windows.
 2. **Indicadores (até 15/11):** perguntas do público (≥ 10, anônimas; hoje só existe o conjunto `equipe`) medidas **antes** de ajustar a busca; teste de usabilidade com pessoa de fora (`testes/usabilidade.md` está vazio); nota de clareza A × B (coluna `clareza_1a5` vazia). Só depois se escolhe o formato padrão (hoje o passo a passo é provisório).
 3. **Onda 2, teste real:** no Telegram real (com documentos fictícios): foto/PDF, cofre pelo chat, resumo da manhã, Mini App (incluindo a aba Tarefas) e o botão "Sim, apagar tudo". O lembrete pelo chat já foi testado (08/11). `/painel` precisa de `PAINEL_URL` com https.
-4. **Infraestrutura:** VM, DuckDNS/Caddy e deploy automático (nunca testados; o deploy só liga com `DEPLOY_ATIVO=true`); `ffmpeg` e Whisper na VM.
+4. **Infraestrutura (bloqueio principal):** não há VM. O subdomínio DuckDNS existe, mas aponta para um IP residencial e as portas 80/443 não respondem; a conta Oracle não foi criada. Alternativas: GitHub Student Pack + DigitalOcean, Google Cloud e2-micro ou computador + Cloudflare Tunnel (só demonstração). Passo a passo em `docs/deploy_vm.md`; o deploy só liga com `DEPLOY_ATIVO=true`; `ffmpeg` e Whisper na VM.
 5. **Segurança:** `cryptography` atualizada para 50.0.2 em 08/11 (fecha os 6 alertas do Dependabot). Para atualizar um ambiente já criado: `.venv/bin/python -m pip install cryptography==50.0.2` (não use `pip install -r requirements.txt` fora do `.venv` nem antes do passo do Whisper, ver §6). Antes da VM, gerar **novo** token do bot e **nova** chave do Gemini (os de teste foram compartilhados fora do `.env`) e conferir o histórico do Git (busca feita em 08/11 não achou tokens).
 6. **Decisões EM ABERTO:** fuso por usuário (hoje todos em America/Sao_Paulo). Armazenamento: SQLite padrão e Supabase opcional (testado em 09/11 contra o projeto real com a chave secret: grava e lê; volta sozinho para o SQLite se falhar). Gemini no plano gratuito (decidido em 08/11; ver spec §12).
 7. **Documentação e entrega:** seções 2, 8 e 10 escritas em 09/11 (revisar). Faltam o nome do grupo e os perfis da seção 1, o link da seção 9, "Participação na Competição", conferir o `docs/relatorio.pdf` (rascunho gerado em 09/11 por `scripts/gerar_relatorio.py`), o vídeo e `docs/link_video.txt`, e o `.txt` na FIAP ON.
@@ -258,7 +264,7 @@ Sem base suficiente, o assistente diz que não encontrou orientação verificada
 
 São 19 perguntas em `testes/perguntas.json`: 8 diretas, 3 reformuladas, 3 fora da base e 5 de limite (entrada vazia, consulta ambígua "documento", tópico sem base, só símbolos e texto longo). Todas são fictícias, sem dado pessoal. As perguntas da equipe foram **congeladas num commit antes** de preencher as palavras-chave (histórico do Git). O conjunto do público (≥ 10 perguntas anônimas) será coletado depois e medido **antes** de qualquer ajuste.
 
-Testes automatizados: `python -m unittest discover -s testes -t .` (248 testes: base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal e avaliação, além do servidor, que só rodam com o ambiente do bot).
+Testes automatizados: `python -m unittest discover -s testes -t .` (256 testes: base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal e avaliação, além do servidor, que só rodam com o ambiente do bot).
 
 ### Indicadores da busca
 

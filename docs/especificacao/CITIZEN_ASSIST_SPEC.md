@@ -483,7 +483,7 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 - [ ] README com as 10 seções; relatório 4–8 páginas; `uso_ia.md`; `link_video.txt`.
 - [ ] Repositório público, sem segredos (verificar histórico do Git).
 - [ ] Vídeo Não Listado; `.txt` com os dois links enviado na FIAP ON.
-- [ ] Onda 2: cofre testado com senha errada, expiração de desbloqueio e isolamento por usuário; ou movida para o roadmap. (08/11: cofre, cripto, classificador, tarefas, agendador, briefing, foto/PDF no bot e front do painel **implementados e cobertos por 248 testes automatizados** — senha errada, expiração e isolamento por usuário testados; bot, UF, voz e roteador testados no Telegram real em 07/11. **Falta testar no Telegram real** foto/PDF, cofre, lembretes, resumo e Mini App, e **VM/HTTPS/deploy**; feeds RSS por tema decididos em 08/11; fuso por usuário segue EM ABERTO.)
+- [ ] Onda 2: cofre testado com senha errada, expiração de desbloqueio e isolamento por usuário; ou movida para o roadmap. (08/11: cofre, cripto, classificador, tarefas, agendador, briefing, foto/PDF no bot e front do painel **implementados e cobertos por 256 testes automatizados** — senha errada, expiração e isolamento por usuário testados; bot, UF, voz e roteador testados no Telegram real em 07/11. **Falta testar no Telegram real** foto/PDF, cofre, lembretes, resumo e Mini App, e **VM/HTTPS/deploy**; feeds RSS por tema decididos em 08/11; fuso por usuário segue EM ABERTO.)
 
 ---
 

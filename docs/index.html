@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Citizen Assist AI</title>
+<meta name="description" content="Assistente de orientação cidadã sobre documentos, serviços públicos e direitos, com base em registros verificados e fonte oficial. Global Solution 2026.2 · FIAP · CitizenTech.">
+<style>
+:root{
+  --acao:#12689E; --azul:#229ED9; --fundo:#F2F8FC; --sup:#FFFFFF; --texto:#0E2233; --apoio:#4A6176;
+  --borda:#C9D8E8; --verde:#0F7A5A; --verde-s:#DDF3EA; --verde-t:#0A4F3A;
+  --amb:#9A5B00; --amb-s:#FFF1D6; --verm:#B0391B; --verm-s:#FDE7DF; --link:#0B5E94;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-tema="claro"]){
+    --acao:#5BB8EA; --fundo:#0B1722; --sup:#12222F; --texto:#E6F0F7; --apoio:#9DB4C6; --borda:#2A4156;
+    --verde-s:#0E2E24; --verde-t:#8FE0C0; --amb-s:#3A2A08; --amb:#F2C46B; --verm-s:#3A1810; --verm:#FF9C80; --link:#7CC7F2;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--fundo);color:var(--texto);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+a{color:var(--link)}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px}
+header.hero{background:linear-gradient(135deg,#0E2233 0%,#12689E 70%,#229ED9 100%);color:#fff;padding:40px 0 64px}
+header.hero h1{margin:0 0 8px;font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.15}
+header.hero p{margin:0 0 6px;max-width:60ch;color:#E6F3FB}
+header.hero .eyebrow{font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:#BFE3F7;margin-bottom:10px}
+.botoes{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.botao{display:inline-block;min-height:44px;padding:10px 18px;border-radius:12px;background:#fff;color:#0B3F63;font-weight:600;text-decoration:none}
+.botao.sec{background:transparent;color:#fff;border:2px solid #BFE3F7}
+main{margin-top:-36px}
+.folha{background:var(--fundo);border-radius:24px 24px 0 0;padding-top:8px}
+nav.indice{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px;padding:0}
+nav.indice a{padding:8px 14px;border:1px solid var(--borda);border-radius:999px;background:var(--sup);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+section{margin:0 0 36px}
+h2{font-size:1.4rem;margin:0 0 10px}
+h3{font-size:1.05rem;margin:0 0 6px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.card{background:var(--sup);border:1px solid var(--borda);border-radius:16px;padding:16px}
+.num{font-size:2rem;font-weight:700;line-height:1.1;color:var(--acao)}
+.leg{color:var(--apoio);font-size:.92rem}
+.selo{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.8rem;font-weight:700}
+.ok{background:var(--verde-s);color:var(--verde-t)}
+.parc{background:var(--amb-s);color:var(--amb)}
+.pend{background:var(--verm-s);color:var(--verm)}
+table{width:100%;border-collapse:collapse;background:var(--sup);border:1px solid var(--borda);border-radius:12px;overflow:hidden}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--borda)}
+th{font-size:.85rem;color:var(--apoio);text-transform:uppercase;letter-spacing:.04em}
+tr:last-child td{border-bottom:0}
+.tabela{overflow-x:auto}
+ul.lista{margin:0;padding-left:1.1rem}
+ul.lista li{margin:4px 0}
+.aviso{border-left:5px solid var(--acao);background:var(--sup);padding:12px 16px;border-radius:8px}
+code{font:.9em ui-monospace,Menlo,Consolas,monospace;background:var(--sup);border:1px solid var(--borda);padding:1px 6px;border-radius:6px}
+pre{background:#0E2233;color:#E6F0F7;padding:14px;border-radius:12px;overflow-x:auto;font:.9rem/1.45 ui-monospace,Menlo,Consolas,monospace}
+footer{padding:24px 0 40px;color:var(--apoio);font-size:.92rem;border-top:1px solid var(--borda)}
+@media (max-width:560px){th,td{padding:8px}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Global Solution 2026.2 · FIAP · CitizenTech</div>
+    <h1>Citizen Assist AI</h1>
+    <p>Orientação cidadã sobre documentos, serviços públicos e direitos, <strong>somente com base em registros verificados</strong>, sempre com a fonte oficial e a data de verificação.</p>
+    <p>Quando não há base suficiente, o assistente avisa e <strong>não inventa</strong> instruções.</p>
+    <div class="botoes">
+      <a class="botao" href="https://github.com/JFrois/GlobalSolution_CitizenTech">Repositório no GitHub</a>
+      <a class="botao sec" href="relatorio.pdf">Relatório (PDF)</a>
+      <a class="botao sec" href="#status">Ver o que falta</a>
+    </div>
+  </div>
+</header>
+
+<main class="folha"><div class="wrap">
+<nav class="indice" aria-label="Seções">
+  <a href="#resumo">Resumo</a><a href="#como">Como funciona</a><a href="#status">Status</a>
+  <a href="#quem">Quem faz o quê</a><a href="#rodar">Como rodar</a><a href="#equipe">Equipe</a><a href="#links">Links</a>
+</nav>
+
+<section id="resumo">
+  <h2>Resumo em números <span class="leg">(atualizado em 09/11/2026)</span></h2>
+  <div class="cards">
+    <div class="card"><div class="num">17</div><div>orientações verificadas</div><div class="leg">3 temas: documentação, serviços e direitos</div></div>
+    <div class="card"><div class="num">19/19</div><div>acertos da busca (equipe)</div><div class="leg">Não é medida independente: falta o conjunto do público</div></div>
+    <div class="card"><div class="num">256</div><div>testes automatizados</div><div class="leg">CI verde no Python 3.9 e 3.12</div></div>
+    <div class="card"><div class="num">100–200×</div><div>índice invertido vs. busca linear</div><div class="leg">17 a 17.000 registros</div></div>
+  </div>
+  <p class="aviso" style="margin-top:14px"><strong>Aviso:</strong> o Citizen Assist AI <strong>não é um canal oficial</strong> de nenhum órgão público. Confirme sempre no site oficial indicado em cada resposta. Demonstrações e testes usam somente documentos fictícios.</p>
+</section>
+
+<section id="como">
+  <h2>Como funciona</h2>
+  <p>O projeto tem duas camadas. A resposta ao cidadão <strong>nunca</strong> é gerada livremente por IA: o conteúdo vem sempre da base verificada.</p>
+  <div class="cards">
+    <div class="card"><h3>Núcleo (avaliado pela GS)</h3>
+      <ul class="lista"><li>Roda no terminal, offline, só com Python 3.9+</li><li>Busca por palavras-chave com pontuação, índice invertido, sinônimos</li><li>Grafo de assuntos e Dijkstra para navegar entre temas</li><li>Dois formatos de resposta (resumido e passo a passo)</li><li>Trata entrada vazia, ambígua e sem base</li></ul></div>
+    <div class="card"><h3>Produto (diferencial)</h3>
+      <ul class="lista"><li>Bot no Telegram (texto, voz, foto, PDF)</li><li>Roteador com Gemini e reserva por regras</li><li>Cofre de documentos criptografado (AES-256-GCM)</li><li>Tarefas, lembretes e resumo da manhã</li><li>Painel web / Mini App do Telegram</li></ul></div>
+    <div class="card"><h3>Decisão da busca</h3>
+      <ul class="lista"><li>Entrada inválida: pede de novo</li><li>Boa correspondência: responde</li><li>Empate: pede para escolher entre até 3</li><li>Sem base: avisa e aponta o gov.br</li></ul></div>
+  </div>
+</section>
+
+<section id="status">
+  <h2>Status: o que está pronto e o que falta</h2>
+  <div class="tabela"><table>
+    <tr><th>Área</th><th>Situação</th><th>Detalhe</th></tr>
+    <tr><td>Núcleo no terminal</td><td><span class="selo ok">Pronto</span></td><td>Base com 17 registros, busca, grafo, Dijkstra, modelos A e B, <code>--avaliar</code>. Falta conferir numa máquina limpa e no Windows.</td></tr>
+    <tr><td>Bot no Telegram</td><td><span class="selo ok">Pronto</span></td><td>Texto, voz, UF, <code>/apagar_meus_dados</code> e roteador testados no Telegram real.</td></tr>
+    <tr><td>Tarefas e lembretes</td><td><span class="selo ok">Pronto</span></td><td>Lembrete chega no Telegram na hora certa (testado em 08/11).</td></tr>
+    <tr><td>Armazenamento</td><td><span class="selo ok">Pronto</span></td><td>SQLite por padrão; Supabase opcional, testado no projeto real, com volta automática para o SQLite.</td></tr>
+    <tr><td>Painel, cofre, foto/PDF, resumo da manhã</td><td><span class="selo parc">Parcial</span></td><td>Implementados e cobertos por testes; <strong>falta testar no Telegram real</strong> (roteiro de 14 casos no repositório).</td></tr>
+    <tr><td>Relatório PDF</td><td><span class="selo parc">Rascunho</span></td><td>7 páginas geradas dos dados reais; falta incluir público, usabilidade e clareza.</td></tr>
+    <tr><td>README</td><td><span class="selo parc">Parcial</span></td><td>Faltam nome do grupo, perfis, link do vídeo e "Participação na Competição".</td></tr>
+    <tr><td>Revisão das 17 orientações</td><td><span class="selo pend">Pendente</span></td><td>Rascunho escrito com apoio de IA a partir das páginas oficiais; precisa de conferência humana, incluindo os estados do DOC-001.</td></tr>
+    <tr><td>Perguntas do público</td><td><span class="selo pend">Pendente</span></td><td>Meta: pelo menos 10, anônimas, medidas antes de ajustar a busca.</td></tr>
+    <tr><td>Teste de usabilidade e nota de clareza A × B</td><td><span class="selo pend">Pendente</span></td><td>Folha cega e roteiro de tarefas prontos; falta aplicar.</td></tr>
+    <tr><td>Hospedagem (VM, HTTPS, deploy)</td><td><span class="selo pend">Bloqueado</span></td><td>Ainda não há VM. Segredos já estão no GitHub Secrets; falta escolher onde hospedar.</td></tr>
+    <tr><td>Vídeo e envio na FIAP ON</td><td><span class="selo pend">Pendente</span></td><td>Vídeo "Não Listado" no YouTube e um <code>.txt</code> com os dois links.</td></tr>
+  </table></div>
+  <p class="leg" style="margin-top:10px">Prazos: código congelado em <strong>13/11/2026</strong>; entrega na FIAP ON em <strong>19/11/2026</strong>. O que não estiver testado em 13/11 vira roadmap.</p>
+</section>
+
+<section id="quem">
+  <h2>Quem faz o quê agora</h2>
+  <div class="cards">
+    <div class="card"><h3>Juan (núcleo e dados)</h3><ul class="lista"><li>Revisar orientações de direitos</li><li>Consolidar README e relatório</li><li>Testar numa máquina limpa e no Windows</li><li>Decidir o formato padrão (A ou B)</li></ul></div>
+    <div class="card"><h3>Flávia (bot, testes, A × B)</h3><ul class="lista"><li>Coletar 10+ perguntas do público</li><li>Teste de usabilidade com pessoa de fora</li><li>Notas de clareza (folha cega)</li><li>Testar no Telegram real</li><li>Revisar orientações de documentação</li></ul></div>
+    <div class="card"><h3>Pedro (cofre, painel, infra)</h3><ul class="lista"><li>Escolher onde hospedar e subir a VM</li><li>HTTPS com DuckDNS + Caddy e deploy</li><li>Testar o Mini App no Telegram real</li><li>Revisão de segurança; revisar serviços</li></ul></div>
+  </div>
+  <p class="leg" style="margin-top:10px">Detalhes e prazos: <a href="https://github.com/JFrois/GlobalSolution_CitizenTech/blob/main/docs/planejamento.md">planejamento</a>.</p>
+</section>
+
+<section id="rodar">
+  <h2>Como rodar o núcleo</h2>
+  <p>Só Python 3.9 ou superior. Sem chaves, sem internet, sem instalar nada.</p>
+<pre>git clone https://github.com/JFrois/GlobalSolution_CitizenTech.git
+cd GlobalSolution_CitizenTech
+python src/sistema.py            # menu interativo: digite sua pergunta
+python src/sistema.py --avaliar  # taxa de acerto e tempo médio
+python -m unittest discover -s testes -t .   # testes</pre>
+  <p>O bot, o painel e o cofre ficam no modo <code>--servidor</code> e exigem o ambiente descrito no README do repositório.</p>
+</section>
+
+<section id="equipe">
+  <h2>Equipe</h2>
+  <div class="cards">
+    <div class="card"><h3>Juan de Lucas Frois</h3><div class="leg">RM563260 · Núcleo e dados</div></div>
+    <div class="card"><h3>Flávia Roberta Pennachin</h3><div class="leg">RM561860 · Bot, roteador, testes e comparação A × B</div></div>
+    <div class="card"><h3>Pedro Valente</h3><div class="leg">RM570394 · Cofre, painel e infraestrutura</div></div>
+  </div>
+</section>
+
+<section id="links">
+  <h2>Links</h2>
+  <ul class="lista">
+    <li><a href="https://github.com/JFrois/GlobalSolution_CitizenTech">Repositório</a></li>
+    <li><a href="relatorio.pdf">Relatório em PDF</a></li>
+    <li><a href="https://github.com/JFrois/GlobalSolution_CitizenTech/blob/main/README.md">README (estado do projeto e como executar)</a></li>
+    <li><a href="https://github.com/JFrois/GlobalSolution_CitizenTech/blob/main/docs/especificacao/CITIZEN_ASSIST_SPEC.md">Especificação (fonte de verdade)</a></li>
+    <li><a href="https://github.com/JFrois/GlobalSolution_CitizenTech/blob/main/docs/planejamento.md">Planejamento e divisão de tarefas</a></li>
+    <li><a href="https://github.com/JFrois/GlobalSolution_CitizenTech/blob/main/docs/uso_ia.md">Uso de IA e validação crítica</a></li>
+  </ul>
+</section>
+</div></main>
+
+<footer><div class="wrap">Citizen Assist AI · projeto acadêmico da FIAP (Global Solution 2026.2). Não é um canal oficial de nenhum órgão público. Esta página resume o que é público sobre o projeto; o repositório é a fonte completa.</div></footer>
+</body>
+</html>
