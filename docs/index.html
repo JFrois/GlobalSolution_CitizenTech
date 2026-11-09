@@ -5,627 +5,1265 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Citizen Assist AI</title>
 <meta name="description" content="Assistente de orientação cidadã sobre documentos, serviços públicos e direitos, com base em registros verificados e fonte oficial. Global Solution 2026.2 · FIAP · CitizenTech.">
-<meta name="theme-color" content="#071420">
+<meta name="theme-color" content="#1676B0">
+<link rel="icon" href="design/imagens/avatar-bot.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* Tokens: "Azul Telegram" do projeto (docs/design/tokens.css) em versão noturna com neon. */
+/* Identidade "Azul Telegram" (docs/ux.md §9 e docs/design/tokens.css) */
 :root{
-  --noite:#071420; --noite-2:#0B1F30; --painel:#0E2233; --linha:#1E3A52; --linha-forte:#2D5778;
-  --texto:#E6F2FA; --apoio:#9FB8CC;
-  --azul:#229ED9; --azul-neon:#3CC8FF; --azul-acao:#12689E;
-  --verde:#3DF5B0; --verde-s:#0E3A2D; --ambar:#FFC857; --ambar-s:#3A2C0B; --coral:#FF7A59; --coral-s:#3A1A12;
-  --glow:0 0 18px rgba(60,200,255,.45), 0 0 42px rgba(34,158,217,.25);
-  --glow-verde:0 0 14px rgba(61,245,176,.45);
-  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --azul:#229ED9; --acao:#12689E; --link:#0B5E94; --fundo:#F2F8FC; --sup:#FFFFFF;
+  --texto:#0E2233; --apoio:#4A6176; --noite:#0E2233; --azul-suave:#DDEFFA;
+  --verde:#0F7A5A; --verde-s:#DDF3EA; --verde-t:#0A4F3A;
+  --teal:#0A7C73; --teal-s:#D9F2EF; --coral:#B8431F; --coral-s:#FDE7DF; --atencao:#5E1F0B;
+  --perigo:#B0391B; --borda:#6F8CA2; --linha:#D4E3EF;
+  --hero:linear-gradient(170deg,#229ED9 0%,#1676B0 45%,#0F5C93 100%);
+  --vidro:rgba(8,40,70,.38); --vidro-borda:rgba(255,255,255,.4);
+  --sombra:0 8px 20px -12px rgba(14,34,51,.35); --sombra-alta:0 18px 34px -12px rgba(6,24,40,.7);
   --sans:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --curva:cubic-bezier(.2,.7,.2,1); --pop:cubic-bezier(.2,.9,.3,1.2);
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:72px}
-body{margin:0;background:var(--noite);color:var(--texto);font:16px/1.6 var(--sans);overflow-x:hidden}
-a{color:var(--azul-neon)}
-a:hover{color:#fff}
-:focus-visible{outline:3px solid var(--verde);outline-offset:3px;border-radius:6px}
-.wrap{max-width:1040px;margin:0 auto;padding:0 16px;position:relative;z-index:2}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{margin:0;background:var(--fundo);color:var(--texto);font:16px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--link)}
+a:hover{color:var(--acao)}
+:focus-visible{outline:3px solid #0B5E94;outline-offset:3px;border-radius:8px}
+.hero :focus-visible,.nav :focus-visible{outline-color:#fff}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+button,input,select{font-family:inherit}
 
-/* ---------- Atmosfera: cyber-grid, glow e CRT ---------- */
-.atmo{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.grade{position:absolute;inset:-80px 0 0 0;
-  background-image:linear-gradient(rgba(60,200,255,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(60,200,255,.09) 1px,transparent 1px);
-  background-size:56px 56px;
-  -webkit-mask-image:radial-gradient(ellipse at 50% 20%,#000 0%,rgba(0,0,0,.55) 45%,transparent 80%);
-          mask-image:radial-gradient(ellipse at 50% 20%,#000 0%,rgba(0,0,0,.55) 45%,transparent 80%);
-  animation:deriva 14s linear infinite}
-@keyframes deriva{to{transform:translateY(56px)}}
-.brilho{position:absolute;width:720px;height:720px;border-radius:50%;filter:blur(90px);opacity:.5}
-.brilho.a{left:-220px;top:-200px;background:radial-gradient(circle,rgba(34,158,217,.55),transparent 65%)}
-.brilho.b{right:-260px;top:38vh;background:radial-gradient(circle,rgba(61,245,176,.22),transparent 65%)}
-.crt{position:fixed;inset:0;z-index:50;pointer-events:none;opacity:0;transition:opacity .3s;
-  background:repeating-linear-gradient(to bottom,rgba(0,0,0,.28) 0,rgba(0,0,0,.28) 1px,transparent 1px,transparent 3px);
-  box-shadow:inset 0 0 160px rgba(0,0,0,.55)}
-body.crt-on .crt{opacity:1}
-body.crt-on .crt::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,transparent 0,rgba(60,200,255,.05) 50%,transparent 100%);height:140px;animation:varre 6s linear infinite}
-@keyframes varre{from{transform:translateY(-160px)}to{transform:translateY(100vh)}}
-
-/* ---------- Barra superior ---------- */
-.topo{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:rgba(7,20,32,.78);border-bottom:1px solid var(--linha)}
-.topo .wrap{display:flex;align-items:center;gap:12px;min-height:56px}
-.marca{font:800 1rem var(--mono);letter-spacing:.02em;color:var(--azul-neon);text-decoration:none;white-space:nowrap}
-.marca b{color:var(--verde)}
-.topo nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1}
-.topo nav a{color:var(--apoio);text-decoration:none;padding:8px 12px;border-radius:8px;white-space:nowrap;font-size:.92rem;min-height:44px;display:inline-flex;align-items:center;transition:color .2s,background .2s}
-.topo nav a:hover{color:#fff;background:rgba(60,200,255,.12)}
-.crt-btn{font:600 .8rem var(--mono);color:var(--apoio);background:transparent;border:1px solid var(--linha-forte);border-radius:8px;min-height:44px;padding:0 12px;cursor:pointer;transition:all .2s;white-space:nowrap}
-.crt-btn:hover{color:#fff;border-color:var(--azul-neon);box-shadow:var(--glow)}
-.crt-btn[aria-pressed="true"]{color:var(--noite);background:var(--verde);border-color:var(--verde);box-shadow:var(--glow-verde)}
-
-/* ---------- Hero ---------- */
-.hero{padding:72px 0 56px;text-align:left}
-.etiqueta{display:inline-flex;align-items:center;gap:8px;font:600 .8rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--verde);border:1px solid rgba(61,245,176,.35);padding:6px 12px;border-radius:999px;background:rgba(61,245,176,.06)}
-.etiqueta i{width:8px;height:8px;border-radius:50%;background:var(--verde);box-shadow:var(--glow-verde);animation:pulso 1.6s ease-in-out infinite}
-@keyframes pulso{50%{opacity:.35;transform:scale(.7)}}
-.glitch{position:relative;font:800 clamp(2.6rem,9vw,5.6rem)/1.02 var(--sans);letter-spacing:-.02em;margin:22px 0 14px;color:#fff;text-shadow:0 0 28px rgba(60,200,255,.5)}
-.glitch::before,.glitch::after{content:attr(data-texto);position:absolute;left:0;top:0;width:100%;overflow:hidden;opacity:0}
-.glitch::before{color:var(--azul-neon);transform:translate(-3px,0)}
-.glitch::after{color:var(--coral);transform:translate(3px,0)}
-.glitch.ativo::before{opacity:.85;animation:cortaA .5s steps(2,end)}
-.glitch.ativo::after{opacity:.85;animation:cortaB .5s steps(2,end)}
-@keyframes cortaA{0%{clip-path:inset(10% 0 70% 0)}20%{clip-path:inset(60% 0 8% 0)}40%{clip-path:inset(30% 0 40% 0)}60%{clip-path:inset(80% 0 4% 0)}80%{clip-path:inset(5% 0 82% 0)}100%{clip-path:inset(45% 0 30% 0)}}
-@keyframes cortaB{0%{clip-path:inset(70% 0 6% 0)}20%{clip-path:inset(12% 0 64% 0)}40%{clip-path:inset(50% 0 20% 0)}60%{clip-path:inset(4% 0 80% 0)}80%{clip-path:inset(66% 0 14% 0)}100%{clip-path:inset(28% 0 44% 0)}}
-.sub{font-size:clamp(1.05rem,2.4vw,1.35rem);max-width:58ch;color:#CFE4F3;margin:0 0 8px}
-.sub strong{color:#fff}
-.digita{font:600 1rem var(--mono);color:var(--verde);min-height:1.8em;margin:18px 0 0}
-.cursor{display:inline-block;width:.6em;height:1.05em;background:var(--verde);vertical-align:text-bottom;margin-left:2px;animation:pisca 1s steps(1) infinite;box-shadow:var(--glow-verde)}
+/* ---------- movimento (só opacidade e transform) ---------- */
+@keyframes sobe{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes folha{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:none}}
+@keyframes brilho{0%,100%{opacity:.45;transform:scale(1)}50%{opacity:.8;transform:scale(1.15)}}
+@keyframes flutua{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes pop{0%{opacity:0;transform:scale(.6)}70%{transform:scale(1.08)}100%{opacity:1;transform:none}}
+@keyframes traca{to{stroke-dashoffset:0}}
 @keyframes pisca{50%{opacity:0}}
-.botoes{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
-.btn{position:relative;display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:12px 22px;border-radius:12px;font:600 1rem var(--sans);text-decoration:none;color:var(--noite);background:var(--azul-neon);border:1px solid var(--azul-neon);box-shadow:var(--glow);transition:transform .18s,box-shadow .18s,background .18s;overflow:hidden}
-.btn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-120%);transition:transform .55s}
-.btn:hover{transform:translateY(-3px);color:var(--noite);box-shadow:0 0 28px rgba(60,200,255,.8),0 0 64px rgba(34,158,217,.4)}
-.btn:hover::after{transform:translateX(120%)}
-.btn:active{transform:translateY(0) scale(.98)}
-.btn.sec{color:var(--texto);background:transparent;border-color:var(--linha-forte);box-shadow:none}
-.btn.sec:hover{color:#fff;border-color:var(--azul-neon);background:rgba(60,200,255,.1);box-shadow:var(--glow)}
+.sobe{animation:sobe .55s var(--curva) both}
+.rev{opacity:0;transform:translateY(14px);transition:opacity .55s var(--curva),transform .55s var(--curva)}
+.rev.vis{opacity:1;transform:none}
+.sem-js .rev{opacity:1;transform:none}
+.press{transition:transform .15s var(--curva),box-shadow .2s,background .2s,color .2s,border-color .2s;cursor:pointer}
+.press:active{transform:scale(.96)}
+.lift{transition:transform .25s var(--curva),box-shadow .25s}
+.lift:hover{transform:translateY(-4px);box-shadow:0 16px 28px -14px rgba(14,34,51,.45)}
 
-/* ---------- Seções ---------- */
-section{padding:56px 0 8px}
-.rotulo{font:600 .8rem var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--azul-neon);margin-bottom:8px}
-.rotulo::before{content:"// ";color:var(--verde)}
-h2{font:800 clamp(1.6rem,4vw,2.3rem)/1.15 var(--sans);margin:0 0 12px;letter-spacing:-.01em}
-.lead{color:var(--apoio);max-width:64ch;margin:0 0 24px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
-.card{position:relative;background:linear-gradient(160deg,rgba(14,34,51,.92),rgba(11,31,48,.92));border:1px solid var(--linha);border-radius:16px;padding:20px;transition:transform .25s,border-color .25s,box-shadow .25s;overflow:hidden}
-.card::before{content:"";position:absolute;left:0;top:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--azul-neon),transparent);opacity:0;transition:opacity .25s}
-.card:hover{transform:translateY(-5px);border-color:var(--azul-neon);box-shadow:var(--glow)}
-.card:hover::before{opacity:1}
-.card h3{margin:0 0 8px;font-size:1.08rem}
-.card ul{margin:0;padding-left:1.1rem;color:var(--apoio)}
-.card li{margin:4px 0}
-.num{font:800 2.4rem/1.1 var(--mono);color:var(--azul-neon);text-shadow:0 0 18px rgba(60,200,255,.5)}
-.leg{color:var(--apoio);font-size:.9rem}
-.aviso{border:1px solid rgba(255,200,87,.4);background:var(--ambar-s);color:#FFE3A6;padding:14px 18px;border-radius:12px;margin-top:18px}
-.aviso strong{color:#fff}
+/* ---------- hero ---------- */
+.hero{position:relative;background:var(--hero);color:#fff;padding:22px 0 96px;overflow:hidden}
+.hero .b1{position:absolute;top:-110px;right:-80px;width:360px;height:360px;border-radius:50%;background:#2AABEE;filter:blur(34px);animation:brilho 6s ease-in-out infinite}
+.hero .b2{position:absolute;top:210px;left:-70px;width:190px;height:190px;border-radius:50%;background:rgba(255,255,255,.12);animation:flutua 5s ease-in-out infinite}
+.hero .b3{position:absolute;bottom:40px;right:12%;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.1);animation:flutua 7s ease-in-out infinite reverse}
+.topo{display:flex;align-items:center;justify-content:space-between;gap:12px;position:relative}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;letter-spacing:-.01em;color:#fff;text-decoration:none}
+.logo span.q{width:40px;height:40px;border-radius:14px;background:#fff;color:var(--acao);display:grid;place-items:center}
+.vidro{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#fff;background:var(--vidro);border:1px solid var(--vidro-borda);border-radius:999px;padding:6px 12px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.hero h1{position:relative;margin:34px 0 0;max-width:15ch;font-size:clamp(2.4rem,7vw,4.2rem);line-height:1.04;font-weight:800;letter-spacing:-.03em}
+.hero .sub{position:relative;max-width:52ch;margin:16px 0 0;font-size:clamp(1.05rem,2.2vw,1.25rem);font-weight:500;color:#fff}
+.hero .sub strong{font-weight:800}
+.acoes{position:relative;display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border-radius:999px;font-weight:700;font-size:16px;text-decoration:none;border:2px solid transparent}
+.btn.claro{background:#fff;color:var(--acao);box-shadow:var(--sombra-alta)}
+.btn.claro:hover{transform:translateY(-3px);color:var(--acao)}
+.btn.vid{background:var(--vidro);color:#fff;border-color:var(--vidro-borda);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.btn.vid:hover{background:rgba(8,40,70,.55);color:#fff;transform:translateY(-3px)}
+.btn.sol{background:var(--acao);color:#fff}
+.btn.sol:hover{background:#0F5C93;color:#fff;transform:translateY(-3px)}
+.btn.ctr{background:#fff;color:var(--texto);border-color:var(--borda)}
+.btn.ctr:hover{border-color:var(--acao);color:var(--acao);transform:translateY(-3px)}
+.chips-hero{position:relative;display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+.chips-hero .vidro b{font-size:15px}
 
-/* ---------- Vitrine (abas) ---------- */
-.janela{background:var(--painel);border:1px solid var(--linha-forte);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.45),var(--glow);overflow:hidden}
-.janela-barra{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#0A1A29;border-bottom:1px solid var(--linha)}
-.pt{width:12px;height:12px;border-radius:50%;background:#35526B}
-.pt:nth-child(1){background:var(--coral)}.pt:nth-child(2){background:var(--ambar)}.pt:nth-child(3){background:var(--verde)}
-.janela-titulo{margin-left:8px;font:400 .82rem var(--mono);color:var(--apoio)}
-[role=tablist]{display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap}
-[role=tab]{font:600 .95rem var(--mono);color:var(--apoio);background:transparent;border:1px solid var(--linha-forte);border-radius:10px;min-height:44px;padding:0 18px;cursor:pointer;transition:all .2s}
-[role=tab]:hover{color:#fff;border-color:var(--azul-neon)}
-[role=tab][aria-selected="true"]{color:var(--noite);background:var(--azul-neon);border-color:var(--azul-neon);box-shadow:var(--glow)}
-[role=tabpanel][hidden]{display:none}
-[role=tabpanel]{animation:entra .4s ease}
-@keyframes entra{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+/* ---------- folha ---------- */
+.folha{position:relative;margin-top:-46px;background:var(--fundo);border-radius:34px 34px 0 0;padding-top:10px;animation:folha .6s var(--curva) .1s both}
+.nav{position:sticky;top:12px;z-index:30;margin:-34px auto 0;width:max-content;max-width:calc(100% - 24px);background:var(--noite);border-radius:26px;box-shadow:var(--sombra-alta);padding:8px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{flex:none;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:18px;color:#9DB8CC;text-decoration:none;font-size:14px;font-weight:700;transition:background .2s,color .2s,transform .15s}
+.nav a:hover{color:#fff;background:rgba(255,255,255,.1)}
+.nav a[aria-current="true"]{background:#fff;color:var(--texto)}
+.nav a:active{transform:scale(.96)}
+.visao{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;margin:22px 0 0;font-size:14px;color:var(--apoio);font-weight:600}
+.seg{display:inline-flex;background:var(--sup);border:1.5px solid var(--borda);border-radius:999px;padding:3px}
+.seg button{min-height:44px;padding:0 16px;border:0;border-radius:999px;background:transparent;color:var(--texto);font-weight:700;font-size:14px;cursor:pointer;transition:background .2s,color .2s,transform .15s}
+.seg button:active{transform:scale(.96)}
+.seg button[aria-pressed="true"]{background:var(--acao);color:#fff}
+.seg button[aria-pressed="true"]::before{content:"✓ "}
 
-.term{padding:16px;font:400 .88rem/1.5 var(--mono);color:#CFE7F5;min-height:420px;max-height:520px;overflow:auto;white-space:pre-wrap;word-break:break-word;background:#050F18}
-.term .p{color:var(--verde)}.term .d{color:var(--apoio)}.term .t{color:var(--azul-neon);font-weight:600}.term .at{color:var(--ambar)}.term .f{color:var(--verde)}
-.presets{display:flex;flex-wrap:wrap;gap:8px;padding:12px 14px;border-top:1px solid var(--linha);background:#0A1A29}
-.chip{font:600 .82rem var(--mono);color:var(--texto);background:rgba(60,200,255,.08);border:1px solid var(--linha-forte);border-radius:999px;min-height:44px;padding:0 14px;cursor:pointer;transition:all .2s}
-.chip:hover{border-color:var(--azul-neon);box-shadow:var(--glow);transform:translateY(-2px)}
+body[data-visao="simples"] [data-nivel="tecnico"]{display:none!important}
+body[data-visao="tecnico"] [data-nivel="simples"]{display:none!important}
 
-.cofre{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:0}
-@media (max-width:760px){.cofre{grid-template-columns:1fr}}
-.cofre-lado{padding:24px;border-right:1px solid var(--linha);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;background:radial-gradient(circle at 50% 30%,rgba(34,158,217,.14),transparent 70%)}
-@media (max-width:760px){.cofre-lado{border-right:0;border-bottom:1px solid var(--linha)}}
-.cadeado{width:96px;height:96px;filter:drop-shadow(0 0 14px rgba(60,200,255,.6));transition:filter .3s}
-.cadeado .arco{transform-origin:30px 26px;transition:transform .5s cubic-bezier(.3,1.4,.5,1)}
-.cofre.aberto .cadeado{filter:drop-shadow(0 0 16px rgba(61,245,176,.7))}
-.cofre.aberto .cadeado .arco{transform:translate(0,-10px) rotate(-22deg)}
-.cofre.aberto .cadeado .corpo{stroke:var(--verde)}
-.cofre.aberto .cadeado .arco{stroke:var(--verde)}
-.estado{font:600 .85rem var(--mono);padding:4px 12px;border-radius:999px;border:1px solid var(--coral);color:var(--coral);background:var(--coral-s)}
-.cofre.aberto .estado{border-color:var(--verde);color:var(--verde);background:var(--verde-s)}
-.relogio{font:800 2.2rem var(--mono);color:#fff;letter-spacing:.04em}
-.relogio small{display:block;font:400 .78rem var(--mono);color:var(--apoio);letter-spacing:0}
-.trilho{width:100%;max-width:240px;height:6px;border-radius:99px;background:var(--linha);overflow:hidden}
-.trilho i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--azul),var(--verde));box-shadow:var(--glow-verde);transition:width 1s linear}
-.cofre-corpo{padding:20px 22px}
-.cofre-corpo h3{margin:0 0 4px;font-size:1.05rem}
-.docs{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:8px}
-.docs li{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--linha);border-radius:10px;background:rgba(5,15,24,.6);font:400 .85rem var(--mono);transition:all .3s;min-height:48px}
-.docs .ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:rgba(60,200,255,.12);color:var(--azul-neon);flex:none}
-.docs .nome{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.docs .cifra{color:var(--apoio);filter:blur(3.5px);transition:filter .4s;user-select:none}
-.docs .claro{display:none;color:#fff}
-.cofre.aberto .docs .cifra{display:none}
-.cofre.aberto .docs .claro{display:inline}
-.cofre.aberto .docs li{border-color:rgba(61,245,176,.35)}
-.fichas{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-.ficha{font:600 .75rem var(--mono);color:var(--verde);border:1px solid rgba(61,245,176,.35);background:rgba(61,245,176,.07);border-radius:6px;padding:3px 8px}
-.cofre-acoes{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
-.btn-peq{font:600 .9rem var(--mono);min-height:44px;padding:0 18px;border-radius:10px;cursor:pointer;border:1px solid var(--azul-neon);background:var(--azul-neon);color:var(--noite);transition:all .2s}
-.btn-peq:hover{box-shadow:var(--glow);transform:translateY(-2px)}
-.btn-peq.sec{background:transparent;color:var(--texto);border-color:var(--linha-forte)}
-.nota-demo{font-size:.82rem;color:var(--apoio);margin-top:12px}
+section.sec{padding:56px 0 6px}
+.rot{display:inline-flex;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--acao);background:var(--azul-suave);padding:5px 12px;border-radius:999px;margin-bottom:10px}
+h2{margin:0 0 8px;font-size:clamp(1.7rem,4vw,2.3rem);line-height:1.1;font-weight:800;letter-spacing:-.03em}
+h3{margin:0 0 6px;font-size:18px;font-weight:800;letter-spacing:-.01em}
+.lead{max-width:68ch;margin:0 0 22px;color:var(--apoio);font-size:17px}
+.grade{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.cartao{background:var(--sup);border-radius:22px;box-shadow:var(--sombra);padding:20px}
+.cartao p{margin:0;color:var(--apoio)}
+.cartao ul{margin:8px 0 0;padding-left:1.1rem;color:var(--apoio)}
+.cartao li{margin:4px 0}
+.ic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;margin-bottom:12px;background:var(--azul-suave);color:var(--acao)}
+.ic.t{background:var(--teal-s);color:var(--teal)}.ic.c{background:var(--coral-s);color:var(--coral)}.ic.v{background:var(--verde-s);color:var(--verde)}
+.aviso{display:flex;gap:12px;align-items:flex-start;background:var(--coral-s);color:var(--atencao);border-radius:18px;padding:14px 16px;margin-top:16px;font-weight:600}
+.aviso b{font-weight:800}
+.nota{font-size:14px;color:var(--apoio);margin:10px 0 0}
+code{font:500 .88em var(--mono);background:var(--azul-suave);color:var(--texto);padding:1px 6px;border-radius:6px}
 
-/* ---------- Métricas ---------- */
-.metricas{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
-.metrica h3{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.metrica h3 span{font:600 .75rem var(--mono);color:var(--apoio);font-weight:400}
-.valor{font:800 2.1rem/1 var(--mono);color:#fff;margin:6px 0 14px}
-.valor small{font:400 .9rem var(--mono);color:var(--apoio)}
-.barra{margin:10px 0}
-.barra-topo{display:flex;justify-content:space-between;font:400 .8rem var(--mono);color:var(--apoio);margin-bottom:5px;gap:8px}
-.barra-topo b{color:var(--texto);font-weight:600}
-.fio{height:10px;border-radius:99px;background:#0A1A29;border:1px solid var(--linha);overflow:hidden}
-.fio i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--azul),var(--azul-neon));box-shadow:var(--glow);transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
-.fio i.v{background:linear-gradient(90deg,#16b985,var(--verde));box-shadow:var(--glow-verde)}
-.fio i.a{background:linear-gradient(90deg,#e0a52e,var(--ambar))}
-.rodape-metrica{font-size:.8rem;color:var(--apoio);margin-top:12px}
+/* números */
+.nums{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:18px}
+.nums .cartao{text-align:left}
+.nums .n{font-size:2.6rem;font-weight:800;letter-spacing:-.04em;color:var(--acao);line-height:1.05}
 
-/* ---------- Tabela de status ---------- */
-.tabela{overflow-x:auto;border:1px solid var(--linha);border-radius:14px;background:rgba(14,34,51,.8)}
-table{width:100%;border-collapse:collapse;min-width:640px}
-th,td{padding:12px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--linha)}
-th{font:600 .75rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--apoio);background:#0A1A29}
+/* passos */
+.passos{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));counter-reset:p}
+.passo{position:relative;text-align:left;border:2px solid transparent;background:var(--sup);border-radius:22px;box-shadow:var(--sombra);padding:18px;cursor:pointer;color:var(--texto);font:inherit;transition:transform .25s var(--curva),border-color .25s}
+.passo:hover{transform:translateY(-3px)}
+.passo .nb{width:34px;height:34px;border-radius:50%;background:var(--azul-suave);color:var(--acao);font-weight:800;display:grid;place-items:center;margin-bottom:10px;transition:background .25s,color .25s,transform .4s var(--pop)}
+.passo[aria-pressed="true"]{border-color:var(--acao)}
+.passo[aria-pressed="true"] .nb{background:var(--acao);color:#fff;transform:scale(1.12)}
+.passo b{display:block;font-size:17px;font-weight:800}
+.passo span.d{display:block;color:var(--apoio);font-size:15px;margin-top:4px}
+.detalhe{margin-top:14px;background:var(--sup);border-radius:22px;box-shadow:var(--sombra);padding:20px;min-height:96px}
+.detalhe .tec{margin-top:10px;padding:12px 14px;border-radius:14px;background:var(--azul-suave);font-size:15px}
+.saidas{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:16px}
+.saida{border-radius:22px;padding:18px;background:var(--sup);box-shadow:var(--sombra);border-top:6px solid var(--acao)}
+.saida.v{border-color:var(--verde)}.saida.a{border-color:#C98A00}.saida.c{border-color:var(--coral)}.saida.p{border-color:var(--apoio)}
+.saida small{display:block;font:500 12px var(--mono);color:var(--apoio);margin-bottom:6px}
+table{width:100%;border-collapse:collapse}
+.tab{overflow-x:auto;background:var(--sup);border-radius:22px;box-shadow:var(--sombra)}
+.tab table{min-width:620px}
+th,td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--linha)}
+th{font-size:13px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--apoio);background:#F7FBFE}
 tr:last-child td{border-bottom:0}
 tbody tr{transition:background .2s}
-tbody tr:hover{background:rgba(60,200,255,.06)}
-.selo{display:inline-block;font:600 .75rem var(--mono);padding:3px 10px;border-radius:999px;border:1px solid;white-space:nowrap}
-.ok{color:var(--verde);border-color:rgba(61,245,176,.5);background:var(--verde-s)}
-.parc{color:var(--ambar);border-color:rgba(255,200,87,.5);background:var(--ambar-s)}
-.pend{color:var(--coral);border-color:rgba(255,122,89,.5);background:var(--coral-s)}
-code{font:400 .88em var(--mono);background:#0A1A29;border:1px solid var(--linha);padding:1px 6px;border-radius:6px;color:#CFE7F5}
-.bloco{position:relative;background:#050F18;border:1px solid var(--linha-forte);border-radius:12px;padding:16px 16px 16px;font:400 .9rem/1.6 var(--mono);overflow-x:auto;color:#CFE7F5}
-.bloco .p{color:var(--verde)}
-.copiar{position:absolute;right:10px;top:10px;font:600 .75rem var(--mono);min-height:44px;min-width:44px;border-radius:8px;cursor:pointer;color:var(--texto);background:rgba(60,200,255,.1);border:1px solid var(--linha-forte)}
-.copiar:hover{border-color:var(--azul-neon);box-shadow:var(--glow)}
-.lista{margin:0;padding-left:1.1rem;color:var(--apoio)}
-.lista li{margin:6px 0}
-footer{margin-top:64px;padding:28px 0 56px;border-top:1px solid var(--linha);color:var(--apoio);font-size:.9rem;position:relative;z-index:2}
+tbody tr:hover{background:#F2F8FC}
+.karn{width:auto;margin:10px 0;font:500 14px var(--mono)}
+.karn td,.karn th{padding:8px 14px;text-align:center;border:1px solid var(--linha)}
+.karn td.r{background:var(--verde-s);color:var(--verde-t);font-weight:700}
+.karn td.e{background:var(--azul-suave)}
+.karn td.s{background:var(--coral-s);color:var(--atencao)}
+.karn td.i{background:#EEF2F5;color:var(--apoio)}
 
-/* ---------- Revelar ao rolar ---------- */
-.rev{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
-.rev.vis{opacity:1;transform:none}
-.rev.d1{transition-delay:.08s}.rev.d2{transition-delay:.16s}.rev.d3{transition-delay:.24s}.rev.d4{transition-delay:.32s}
-.sem-js .rev{opacity:1;transform:none}
+/* abas */
+.abas{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.abas [role=tab]{min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--borda);background:var(--sup);color:var(--texto);font-weight:700;font-size:15px;cursor:pointer;transition:all .2s var(--curva)}
+.abas [role=tab]:hover{border-color:var(--acao);transform:translateY(-2px)}
+.abas [role=tab]:active{transform:scale(.96)}
+.abas [role=tab][aria-selected="true"]{background:var(--acao);border-color:var(--acao);color:#fff}
+.abas [role=tab][aria-selected="true"]::before{content:"✓ "}
+[role=tabpanel][hidden]{display:none}
+.tela-grid{display:grid;gap:28px;grid-template-columns:minmax(0,360px) minmax(0,1fr);align-items:start}
+@media (max-width:820px){.tela-grid{grid-template-columns:1fr;justify-items:center}.tela-grid .explica{width:100%}}
+.explica h3{font-size:22px}
+.explica .cartao{margin-top:12px}
+.etq{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.etq span{font-size:13px;font-weight:700;border-radius:999px;padding:5px 12px;background:var(--azul-suave);color:var(--acao)}
+.replay{margin-top:14px}
 
-@media (prefers-reduced-motion: reduce){
+/* moldura de celular e telas */
+.fone{position:relative;width:340px;max-width:100%;height:690px;border-radius:40px;overflow:hidden;background:var(--hero);box-shadow:0 30px 60px -24px rgba(6,24,40,.55),0 0 0 9px #0E2233;isolation:isolate}
+.fone .g1{position:absolute;top:-80px;right:-60px;width:260px;height:260px;border-radius:50%;background:#2AABEE;filter:blur(26px);animation:brilho 6s ease-in-out infinite}
+.fone .g2{position:absolute;top:140px;left:-50px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.12);animation:flutua 5s ease-in-out infinite}
+.f-in{position:relative;padding:22px 18px 0;color:#fff}
+.f-top{display:flex;align-items:center;justify-content:space-between}
+.f-logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
+.f-logo span.q{width:34px;height:34px;border-radius:12px;background:#fff;color:var(--acao);display:grid;place-items:center}
+.f-logo .i{width:19px;height:19px}
+.f-h1{margin:20px 0 0;font-size:30px;line-height:1.08;font-weight:800;letter-spacing:-.03em}
+.f-sub{margin:8px 0 0;font-size:15px;font-weight:500}
+.f-folha{position:absolute;left:0;right:0;bottom:0;background:var(--fundo);border-radius:30px 30px 0 0;padding:18px 16px 96px;color:var(--texto);display:flex;flex-direction:column;gap:12px;overflow:hidden}
+.f-nav{position:absolute;left:16px;right:16px;bottom:16px;height:62px;border-radius:24px;background:var(--noite);display:flex;align-items:center;justify-content:space-around;padding:0 8px;box-shadow:var(--sombra-alta);z-index:3}
+.f-nav span{min-width:44px;height:44px;border-radius:16px;display:grid;place-items:center;color:#9DB8CC}
+.f-nav span.on{background:#fff;color:var(--texto);display:flex;gap:6px;padding:0 14px;font-size:13px;font-weight:700;align-items:center;justify-content:center}
+.f-nav .i{width:20px;height:20px}
+.f-campo{display:flex;align-items:center;gap:8px;background:#fff;border-radius:20px;padding:5px 5px 5px 16px;box-shadow:0 14px 30px -14px rgba(6,40,70,.6);margin-top:16px;color:var(--texto)}
+.f-campo span.t{flex:1;font-size:14px;color:var(--apoio);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.f-campo .go{width:42px;height:42px;border-radius:14px;background:var(--acao);color:#fff;display:grid;place-items:center}
+.f-chips{display:flex;gap:8px;align-items:center;overflow:hidden}
+.f-chips small{font-size:12px;font-weight:700;color:var(--apoio);flex:none}
+.chip{flex:none;min-height:44px;border:1.5px solid #7C98AD;background:#fff;color:var(--texto);border-radius:999px;padding:0 14px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s var(--curva);display:inline-flex;align-items:center;gap:6px}
+.chip:active{transform:scale(.96)}
+.chip:hover{border-color:var(--acao)}
+.chip[aria-pressed="true"]{background:var(--acao);border-color:var(--acao);color:#fff}
+.chip[aria-pressed="true"]::before{content:"✓"}
+.f-temas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.f-tema{background:#fff;border-radius:20px;padding:12px 10px;min-height:96px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:var(--sombra);font-size:13px;font-weight:700;line-height:1.2}
+.f-tema span{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:var(--azul-suave);color:var(--acao)}
+.f-tema span.t{background:var(--teal-s);color:var(--teal)}.f-tema span.c{background:var(--coral-s);color:var(--coral)}
+.f-tema .i{width:19px;height:19px}
+.f-card{background:#fff;border-radius:20px;box-shadow:var(--sombra);padding:12px 14px;display:flex;gap:12px;align-items:center;font-size:13px;color:var(--apoio)}
+.f-card b{color:var(--texto)}
+.selo{display:inline-flex;align-items:center;gap:8px;background:var(--verde-s);color:var(--verde-t);font-weight:800;font-size:13px;border-radius:999px;padding:6px 12px 6px 8px}
+.selo svg{width:22px;height:22px;border-radius:50%;background:var(--verde);padding:3px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.selo svg path{stroke-dasharray:24;stroke-dashoffset:24}
+.anim .selo{animation:pop .5s var(--pop) .5s both}
+.anim .selo svg path{animation:traca .5s ease .8s both}
+.passo-l{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.4}
+.passo-l i{flex:none;width:26px;height:26px;border-radius:50%;background:var(--acao);color:#fff;font:800 12px var(--sans);display:grid;place-items:center;font-style:normal}
+.f-aten{background:var(--coral-s);color:var(--atencao);border-radius:16px;padding:10px 12px;font-size:13px}
+.f-rel{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:16px;padding:10px 12px;font-size:13px;font-weight:700;box-shadow:var(--sombra)}
+.f-rel em{font-style:normal;color:var(--link)}
+.anim .u1,.anim .u2,.anim .u3,.anim .u4,.anim .u5{animation:sobe .55s var(--curva) both}
+.anim .u1{animation-delay:.1s}.anim .u2{animation-delay:.25s}.anim .u3{animation-delay:.4s}.anim .u4{animation-delay:.55s}.anim .u5{animation-delay:.7s}
+.f-btn{border:0;border-radius:999px;min-height:44px;padding:0 18px;font-weight:700;font-size:13px;cursor:pointer;background:var(--acao);color:#fff}
+.f-btn.sec{background:#fff;color:var(--texto);border:1.5px solid var(--borda)}
+.f-btn.pg{background:#fff;color:var(--perigo);border:1.5px solid var(--perigo)}
+.f-doc{display:flex;align-items:center;gap:10px;background:#fff;border-radius:18px;padding:10px 12px;box-shadow:var(--sombra);font-size:13px}
+.f-doc .ic{width:36px;height:36px;border-radius:12px;margin:0}
+.f-doc small{display:block;color:var(--apoio)}
+.f-doc em{margin-left:auto;font-style:normal;font-size:11px;font-weight:800;background:var(--azul-suave);color:var(--acao);border-radius:999px;padding:2px 8px}
+.f-status{display:flex;align-items:center;gap:10px;background:var(--verde-s);color:var(--verde-t);border-radius:18px;padding:10px 12px;font-size:13px;font-weight:700}
+.f-status.fechado{background:var(--coral-s);color:var(--atencao)}
+.f-in2{display:block;width:100%;min-height:44px;border:1.5px solid var(--borda);border-radius:14px;padding:0 12px;font-size:14px;background:#fff;color:var(--texto)}
+.f-tar{display:flex;align-items:center;gap:10px;background:#fff;border-radius:18px;padding:10px 12px;box-shadow:var(--sombra);font-size:13px}
+.f-tar .ck{width:26px;height:26px;border-radius:50%;border:2px solid var(--acao);flex:none}
+.f-tar .ck.ok{background:var(--verde);border-color:var(--verde)}
+.f-tar small{display:block;color:var(--apoio)}
+.f-sub2{font-size:13px;font-weight:800;color:var(--apoio);letter-spacing:.04em;text-transform:uppercase;margin:2px 0 -4px}
+
+/* Telegram */
+.tg{background:#DCE9F2;position:absolute;inset:0;display:flex;flex-direction:column}
+.tg-top{background:#229ED9;color:#fff;display:flex;align-items:center;gap:10px;padding:14px 14px}
+.tg-top img{width:40px;height:40px;border-radius:50%;background:#fff}
+.tg-top b{display:block;font-size:15px}.tg-top small{opacity:.9;font-size:12px}
+.tg-msgs{flex:1;padding:12px;display:flex;flex-direction:column;gap:8px;overflow:hidden;font-size:13.5px;line-height:1.4}
+.bolha{max-width:86%;padding:8px 12px;border-radius:16px;box-shadow:0 1px 2px rgba(14,34,51,.18)}
+.bolha.eu{align-self:flex-end;background:#DDF3EA;border-bottom-right-radius:4px}
+.bolha.bot{align-self:flex-start;background:#fff;border-bottom-left-radius:4px}
+.bolha b{font-weight:800}
+.bolha .f{color:var(--verde-t);font-weight:700}
+.bolha .a{color:var(--coral);font-weight:700}
+.tg-bt{display:flex;flex-direction:column;gap:5px;align-self:flex-start;width:86%}
+.tg-bt span{background:rgba(14,34,51,.55);color:#fff;border-radius:10px;padding:8px;text-align:center;font-size:12.5px;font-weight:600}
+.tg-in{background:#fff;padding:10px 12px;color:var(--apoio);font-size:13px;display:flex;justify-content:space-between}
+.anim .tg-msgs>*{animation:sobe .5s var(--curva) both}
+.anim .tg-msgs>*:nth-child(1){animation-delay:.1s}.anim .tg-msgs>*:nth-child(2){animation-delay:.6s}.anim .tg-msgs>*:nth-child(3){animation-delay:1.1s}.anim .tg-msgs>*:nth-child(4){animation-delay:1.6s}.anim .tg-msgs>*:nth-child(5){animation-delay:2.1s}
+
+/* Terminal */
+.term{width:100%;max-width:640px;background:#0B1622;border-radius:18px;overflow:hidden;font:400 13px/20px var(--mono);color:#E6F1F8;box-shadow:0 30px 60px -24px rgba(6,24,40,.55)}
+.term-top{height:40px;background:#0F2030;display:flex;align-items:center;gap:8px;padding:0 16px;border-bottom:1px solid #1C3347}
+.term-top i{width:12px;height:12px;border-radius:50%}
+.term-top span{margin-left:10px;color:#8FA9BD;font-size:12px}
+.term-corpo{padding:14px 18px;min-height:420px;white-space:pre-wrap;word-break:break-word}
+.term .az{color:#2AABEE}.term .vd{color:#5BD68F}.term .la{color:#FF9B7A}.term .ap{color:#8FA9BD}.term b{font-weight:700}
+.term .l{animation:sobe .35s var(--curva) both}
+.cur{display:inline-block;width:8px;height:15px;background:#2AABEE;vertical-align:-2px;animation:pisca 1s steps(1) infinite}
+
+/* identidade */
+.swatches{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.sw{border:0;text-align:left;background:var(--sup);border-radius:22px;box-shadow:var(--sombra);padding:0;overflow:hidden;cursor:pointer;font:inherit;color:var(--texto)}
+.sw .cor{height:84px}
+.sw .tx{padding:12px 14px}
+.sw b{display:block;font-size:15px;font-weight:800}
+.sw code{display:inline-block;margin:4px 0}
+.sw small{display:block;color:var(--apoio);font-size:13px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,30px);opacity:0;background:var(--noite);color:#fff;font-weight:700;padding:12px 18px;border-radius:999px;box-shadow:var(--sombra-alta);transition:all .3s var(--curva);z-index:60;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.tipo{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.tipo .amostra{font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1.05}
+.tipo .mono{font:500 17px/1.5 var(--mono)}
+.formas{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end}
+.forma{background:var(--sup);box-shadow:var(--sombra);display:grid;place-items:center;text-align:center;font-size:13px;font-weight:700;color:var(--apoio);padding:10px}
+.fazer{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.fazer .sim{border-top:6px solid var(--verde)}.fazer .nao{border-top:6px solid var(--perigo)}
+.mov-demo{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.pop-demo{width:64px;height:64px;border-radius:50%;background:var(--verde-s);display:grid;place-items:center}
+.pop-demo svg{width:34px;height:34px;stroke:var(--verde);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.pop-demo path{stroke-dasharray:24;stroke-dashoffset:24}
+.pop-demo.go{animation:pop .5s var(--pop) both}.pop-demo.go path{animation:traca .5s ease .25s both}
+.baixar{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+
+/* base explorer */
+.filtros{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.ficha-grade{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.ficha{text-align:left;border:2px solid transparent;font:inherit;color:var(--texto);background:var(--sup);border-radius:22px;box-shadow:var(--sombra);padding:16px;cursor:pointer;display:flex;flex-direction:column;gap:8px}
+.ficha[aria-pressed="true"]{border-color:var(--acao)}
+.ficha b{font-size:16px;font-weight:800;line-height:1.25}
+.ficha .m{display:flex;flex-wrap:wrap;gap:6px;font-size:12px;font-weight:700}
+.tag{border-radius:999px;padding:3px 10px;background:var(--azul-suave);color:var(--acao)}
+.tag.t{background:var(--teal-s);color:var(--teal)}.tag.c{background:var(--coral-s);color:var(--coral)}.tag.v{background:var(--verde-s);color:var(--verde-t)}.tag.n{background:#EEF2F5;color:var(--apoio)}
+.ficha-det{margin-top:14px;background:var(--sup);border-radius:22px;box-shadow:var(--sombra);padding:20px}
+.ficha-det[hidden]{display:none}
+.rels{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.caminho{display:grid;gap:12px;grid-template-columns:1fr 1fr auto;align-items:end}
+@media (max-width:640px){.caminho{grid-template-columns:1fr}}
+.campo label{display:block;font-size:14px;font-weight:700;margin-bottom:6px}
+select{width:100%;min-height:44px;border:1.5px solid var(--borda);border-radius:14px;padding:0 12px;font-size:15px;background:#fff;color:var(--texto)}
+.rota{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:16px;min-height:48px}
+.rota .no{background:var(--acao);color:#fff;border-radius:999px;padding:8px 14px;font-weight:700;font-size:14px;animation:pop .45s var(--pop) both}
+.rota .seta{color:var(--apoio);font:700 12px var(--mono);animation:sobe .4s var(--curva) both}
+
+/* arquitetura */
+.arq{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.no-arq{text-align:left;border:2px solid transparent;background:var(--sup);border-radius:20px;box-shadow:var(--sombra);padding:14px;cursor:pointer;font:inherit;color:var(--texto);position:relative}
+.no-arq b{display:block;font-size:15px;font-weight:800}
+.no-arq small{color:var(--apoio);font-size:13px}
+.no-arq[aria-pressed="true"]{border-color:var(--acao)}
+.no-arq.n1{border-bottom:5px solid var(--azul)}.no-arq.n2{border-bottom:5px solid var(--teal)}.no-arq.n3{border-bottom:5px solid var(--verde)}
+.fluxo{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px;font:700 13px var(--mono);color:var(--apoio)}
+.fluxo span.s{color:var(--acao)}
+
+/* métricas */
+.metricas{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.bar{margin:12px 0}
+.bar-t{display:flex;justify-content:space-between;gap:8px;font-size:14px;font-weight:600;margin-bottom:6px}
+.bar-t b{font-family:var(--mono);font-weight:700}
+.fio{height:12px;border-radius:99px;background:var(--azul-suave);overflow:hidden}
+.fio i{display:block;height:100%;width:0;border-radius:99px;background:var(--acao);transition:width 1.2s var(--curva)}
+.fio i.v{background:var(--verde)}.fio i.a{background:#C98A00}
+.valor{font-size:2.2rem;font-weight:800;letter-spacing:-.04em;line-height:1;margin:4px 0 8px}
+.valor small{font-size:.9rem;font-weight:600;color:var(--apoio);letter-spacing:0}
+
+/* status */
+.anel-box{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:16px}
+.anel{position:relative;width:110px;height:110px}
+.anel svg{transform:rotate(-90deg)}
+.anel circle{fill:none;stroke-width:12}
+.anel .fund{stroke:var(--azul-suave)}
+.anel .prog{stroke:var(--verde);stroke-linecap:round;stroke-dasharray:314;stroke-dashoffset:314;transition:stroke-dashoffset 1.3s var(--curva)}
+.anel b{position:absolute;inset:0;display:grid;place-items:center;font-size:24px;font-weight:800}
+.selo2{display:inline-block;font-size:12.5px;font-weight:800;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.s-ok{background:var(--verde-s);color:var(--verde-t)}.s-pa{background:#FFF1D1;color:#6A4A00}.s-pe{background:var(--coral-s);color:var(--atencao)}.s-bl{background:#E8EAF6;color:#2A2F6B}
+.tempo{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:16px}
+.tempo .cartao b{font-size:2.2rem;font-weight:800;color:var(--acao);letter-spacing:-.03em;display:block;line-height:1.1}
+
+/* equipe, faq, docs */
+.avatar{width:52px;height:52px;border-radius:18px;background:var(--hero);color:#fff;font-weight:800;font-size:18px;display:grid;place-items:center;margin-bottom:10px}
+details{background:var(--sup);border-radius:18px;box-shadow:var(--sombra);margin:0 0 10px;overflow:hidden}
+summary{list-style:none;cursor:pointer;min-height:52px;padding:14px 18px;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:22px;color:var(--acao);transition:transform .25s var(--curva);flex:none}
+details[open] summary::after{transform:rotate(45deg)}
+details .resp{padding:0 18px 16px;color:var(--apoio)}
+.links{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.link{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--texto);background:var(--sup);border-radius:22px;box-shadow:var(--sombra);padding:16px}
+.link .ic{margin:0}
+.link b{display:block;font-size:15px}
+.link small{color:var(--apoio);font-size:13px}
+footer{margin-top:64px;background:var(--noite);color:#C9DCEB;padding:34px 0 44px}
+footer a{color:#fff}
+.topo-btn{position:fixed;right:18px;bottom:18px;z-index:40;width:48px;height:48px;border-radius:50%;border:0;background:var(--acao);color:#fff;box-shadow:var(--sombra-alta);cursor:pointer;opacity:0;transform:translateY(12px);pointer-events:none;transition:all .3s var(--curva)}
+.topo-btn.on{opacity:1;transform:none;pointer-events:auto}
+@media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .grade,.cursor,.etiqueta i,body.crt-on .crt::after{animation:none}
-  .glitch.ativo::before,.glitch.ativo::after{animation:none;opacity:0}
-  .rev{opacity:1;transform:none;transition:none}
-  .fio i,.trilho i{transition:none}
-  [role=tabpanel]{animation:none}
-  .btn,.card,.chip,.btn-peq{transition:none}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .rev{opacity:1;transform:none}
+  .selo svg path,.pop-demo path{stroke-dashoffset:0}
 }
-@media (max-width:560px){.hero{padding-top:44px}.crt-btn{padding:0 8px}.marca{font-size:.9rem}}
+@media (max-width:560px){.hero{padding-bottom:84px}.fone{height:700px}}
 </style>
 </head>
-<body class="sem-js">
+<body class="sem-js" data-visao="tudo">
 
-<div class="atmo" aria-hidden="true"><div class="brilho a"></div><div class="brilho b"></div><div class="grade"></div></div>
-<div class="crt" aria-hidden="true"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-lupa" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M8 11l2.2 2.2L14.5 9"/><path d="M20 20l-3.5-3.5"/></symbol>
+  <symbol id="i-seta" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-servico" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/></symbol>
+  <symbol id="i-direito" viewBox="0 0 24 24"><path d="M12 3v18M5 7h14M7 7l-3 7a3 3 0 0 0 6 0zM17 7l-3 7a3 3 0 0 0 6 0z"/></symbol>
+  <symbol id="i-cofre" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 15v2"/></symbol>
+  <symbol id="i-ajustes" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-tarefa" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></symbol>
+  <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+  <symbol id="i-codigo" viewBox="0 0 24 24"><path d="M8 8l-5 4 5 4M16 8l5 4-5 4M14 5l-4 14"/></symbol>
+  <symbol id="i-pessoas" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+  <symbol id="i-baixo" viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></symbol>
+  <symbol id="i-relogio" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-cima" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+</svg>
 
-<header class="topo">
+<header class="hero" id="topo">
+  <div class="b1"></div><div class="b2"></div><div class="b3"></div>
   <div class="wrap">
-    <a class="marca" href="#topo" aria-label="Citizen Assist AI, início">citizen<b>.</b>assist</a>
-    <nav aria-label="Seções">
-      <a href="#como">Como funciona</a><a href="#vitrine">Vitrine</a><a href="#metricas">Métricas</a>
-      <a href="#status">Status</a><a href="#quem">Equipe</a><a href="#rodar">Rodar</a>
-    </nav>
-    <button class="crt-btn" id="crt" type="button" aria-pressed="false" title="Liga ou desliga o efeito de tela CRT (scanlines)">CRT: off</button>
+    <div class="topo sobe">
+      <a class="logo" href="#topo" aria-label="Citizen Assist AI, início"><span class="q"><svg class="i" aria-hidden="true"><use href="#i-lupa"/></svg></span>Citizen Assist</a>
+      <span class="vidro">Não oficial</span>
+    </div>
+    <h1 class="sobe" style="animation-delay:.1s">Orientação cidadã com fonte oficial.</h1>
+    <p class="sub sobe" style="animation-delay:.18s">Tire dúvidas sobre <strong>documentos, serviços públicos e direitos</strong> com respostas simples, sempre com a <strong>fonte</strong> e a <strong>data de verificação</strong>. Sem base suficiente, o assistente avisa e não inventa.</p>
+    <div class="acoes sobe" style="animation-delay:.26s">
+      <a class="btn claro press" href="#telas">Ver as telas e a identidade <svg class="i" aria-hidden="true"><use href="#i-seta"/></svg></a>
+      <a class="btn vid press" href="#como">Como funciona</a>
+      <a class="btn vid press" href="relatorio.pdf">Relatório (PDF)</a>
+      <a class="btn vid press" href="https://github.com/JFrois/GlobalSolution_CitizenTech" target="_blank" rel="noopener noreferrer">GitHub <svg class="i" aria-hidden="true"><use href="#i-ext"/></svg></a>
+    </div>
+    <div class="chips-hero sobe" style="animation-delay:.34s">
+      <span class="vidro"><b data-conta="17">17</b> orientações verificadas</span>
+      <span class="vidro"><b data-conta="256">256</b> testes automatizados</span>
+      <span class="vidro"><b>3</b> interfaces: terminal, Telegram e painel</span>
+    </div>
   </div>
 </header>
 
-<main id="topo">
+<div class="folha">
 <div class="wrap">
 
-  <div class="hero">
-    <span class="etiqueta"><i></i>Global Solution 2026.2 · FIAP · CitizenTech</span>
-    <h1 class="glitch" id="glitch" data-texto="Citizen Assist AI">Citizen Assist AI</h1>
-    <p class="sub">Orientação cidadã sobre documentos, serviços públicos e direitos, <strong>somente com base em registros verificados</strong>, sempre com a fonte oficial e a data de verificação.</p>
-    <p class="sub">Sem base suficiente, o assistente avisa e <strong>não inventa</strong> instruções.</p>
-    <p class="digita" aria-live="off"><span id="digita"></span><span class="cursor" aria-hidden="true"></span></p>
-    <div class="botoes">
-      <a class="btn" href="https://github.com/JFrois/GlobalSolution_CitizenTech">Repositório no GitHub</a>
-      <a class="btn sec" href="relatorio.pdf">Relatório (PDF)</a>
-      <a class="btn sec" href="#vitrine">Ver a vitrine</a>
+  <nav class="nav" id="nav" aria-label="Seções da página">
+    <a href="#projeto">Projeto</a><a href="#como">Como funciona</a><a href="#telas">Telas</a><a href="#identidade">Identidade</a><a href="#base">Orientações</a><a href="#seguranca">Segurança</a><a href="#tecnica">Técnica</a><a href="#qualidade">Resultados</a><a href="#status">Status</a><a href="#equipe">Equipe</a><a href="#faq">Perguntas</a><a href="#docs">Documentos</a>
+  </nav>
+
+  <div class="visao">
+    <span id="visao-rot">Quanto detalhe você quer ver?</span>
+    <div class="seg" role="group" aria-labelledby="visao-rot">
+      <button type="button" data-v="simples" aria-pressed="false">Para todos</button>
+      <button type="button" data-v="tudo" aria-pressed="true">Tudo</button>
+      <button type="button" data-v="tecnico" aria-pressed="false">Técnico</button>
     </div>
   </div>
 
-  <section id="resumo" class="rev">
-    <div class="rotulo">resumo</div>
-    <h2>O projeto em números</h2>
-    <p class="lead">Medidos em 09/11/2026 a partir do repositório (<code>--avaliar</code> e a suíte de testes).</p>
-    <div class="cards">
-      <div class="card rev d1"><div class="num" data-conta="17">0</div><div>orientações verificadas</div><div class="leg">3 temas: documentação, serviços e direitos</div></div>
-      <div class="card rev d2"><div class="num"><span data-conta="19">0</span>/19</div><div>acertos da busca (equipe)</div><div class="leg">Não é medida independente: falta o conjunto do público</div></div>
-      <div class="card rev d3"><div class="num" data-conta="256">0</div><div>testes automatizados</div><div class="leg">CI verde no Python 3.9 e 3.12</div></div>
-      <div class="card rev d4"><div class="num">0</div><div>pacotes externos no núcleo</div><div class="leg">Só a biblioteca padrão do Python 3.9+</div></div>
+  <!-- ===== PROJETO ===== -->
+  <section class="sec rev" id="projeto">
+    <span class="rot">O projeto</span>
+    <h2>Informação pública, sem labirinto</h2>
+    <p class="lead" data-nivel="simples">Quem precisa de um documento ou de um serviço público costuma achar a informação espalhada em vários sites, com palavras difíceis. O Citizen Assist responde em linguagem simples e mostra de onde veio cada informação.</p>
+    <p class="lead" data-nivel="tecnico">Assistente de orientação cidadã não oficial. Duas camadas: um núcleo em Python (biblioteca padrão, Python 3.9+, offline) avaliado pela Global Solution, e uma camada de produto (bot no Telegram, painel web, cofre criptografado, tarefas e resumo da manhã). A resposta nunca é gerada livremente por IA: o conteúdo vem sempre de <code>data/base.json</code>.</p>
+    <div class="grade">
+      <div class="cartao lift"><div class="ic"><svg class="i" aria-hidden="true"><use href="#i-escudo"/></svg></div><h3>O que ele faz</h3><ul><li>Responde dúvidas sobre documentos, serviços e direitos</li><li>Mostra a <b>fonte oficial</b> e a <b>data</b> de cada orientação</li><li>Sugere os próximos assuntos relacionados</li><li>Avisa quando não sabe</li></ul></div>
+      <div class="cartao lift"><div class="ic c"><svg class="i" aria-hidden="true"><use href="#i-direito"/></svg></div><h3>O que ele nunca faz</h3><ul><li>Não se apresenta como canal do governo</li><li>Não inventa passos nem links</li><li>Não pede CPF, RG nem endereço</li><li>Não promete integração com órgãos públicos</li></ul></div>
+      <div class="cartao lift"><div class="ic t"><svg class="i" aria-hidden="true"><use href="#i-pessoas"/></svg></div><h3>Para quem</h3><ul><li>Quem perdeu um documento</li><li>Quem vai pedir um benefício</li><li>Quem quer reclamar de uma empresa</li><li>Quem precisa de ajuda jurídica gratuita</li></ul></div>
     </div>
-    <p class="aviso"><strong>Aviso:</strong> o Citizen Assist AI <strong>não é um canal oficial</strong> de nenhum órgão público. Confirme sempre no site oficial indicado em cada resposta. Demonstrações e testes usam somente documentos fictícios.</p>
+    <div class="nums">
+      <div class="cartao"><div class="n"><span data-conta="17">17</span></div>orientações em 3 temas: documentos, serviços e direitos</div>
+      <div class="cartao"><div class="n"><span data-conta="19">19</span>/19</div>acertos da busca nas perguntas da equipe <span data-nivel="tecnico">(não é medida independente)</span></div>
+      <div class="cartao"><div class="n"><span data-conta="256">256</span></div>testes automatizados passando</div>
+      <div class="cartao"><div class="n">0</div>pacotes externos para rodar o núcleo</div>
+    </div>
+    <p class="aviso"><svg class="i" aria-hidden="true"><use href="#i-escudo"/></svg><span><b>Atenção:</b> o Citizen Assist <b>não é um canal oficial</b> de nenhum órgão público. Confirme sempre no site oficial indicado em cada resposta. Demonstrações e testes usam somente documentos fictícios.</span></p>
   </section>
 
-  <section id="como" class="rev">
-    <div class="rotulo">arquitetura</div>
-    <h2>Como funciona</h2>
-    <p class="lead">Duas camadas. A resposta ao cidadão <strong>nunca</strong> é gerada livremente por IA: o conteúdo vem sempre da base verificada.</p>
-    <div class="cards">
-      <div class="card rev d1"><h3>Núcleo (avaliado pela GS)</h3>
-        <ul><li>Terminal, offline, só Python 3.9+</li><li>Busca por palavras-chave com pontuação e índice invertido</li><li>Grafo de assuntos e Dijkstra</li><li>Dois formatos de resposta</li><li>Trata entrada vazia, ambígua e sem base</li></ul></div>
-      <div class="card rev d2"><h3>Produto (diferencial)</h3>
-        <ul><li>Bot no Telegram (texto, voz, foto, PDF)</li><li>Roteador com Gemini e reserva por regras</li><li>Cofre criptografado (AES-256-GCM)</li><li>Tarefas, lembretes e resumo da manhã</li><li>Painel web / Mini App</li></ul></div>
-      <div class="card rev d3"><h3>Regra de decisão da busca</h3>
-        <ul><li><b>Inválida:</b> pede de novo</li><li><b>Boa correspondência:</b> responde</li><li><b>Empate:</b> escolher entre até 3</li><li><b>Sem base:</b> avisa e aponta o gov.br</li></ul></div>
+  <!-- ===== COMO FUNCIONA ===== -->
+  <section class="sec rev" id="como">
+    <span class="rot">Como funciona</span>
+    <h2>Da pergunta à resposta com fonte</h2>
+    <p class="lead">Toque em cada etapa para ver o que acontece. A etapa avança sozinha enquanto você lê.</p>
+    <div class="passos" id="passos">
+      <button class="passo" type="button" aria-pressed="true"><span class="nb">1</span><b>Você pergunta</b><span class="d">No terminal, no Telegram ou no painel.</span></button>
+      <button class="passo" type="button" aria-pressed="false"><span class="nb">2</span><b>A busca compara</b><span class="d">Com as 17 orientações verificadas.</span></button>
+      <button class="passo" type="button" aria-pressed="false"><span class="nb">3</span><b>A regra decide</b><span class="d">Responde, pergunta, ou avisa.</span></button>
+      <button class="passo" type="button" aria-pressed="false"><span class="nb">4</span><b>Resposta com fonte</b><span class="d">Passos, aviso, fonte, data e próximos assuntos.</span></button>
+    </div>
+    <div class="detalhe" id="passo-det" aria-live="polite"></div>
+
+    <h3 style="margin-top:28px">As quatro saídas possíveis</h3>
+    <div class="saidas">
+      <div class="saida p"><small data-nivel="tecnico">¬C</small><b>Pergunta inválida</b><p class="nota">Vazia ou só símbolos: pede para digitar de novo, com exemplos.</p></div>
+      <div class="saida v"><small data-nivel="tecnico">C · A · B</small><b>Responde</b><p class="nota">Boa correspondência: mostra a orientação com fonte e data.</p></div>
+      <div class="saida a"><small data-nivel="tecnico">C · A · ¬B</small><b>Pede para escolher</b><p class="nota">Dois assuntos parecidos: mostra até 3 candidatos em botões.</p></div>
+      <div class="saida c"><small data-nivel="tecnico">C · ¬A</small><b>Sem base</b><p class="nota">Não encontrou: avisa, não inventa e aponta o gov.br.</p></div>
+    </div>
+
+    <div data-nivel="tecnico" style="margin-top:24px">
+      <h3>Regra de decisão e mapa de Karnaugh</h3>
+      <p class="nota" style="margin-top:0"><b>C</b> = entrada válida · <b>A</b> = melhor pontuação ≥ 3 · <b>B</b> = (1ª − 2ª pontuação) ≥ 2</p>
+      <table class="karn" aria-label="Mapa de Karnaugh da regra de decisão">
+        <tr><th>C \ A B</th><th>00</th><th>01</th><th>11</th><th>10</th></tr>
+        <tr><th>0</th><td class="i">Inválida</td><td class="i">Inválida</td><td class="i">Inválida</td><td class="i">Inválida</td></tr>
+        <tr><th>1</th><td class="s">Sem base</td><td class="s">Sem base</td><td class="r">Responde</td><td class="e">Pedir escolha</td></tr>
+      </table>
+      <div class="grade" style="margin-top:12px">
+        <div class="cartao"><h3>Pontuação</h3><p>Palavra-chave vale 3, pergunta vale 2, orientação vale 1. Expressão completa (ex.: "segunda via") ganha +2. Empate: menor id.</p></div>
+        <div class="cartao"><h3>Índice invertido</h3><p>Mapa palavra → registros, montado na carga. A busca linear fica só para comparar o desempenho.</p></div>
+        <div class="cartao"><h3>Filtros com De Morgan</h3><p><code>not (fora_do_tema or ja_exibido)</code> equivale a <code>(not fora_do_tema) and (not ja_exibido)</code>.</p></div>
+        <div class="cartao"><h3>Grafo e Dijkstra</h3><p>Assuntos relacionados formam um grafo. O Dijkstra acha o caminho mais curto (custo 1 no mesmo tema, 2 entre temas) e ordena as sugestões.</p></div>
+        <div class="cartao"><h3>Correção de digitação</h3><p>Só quando nada casa: palavras com 5+ letras trocadas pela mais parecida (similaridade ≥ 0,8).</p></div>
+        <div class="cartao"><h3>Sinônimos nos dados</h3><p>Ficam no <code>base.json</code>, não no código: a equipe melhora a busca sem mexer nas regras.</p></div>
+      </div>
     </div>
   </section>
 
-  <section id="vitrine" class="rev">
-    <div class="rotulo">showcase</div>
-    <h2>Vitrine das interfaces</h2>
-    <p class="lead">Dois componentes centrais do projeto, em versões ilustrativas e interativas. Os dados são fictícios.</p>
-
-    <div role="tablist" aria-label="Interfaces do projeto">
-      <button role="tab" id="aba-cli" aria-selected="true" aria-controls="p-cli" type="button">Terminal (CLI)</button>
-      <button role="tab" id="aba-cofre" aria-selected="false" aria-controls="p-cofre" type="button" tabindex="-1">Cofre</button>
+  <!-- ===== TELAS ===== -->
+  <section class="sec rev" id="telas">
+    <span class="rot">Como são as telas</span>
+    <h2>Três interfaces, uma identidade</h2>
+    <p class="lead">Veja cada tela do projeto aqui mesmo, sem precisar do GitHub. Elas são fiéis ao protótipo aprovado e usam dados de exemplo. Toque nos elementos para experimentar.</p>
+    <div class="abas" role="tablist" aria-label="Telas do projeto" id="abas-telas">
+      <button role="tab" type="button" id="t-perguntar" aria-controls="p-perguntar" aria-selected="true">Painel: Perguntar</button>
+      <button role="tab" type="button" id="t-resposta" aria-controls="p-resposta" aria-selected="false" tabindex="-1">Painel: Resposta</button>
+      <button role="tab" type="button" id="t-tarefas" aria-controls="p-tarefas" aria-selected="false" tabindex="-1">Painel: Tarefas</button>
+      <button role="tab" type="button" id="t-cofre" aria-controls="p-cofre" aria-selected="false" tabindex="-1">Painel: Cofre</button>
+      <button role="tab" type="button" id="t-ajustes" aria-controls="p-ajustes" aria-selected="false" tabindex="-1">Painel: Ajustes</button>
+      <button role="tab" type="button" id="t-telegram" aria-controls="p-telegram" aria-selected="false" tabindex="-1">Bot no Telegram</button>
+      <button role="tab" type="button" id="t-terminal" aria-controls="p-terminal" aria-selected="false" tabindex="-1">Terminal</button>
     </div>
 
-    <div role="tabpanel" id="p-cli" aria-labelledby="aba-cli">
-      <div class="janela">
-        <div class="janela-barra"><span class="pt"></span><span class="pt"></span><span class="pt"></span><span class="janela-titulo">python src/sistema.py</span></div>
-        <div class="term" id="term" role="log" aria-live="polite" aria-label="Terminal de demonstração"></div>
-        <div class="presets" role="group" aria-label="Perguntas de exemplo">
-          <button class="chip" type="button" data-q="rg">&gt; como tirar a segunda via do RG?</button>
-          <button class="chip" type="button" data-q="ipva">&gt; como pagar o IPVA?</button>
-          <button class="chip" type="button" data-q="limpar">limpar</button>
+    <!-- Perguntar -->
+    <div role="tabpanel" id="p-perguntar" aria-labelledby="t-perguntar">
+      <div class="tela-grid">
+        <div class="fone anim"><div class="g1"></div><div class="g2"></div>
+          <div class="f-in">
+            <div class="f-top u1"><div class="f-logo"><span class="q"><svg class="i" aria-hidden="true"><use href="#i-lupa"/></svg></span>Citizen Assist</div><span class="vidro" style="font-size:12px;padding:4px 10px">Não oficial</span></div>
+            <h4 class="f-h1 u2">Qual a sua<br>dúvida hoje?</h4>
+            <p class="f-sub u3">Respostas simples, sempre com a fonte oficial.</p>
+            <div class="f-campo u4"><span class="t" id="campo-txt">Ex.: como tirar a 2ª via do RG?</span><span class="go"><svg class="i" aria-hidden="true"><use href="#i-seta"/></svg></span></div>
+          </div>
+          <div class="f-folha" style="top:318px">
+            <div class="f-chips u3"><small>Experimente</small><button class="chip" type="button" data-vai="resposta">Título de eleitor</button><button class="chip" type="button" data-vai="resposta">Meu INSS</button></div>
+            <div class="u4"><b style="font-size:16px">Explorar por tema</b></div>
+            <div class="f-temas u4"><div class="f-tema"><span><svg class="i" aria-hidden="true"><use href="#i-doc"/></svg></span>Documentos</div><div class="f-tema"><span class="t"><svg class="i" aria-hidden="true"><use href="#i-servico"/></svg></span>Serviços públicos</div><div class="f-tema"><span class="c"><svg class="i" aria-hidden="true"><use href="#i-direito"/></svg></span>Direitos</div></div>
+            <div class="f-card u5"><span class="ic v" style="width:36px;height:36px;margin:0;border-radius:50%"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg></span><span><b>17 orientações verificadas.</b> Toda resposta mostra a fonte e a data.</span></div>
+          </div>
+          <div class="f-nav"><span class="on"><svg class="i" aria-hidden="true"><use href="#i-lupa"/></svg>Perguntar</span><span><svg class="i" aria-hidden="true"><use href="#i-tarefa"/></svg></span><span><svg class="i" aria-hidden="true"><use href="#i-cofre"/></svg></span><span><svg class="i" aria-hidden="true"><use href="#i-ajustes"/></svg></span></div>
+        </div>
+        <div class="explica">
+          <h3>Perguntar: a porta de entrada</h3>
+          <p class="nota" style="font-size:16px">Primeira aba do painel. O cidadão digita a dúvida, escolhe um exemplo ou explora por tema. Funciona sem cofre e sem senha, e a pergunta não é gravada.</p>
+          <div class="cartao"><h3>O que tem</h3><ul><li>Faixa azul com o título e o campo de pergunta</li><li>Atalhos de exemplo e três temas com ícone colorido</li><li>Barra de navegação flutuante: Perguntar · Tarefas · Cofre · Ajustes</li></ul></div>
+          <div class="etq"><span>Sem login de senha</span><span>Pergunta não gravada</span><span>Conteúdo 100% da base</span></div>
+          <button class="btn ctr press replay" type="button" data-replay>Repetir animação</button>
+          <p class="nota">Dica: toque em "Título de eleitor" dentro do celular.</p>
         </div>
       </div>
-      <p class="nota-demo">Exemplo ilustrativo do formato "passo a passo" (modelo B), com texto resumido a partir do registro DOC-001. No programa, cada resposta traz o assunto, os passos, o aviso, a fonte oficial, a data de verificação e os próximos assuntos.</p>
     </div>
 
-    <div role="tabpanel" id="p-cofre" aria-labelledby="aba-cofre" hidden>
-      <div class="janela">
-        <div class="janela-barra"><span class="pt"></span><span class="pt"></span><span class="pt"></span><span class="janela-titulo">painel · cofre</span></div>
-        <div class="cofre" id="cofre">
-          <div class="cofre-lado">
-            <svg class="cadeado" viewBox="0 0 60 60" fill="none" stroke="#3CC8FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Cadeado do cofre">
-              <path class="arco" d="M18 26 V18 a12 12 0 0 1 24 0 V26"/>
-              <rect class="corpo" x="10" y="26" width="40" height="26" rx="5" fill="rgba(60,200,255,.1)"/>
-              <circle cx="30" cy="38" r="3.5" fill="#3CC8FF" stroke="none"/><path d="M30 41 V46"/>
-            </svg>
-            <span class="estado" id="estado">BLOQUEADO</span>
-            <div class="relogio"><span id="relogio">10:00</span><small>chave só na memória do servidor</small></div>
-            <div class="trilho" aria-hidden="true"><i id="trilho"></i></div>
+    <!-- Resposta -->
+    <div role="tabpanel" id="p-resposta" aria-labelledby="t-resposta" hidden>
+      <div class="tela-grid">
+        <div class="fone anim"><div class="g1"></div><div class="g2"></div>
+          <div class="f-in">
+            <div class="f-top u1"><div class="f-logo"><span class="q"><svg class="i" aria-hidden="true"><use href="#i-lupa"/></svg></span>Citizen Assist</div><span class="vidro" style="font-size:12px;padding:4px 10px">Não oficial</span></div>
+            <p class="u2" style="margin:16px 0 0;font-size:13px;font-weight:700;opacity:.95">Documentação pessoal</p>
+            <h4 class="f-h1 u2" style="margin-top:4px;font-size:26px">2ª via do título de eleitor</h4>
           </div>
-          <div class="cofre-corpo">
-            <h3>Seus documentos</h3>
-            <div class="leg">Cifrados antes de armazenar. A senha é criada só no painel e o servidor não a guarda.</div>
-            <ul class="docs">
-              <li><span class="ic" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></span><span class="nome"><span class="cifra">9fK2xQ7vLm0a…==</span><span class="claro">rg-ficticio.pdf</span></span><span class="leg">AES-GCM</span></li>
-              <li><span class="ic" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></span><span class="nome"><span class="cifra">Zr81pT3cNw5b…==</span><span class="claro">documento-20261109</span></span><span class="leg">AES-GCM</span></li>
-              <li><span class="ic" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></span><span class="nome"><span class="cifra">Qa04uHsB91dE…==</span><span class="claro">comprovante-ficticio.png</span></span><span class="leg">AES-GCM</span></li>
-            </ul>
-            <div class="fichas"><span class="ficha">AES-256-GCM</span><span class="ficha">PBKDF2 · 600 mil iterações</span><span class="ficha">salt por usuário</span><span class="ficha">TTL 10 min</span></div>
-            <div class="cofre-acoes">
-              <button class="btn-peq" id="abrir" type="button">Desbloquear (demo)</button>
-              <button class="btn-peq sec" id="fechar" type="button">Bloquear agora</button>
+          <div class="f-folha" style="top:168px">
+            <div class="u3"><span class="selo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Fonte conferida · tse.jus.br</span><div class="nota" style="font-size:12px;margin-top:6px">verificado em 07/11/2026</div></div>
+            <div class="passo-l u3"><i>1</i><span>Entre no site do atendimento eleitoral e escolha o serviço de segunda via.</span></div>
+            <div class="passo-l u4"><i>2</i><span>Informe os dados pedidos e leve um documento oficial com foto.</span></div>
+            <div class="passo-l u4"><i>3</i><span>Retire a via no local indicado ou siga as instruções na tela.</span></div>
+            <div class="f-aten u5"><b>Atenção:</b> confirme no site oficial antes de ir ao atendimento.</div>
+            <div class="f-sub2 u5">Veja também</div>
+            <div class="f-rel u5">Consultar situação eleitoral <em>Abrir →</em></div>
+            <div class="f-rel u5">Título cancelado <em>Abrir →</em></div>
+          </div>
+          <div class="f-nav"><span class="on"><svg class="i" aria-hidden="true"><use href="#i-lupa"/></svg>Perguntar</span><span><svg class="i" aria-hidden="true"><use href="#i-tarefa"/></svg></span><span><svg class="i" aria-hidden="true"><use href="#i-cofre"/></svg></span><span><svg class="i" aria-hidden="true"><use href="#i-ajustes"/></svg></span></div>
+        </div>
+        <div class="explica">
+          <h3>Resposta e "cena da verificação"</h3>
+          <p class="nota" style="font-size:16px">A resposta entra em cena: título, passos em sequência e o selo <b>Fonte conferida</b> com a data. Texto de exemplo ilustrativo; no produto o conteúdo vem do <code>base.json</code>.</p>
+          <div class="cartao"><h3>Ordem fixa em todas as interfaces</h3><ul><li>Conteúdo (passos)</li><li>Atenção, se for preciso confirmar</li><li>Fonte com data de verificação</li><li>Próximos assuntos para continuar</li><li>Aviso de que não é canal oficial</li></ul></div>
+          <div class="etq"><span>Selo com pop e check desenhado</span><span>Sem animação com "reduzir movimento"</span></div>
+          <button class="btn ctr press replay" type="button" data-replay>Repetir animação</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarefas -->
+    <div role="tabpanel" id="p-tarefas" aria-labelledby="t-tarefas" hidden>
+      <div class="tela-grid">
+        <div class="fone anim"><div class="g1"></div><div class="g2"></div>
+          <div class="f-in"><div class="f-top u1"><div class="f-logo"><span class="q"><svg class="i" aria-hidden="true"><use href="#i-tarefa"/></svg></span>Tarefas</div></div>
+            <h4 class="f-h1 u2" style="font-size:28px">Suas tarefas</h4>
+            <p class="f-sub u3">Anote aqui e eu aviso pelo Telegram na hora marcada.</p></div>
+          <div class="f-folha" style="top:200px">
+            <div class="u3" style="display:grid;gap:8px"><input class="f-in2" value="Pagar a conta de luz" aria-label="Título (exemplo)" readonly><input class="f-in2" value="amanhã às 9h" aria-label="Quando (exemplo)" readonly><button class="f-btn" type="button" style="width:100%">Anotar</button></div>
+            <div class="f-sub2 u4">Pendentes</div>
+            <div class="f-tar u4"><span class="ck"></span><span><b>Pagar a conta de luz</b><small>Aviso em amanhã, 09:00</small></span></div>
+            <div class="f-tar u5"><span class="ck"></span><span><b>Ligar para o INSS</b><small>Sem data: não vai avisar</small></span></div>
+            <div class="f-sub2 u5">Já avisadas</div>
+            <div class="f-tar u5"><span class="ck ok"></span><span><b>Levar o RG ao cartório</b><small>Avisado hoje, 08:00</small></span></div>
+          </div>
+          <div class="f-nav"><span><svg class="i" aria-hidden="true"><use href="#i-lupa"/></svg></span><span class="on"><svg class="i" aria-hidden="true"><use href="#i-tarefa"/></svg>Tarefas</span><span><svg class="i" aria-hidden="true"><use href="#i-cofre"/></svg></span><span><svg class="i" aria-hidden="true"><use href="#i-ajustes"/></svg></span></div>
+        </div>
+        <div class="explica">
+          <h3>Tarefas e lembretes</h3>
+          <p class="nota" style="font-size:16px">Anote uma tarefa com data em texto livre ("amanhã às 9h"). O aviso chega pelo Telegram na hora marcada. A data é lida por regras, sem IA.</p>
+          <div class="cartao"><h3>Detalhes</h3><ul><li>Lembretes já enviados vão para "Já avisadas"</li><li>Tudo filtrado por usuário</li><li>Fuso de Brasília para todos</li><li>Funciona também pelo chat: "me lembra de pagar a luz amanhã às 9h"</li></ul></div>
+          <div class="etq"><span>Testado no Telegram real</span><span>Persiste após reiniciar</span></div>
+          <button class="btn ctr press replay" type="button" data-replay>Repetir animação</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cofre -->
+    <div role="tabpanel" id="p-cofre" aria-labelledby="t-cofre" hidden>
+      <div class="tela-grid">
+        <div class="fone anim" id="fone-cofre"><div class="g1"></div><div class="g2"></div>
+          <div class="f-in"><div class="f-top u1"><div class="f-logo"><span class="q"><svg class="i" aria-hidden="true"><use href="#i-cofre"/></svg></span>Cofre</div></div>
+            <h4 class="f-h1 u2" style="font-size:28px">Seu cofre</h4>
+            <p class="f-sub u3">Só você abre, com a sua senha.</p></div>
+          <div class="f-folha" style="top:200px">
+            <div class="f-status u3" id="cofre-status"><svg class="i" aria-hidden="true"><use href="#i-cofre"/></svg><span id="cofre-txt">Cofre aberto · bloqueia sozinho em <span id="cofre-tempo">10:00</span></span></div>
+            <button class="f-btn sec u3" id="cofre-btn" type="button">Bloquear</button>
+            <div class="f-sub2 u4">Documentos</div>
+            <div class="f-doc u4"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-doc"/></svg></span><span><b>RG (frente)</b><small>Identidade · 10/11/2026</small></span><em>exemplo</em></div>
+            <div class="f-doc u4"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-doc"/></svg></span><span><b>Título de eleitor</b><small>Eleitoral · 10/11/2026</small></span><em>exemplo</em></div>
+            <div class="f-doc u5"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-doc"/></svg></span><span><b>Certidão</b><small>Certidão · 11/11/2026</small></span><em>exemplo</em></div>
+            <p class="nota u5" style="font-size:12px;margin:0">Para guardar outro documento, mande a foto ou o PDF para o bot.</p>
+          </div>
+          <div class="f-nav"><span><svg class="i" aria-hidden="true"><use href="#i-lupa"/></svg></span><span><svg class="i" aria-hidden="true"><use href="#i-tarefa"/></svg></span><span class="on"><svg class="i" aria-hidden="true"><use href="#i-cofre"/></svg>Cofre</span><span><svg class="i" aria-hidden="true"><use href="#i-ajustes"/></svg></span></div>
+        </div>
+        <div class="explica">
+          <h3>Cofre de documentos</h3>
+          <p class="nota" style="font-size:16px">Guarda fotos e PDFs cifrados. A senha é criada só no painel, nunca no chat, e o servidor não a guarda. O cofre fecha sozinho depois de alguns minutos. Toque em "Bloquear" para ver.</p>
+          <div class="cartao"><h3>Como protege</h3><ul><li>Cifrado antes de armazenar</li><li>Contador visível de bloqueio</li><li>Apagar em dois passos, de verdade</li><li>Só documentos fictícios nas demonstrações</li></ul></div>
+          <div class="etq"><span>Estado nunca só pela cor</span><span>Texto sempre visível</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ajustes -->
+    <div role="tabpanel" id="p-ajustes" aria-labelledby="t-ajustes" hidden>
+      <div class="tela-grid">
+        <div class="fone anim"><div class="g1"></div><div class="g2"></div>
+          <div class="f-in"><div class="f-top u1"><div class="f-logo"><span class="q"><svg class="i" aria-hidden="true"><use href="#i-ajustes"/></svg></span>Ajustes</div></div>
+            <h4 class="f-h1 u2" style="font-size:28px">Ajustes</h4>
+            <p class="f-sub u3">Do seu jeito, e só o necessário.</p></div>
+          <div class="f-folha" style="top:190px">
+            <div class="u3"><div class="f-sub2">Seu estado</div><select aria-label="UF (exemplo)" style="margin-top:6px"><option>SP</option><option>RJ</option><option>MG</option></select><p class="nota" style="font-size:12px;margin:4px 0 0">Usado quando o procedimento muda de estado para estado.</p></div>
+            <div class="u4"><div class="f-sub2">Resumo da manhã: temas</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px" id="chips-temas"><button class="chip" type="button" aria-pressed="true">Cultura</button><button class="chip" type="button" aria-pressed="false">Tecnologia</button><button class="chip" type="button" aria-pressed="true">Saúde e bem-estar</button><button class="chip" type="button" aria-pressed="false">Música</button><button class="chip" type="button" aria-pressed="false">Filmes</button></div><p class="nota" style="font-size:12px;margin:6px 0 0">Manchetes: notícias, fonte não oficial.</p></div>
+            <div class="u4"><div class="f-sub2">Horário</div><input class="f-in2" value="07:30" aria-label="Horário (exemplo)" readonly style="margin-top:6px"></div>
+            <button class="f-btn u5" type="button">Salvar</button>
+            <div class="u5" style="border-top:1px solid var(--linha);padding-top:10px"><b style="font-size:13px">Apagar meus dados</b><p class="nota" style="font-size:12px;margin:2px 0 8px">Remove cofre, tarefas e preferências. Não dá para desfazer.</p><button class="f-btn pg" type="button">Apagar</button></div>
+          </div>
+          <div class="f-nav"><span><svg class="i" aria-hidden="true"><use href="#i-lupa"/></svg></span><span><svg class="i" aria-hidden="true"><use href="#i-tarefa"/></svg></span><span><svg class="i" aria-hidden="true"><use href="#i-cofre"/></svg></span><span class="on"><svg class="i" aria-hidden="true"><use href="#i-ajustes"/></svg>Ajustes</span></div>
+        </div>
+        <div class="explica">
+          <h3>Ajustes e privacidade</h3>
+          <p class="nota" style="font-size:16px">O usuário informa só o estado (UF), escolhe os temas das manchetes e o horário do resumo, e pode apagar tudo. Os chips mostram a marca de check, não só a cor. Toque neles.</p>
+          <div class="cartao"><h3>Temas do resumo da manhã</h3><p>Cultura, Tecnologia, Saúde e bem-estar, Música e Filmes. Até 3 manchetes por tema, sempre rotuladas "Notícias — fonte não oficial" e separadas das orientações verificadas.</p></div>
+          <div class="etq"><span>Dados mínimos</span><span>Apagar em dois passos</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Telegram -->
+    <div role="tabpanel" id="p-telegram" aria-labelledby="t-telegram" hidden>
+      <div class="tela-grid">
+        <div class="fone anim" style="background:#DCE9F2">
+          <div class="tg">
+            <div class="tg-top"><img src="design/imagens/avatar-bot.svg" alt="" width="40" height="40"><span><b>Citizen Assist AI</b><small>bot</small></span></div>
+            <div class="tg-msgs">
+              <div class="bolha eu">como tirar a segunda via do título de eleitor?</div>
+              <div class="bolha bot"><b>2ª via do título de eleitor</b><br>1. Entre no site do atendimento eleitoral.<br>2. Informe os dados e leve um documento com foto.<br><span class="a">Atenção:</span> confirme no site oficial antes de ir.<br><span class="f">Fonte:</span> tse.jus.br (verificado em 07/11/2026)</div>
+              <div class="tg-bt"><span>Consultar situação eleitoral</span><span>Título cancelado</span><span>2ª via da identidade</span></div>
+              <div class="bolha eu">me lembra de pagar a luz amanhã às 9h</div>
+              <div class="bolha bot">Anotado: pagar a luz, amanhã às 09:00. Aviso você nessa hora.</div>
             </div>
-            <p class="nota-demo">Demonstração visual sem senha real. No produto, o cofre abre só no painel web e fecha sozinho ao fim do tempo. Senha perdida significa documentos perdidos.</p>
+            <div class="tg-in"><span>Mensagem</span><span>/menu</span></div>
           </div>
+        </div>
+        <div class="explica">
+          <h3>Bot no Telegram</h3>
+          <p class="nota" style="font-size:16px">A conversa acontece no app que a pessoa já usa. As escolhas vêm em botões, o áudio é transcrito e mostrado antes da resposta, e o bot nunca fica mudo.</p>
+          <div class="cartao"><h3>O que o bot entende</h3><ul><li>Texto, voz (Whisper local), foto e PDF</li><li>Comandos <code>/start</code> <code>/menu</code> <code>/localizacao</code> <code>/painel</code> <code>/apagar_meus_dados</code></li><li>Lembretes por texto livre</li><li>Roteador com Gemini e reserva por regras</li></ul></div>
+          <div class="cartao"><h3>Identidade no Telegram</h3><p>Títulos em negrito, avatar com a lente azul, mesmo azul da marca. O avatar é o <code>design/imagens/avatar-bot.png</code>.</p></div>
+          <button class="btn ctr press replay" type="button" data-replay>Repetir conversa</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Terminal -->
+    <div role="tabpanel" id="p-terminal" aria-labelledby="t-terminal" hidden>
+      <div class="tela-grid" style="grid-template-columns:minmax(0,640px) minmax(0,1fr)">
+        <div class="term" aria-label="Terminal de demonstração"><div class="term-top"><i style="background:#FF7A66"></i><i style="background:#FFC857"></i><i style="background:#5BD68F"></i><span>python src/sistema.py</span></div><div class="term-corpo" id="term-corpo" role="log" aria-live="polite"></div></div>
+        <div class="explica">
+          <h3>Terminal (o que a GS avalia)</h3>
+          <p class="nota" style="font-size:16px">Roda offline, só com Python. Digite a pergunta direto no menu. As cores seguem a identidade e, sem terminal (testes, arquivos) ou com <code>--simples</code>, vira texto puro.</p>
+          <div class="cartao"><h3>Detalhes</h3><ul><li>Moldura com caracteres de caixa e cartela azul</li><li>"Fonte:" em verde e "Atenção:" em laranja, sempre escritos</li><li>Linhas de até 80 colunas, sem emoji</li><li><code>Ctrl+C</code> sai sem erro</li></ul></div>
+          <div class="etq"><span>Python 3.9+</span><span>Sem internet</span><span>Sem pip install</span></div>
+          <button class="btn ctr press replay" type="button" data-replay>Repetir</button>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="metricas" class="rev">
-    <div class="rotulo">telemetria</div>
-    <h2>Painel de métricas</h2>
-    <p class="lead">Números reais do núcleo, medidos em 09/11/2026 (Mac do autor, Python 3.14). As barras mostram a proporção de cada medida.</p>
+  <!-- ===== IDENTIDADE ===== -->
+  <section class="sec rev" id="identidade">
+    <span class="rot">Identidade visual</span>
+    <h2>Azul Telegram: calma e confiança</h2>
+    <p class="lead">O mesmo azul do Telegram em painel, bot e terminal, para as três interfaces parecerem um produto só. Faixa azul com o título, folha clara por cima, cartões arredondados e botões em pílula.</p>
+
+    <h3>Cores <span class="nota" style="font-size:13px">(toque para copiar)</span></h3>
+    <div class="swatches" id="swatches">
+      <button class="sw press" type="button" data-hex="#229ED9"><div class="cor" style="background:#229ED9"></div><div class="tx"><b>Azul da marca</b><code>#229ED9</code><small>Decoração e degradê. Nunca texto pequeno.</small></div></button>
+      <button class="sw press" type="button" data-hex="#12689E"><div class="cor" style="background:#12689E"></div><div class="tx"><b>Ação</b><code>#12689E</code><small>Botão principal e item ativo. Branco sobre ele: 6,0:1.</small></div></button>
+      <button class="sw press" type="button" data-hex="#F2F8FC"><div class="cor" style="background:#F2F8FC;border-bottom:1px solid var(--linha)"></div><div class="tx"><b>Folha</b><code>#F2F8FC</code><small>Fundo claro das telas.</small></div></button>
+      <button class="sw press" type="button" data-hex="#0E2233"><div class="cor" style="background:#0E2233"></div><div class="tx"><b>Texto e noite</b><code>#0E2233</code><small>Títulos, texto e barra flutuante. 15:1.</small></div></button>
+      <button class="sw press" type="button" data-hex="#4A6176"><div class="cor" style="background:#4A6176"></div><div class="tx"><b>Apoio</b><code>#4A6176</code><small>Legendas e rótulos. 6:1.</small></div></button>
+      <button class="sw press" type="button" data-hex="#0F7A5A"><div class="cor" style="background:#0F7A5A"></div><div class="tx"><b>Verde "Fonte conferida"</b><code>#0F7A5A</code><small>Selo sobre #DDF3EA.</small></div></button>
+      <button class="sw press" type="button" data-hex="#0A7C73"><div class="cor" style="background:#0A7C73"></div><div class="tx"><b>Teal: Serviços</b><code>#0A7C73</code><small>Tinta do tema Serviços públicos.</small></div></button>
+      <button class="sw press" type="button" data-hex="#B8431F"><div class="cor" style="background:#B8431F"></div><div class="tx"><b>Coral: Direitos</b><code>#B8431F</code><small>Tinta do tema Direitos. Atenção usa #5E1F0B sobre #FDE7DF.</small></div></button>
+    </div>
+    <div class="cartao" style="margin-top:14px;padding:0;overflow:hidden"><div style="height:90px;background:var(--hero)"></div><div style="padding:14px 18px"><b>Degradê do hero</b> <code>#229ED9 → #1676B0 → #0F5C93 (170°)</code> <span class="nota">Texto branco só sobre a parte escura ou sobre o vidro <code>rgba(8,40,70,.38)</code> com blur de 14 px.</span></div></div>
+
+    <h3 style="margin-top:28px">Tipografia</h3>
+    <div class="tipo">
+      <div class="cartao"><div class="amostra">Plus Jakarta Sans</div><p>Em tudo. Títulos em peso 800, espaçamento −0,03 em, 36 px no hero. Texto de no mínimo 16 px com entrelinha 1,5.</p></div>
+      <div class="cartao"><div class="amostra mono" style="font:700 30px/1.2 var(--mono)">JetBrains Mono</div><p class="mono">$ python src/sistema.py</p><p>Só no terminal e em trechos de código. Fontes gratuitas (OFL).</p></div>
+    </div>
+
+    <h3 style="margin-top:28px">Formas e componentes</h3>
+    <div class="formas">
+      <div class="forma" style="width:120px;height:90px;border-radius:22px">Cartão<br>22 px</div>
+      <div class="forma" style="width:90px;height:90px;border-radius:14px">Ícone<br>14 px</div>
+      <div class="forma" style="width:150px;height:90px;border-radius:34px 34px 0 0">Folha<br>34 px no topo</div>
+      <button class="btn sol press" type="button">Botão em pílula</button>
+      <span class="chip" aria-hidden="true" style="min-height:44px">Chip</span>
+      <span class="selo"><svg viewBox="0 0 24 24" aria-hidden="true" style="width:22px;height:22px;padding:3px"><path d="M5 12.5l4.5 4.5L19 7.5" style="stroke-dashoffset:0"/></svg>Fonte conferida</span>
+      <span class="vidro" style="background:#0F5C93">Não oficial</span>
+    </div>
+    <p class="nota">Ícones em grade de 24 px, traço de 2 px e pontas redondas, sempre com texto ao lado ou <code>aria-label</code>. Alvo de toque mínimo de 44 px.</p>
+
+    <h3 style="margin-top:28px">Movimento</h3>
+    <div class="cartao"><p>Só opacidade e escala. Blocos sobem 14 px com fade em 550 ms, em sequência de cerca de 150 ms. A folha sobe 60 px em 600 ms. O selo faz <i>pop</i> e o check é desenhado. O toque reduz a escala a 0,96 em 150 ms. Com "reduzir movimento", tudo aparece pronto.</p>
+      <div class="mov-demo" style="margin-top:14px"><button class="btn sol press" type="button">Toque aqui (escala 0,96)</button><div class="pop-demo go" id="pop-demo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><button class="btn ctr press" type="button" id="pop-replay">Repetir o selo</button></div></div>
+
+    <h3 style="margin-top:28px">Faça e nunca faça</h3>
+    <div class="fazer">
+      <div class="cartao sim"><h3>Faça</h3><ul><li>Mostrar sempre "Não oficial"</li><li>Indicar estado com texto e marca, não só cor</li><li>Texto com contraste mínimo AA</li><li>Linguagem simples e o mesmo vocabulário nas 3 interfaces</li></ul></div>
+      <div class="cartao nao"><h3>Nunca</h3><ul><li>Usar o azul e o amarelo do gov.br, brasão ou bandeira</li><li>Esconder o "não oficial"</li><li>Usar o azul da marca em texto pequeno</li><li>Mostrar ids ou termos técnicos ao cidadão</li></ul></div>
+    </div>
+
+    <h3 style="margin-top:28px">Logo e avatar</h3>
+    <div class="cartao" style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+      <img src="design/imagens/avatar-bot.svg" alt="Avatar do bot: lente azul com sinal de conferido" width="96" height="96" style="border-radius:50%;box-shadow:var(--sombra)">
+      <div style="flex:1;min-width:220px"><b>Lente com sinal de conferido</b><p>Branco sobre o degradê azul (#2AABEE → #1A86C2). O símbolo fica dentro do círculo central, então o recorte redondo do Telegram não corta nada. Mínimos: símbolo 24 px, avatar 40 px, logotipo 140 px.</p></div>
+    </div>
+    <div class="baixar">
+      <a class="btn sol press" href="design/tokens.css" download><svg class="i" aria-hidden="true"><use href="#i-baixo"/></svg>tokens.css</a>
+      <a class="btn ctr press" href="design/tokens.json" download><svg class="i" aria-hidden="true"><use href="#i-baixo"/></svg>tokens.json</a>
+      <a class="btn ctr press" href="design/imagens/avatar-bot.png" download><svg class="i" aria-hidden="true"><use href="#i-baixo"/></svg>avatar-bot.png</a>
+      <a class="btn ctr press" href="design/imagens/avatar-bot.svg" download><svg class="i" aria-hidden="true"><use href="#i-baixo"/></svg>avatar-bot.svg</a>
+    </div>
+  </section>
+
+  <!-- ===== ORIENTAÇÕES (EXPLORADOR) ===== -->
+  <section class="sec rev" id="base">
+    <span class="rot">Base de conhecimento</span>
+    <h2>As 17 orientações verificadas</h2>
+    <p class="lead">Toque em um assunto para ver a fonte, a data e os assuntos relacionados. A página mostra só os títulos; as orientações completas ficam no programa.</p>
+    <div class="filtros" id="filtros-base" role="group" aria-label="Filtrar por tema"></div>
+    <div class="ficha-grade" id="grade-base"></div>
+    <div class="ficha-det" id="det-base" hidden aria-live="polite"></div>
+
+    <div data-nivel="tecnico" style="margin-top:30px">
+      <h3>Caminho entre dois assuntos (Dijkstra)</h3>
+      <p class="nota" style="margin-top:0">O grafo liga os assuntos relacionados (custo 1 no mesmo tema, 2 entre temas). Escolha dois e veja o menor caminho, calculado aqui no navegador com o mesmo algoritmo do projeto.</p>
+      <div class="cartao"><div class="caminho">
+        <div class="campo"><label for="sel-a">De</label><select id="sel-a"></select></div>
+        <div class="campo"><label for="sel-b">Para</label><select id="sel-b"></select></div>
+        <button class="btn sol press" type="button" id="calc">Calcular</button>
+      </div><div class="rota" id="rota" aria-live="polite"></div><p class="nota" id="rota-nota"></p></div>
+    </div>
+  </section>
+
+  <!-- ===== SEGURANÇA ===== -->
+  <section class="sec rev" id="seguranca">
+    <span class="rot">Segurança e privacidade</span>
+    <h2>Dados mínimos, claros e sob seu controle</h2>
+    <p class="lead" data-nivel="simples">O núcleo não guarda nada seu. O cofre é opcional, só guarda o que você enviar, protege com uma senha que só você sabe e pode ser apagado a qualquer momento.</p>
+    <p class="lead" data-nivel="tecnico">Toda consulta a dado de usuário é filtrada por <code>user_id</code> validado (Telegram <code>initData</code> com HMAC). A senha nunca passa pelo chat nem é gravada. Segredos ficam fora do repositório (GitHub Secrets e <code>.env</code> da VM).</p>
+    <div class="grade">
+      <div class="cartao lift"><div class="ic"><svg class="i" aria-hidden="true"><use href="#i-cofre"/></svg></div><h3>Cofre cifrado</h3><p data-nivel="simples">Seus documentos são trancados antes de serem guardados. Se você esquecer a senha, não há como recuperar.</p><ul data-nivel="tecnico"><li>AES-256-GCM, nonce de 96 bits por arquivo</li><li>Chave derivada por PBKDF2-SHA256, 600 mil iterações, salt por usuário</li><li>Verificador de senha: constante cifrada, sem hash reutilizável</li><li>Chave só na memória, TTL de 10 min</li></ul></div>
+      <div class="cartao lift"><div class="ic t"><svg class="i" aria-hidden="true"><use href="#i-relogio"/></svg></div><h3>Autodestruição</h3><p>Mensagens com documentos somem do chat em 5 minutos. Isso limpa o chat, não o seu aparelho.</p><p class="nota" data-nivel="tecnico">Só mensagens com menos de 48 h (limite do Telegram). Jobs persistentes: ao subir, o servidor executa as vencidas.</p></div>
+      <div class="cartao lift"><div class="ic c"><svg class="i" aria-hidden="true"><use href="#i-escudo"/></svg></div><h3>Apagar tudo</h3><p><code>/apagar_meus_dados</code> remove cofre, tarefas, UF, temas e consentimentos, em dois passos.</p></div>
+    </div>
+    <div class="aviso"><svg class="i" aria-hidden="true"><use href="#i-escudo"/></svg><span><b>Honestidade sobre os limites:</b> conversas com bots do Telegram não são de ponta a ponta. Enquanto o cofre está desbloqueado, o servidor vê o arquivo ao enviá-lo no chat. Criptografia ponta a ponta de verdade só existe no painel.</span></div>
+    <div class="aviso" style="background:#FFF1D1;color:#5A3F00"><svg class="i" aria-hidden="true"><use href="#i-escudo"/></svg><span><b>Sobre a IA:</b> o Gemini é usado no <b>plano gratuito</b>. Nesse plano o Google pode usar o conteúdo enviado para melhorar seus produtos e pode permitir revisão humana. Por isso o primeiro envio pede consentimento, dá para escolher um nome próprio sem enviar o arquivo, e demonstrações usam só documentos fictícios.</span></div>
+    <h3 style="margin-top:24px">O que guardamos</h3>
+    <div class="tab"><table><thead><tr><th>Dado</th><th>Para quê</th><th>Quem controla</th></tr></thead><tbody>
+      <tr><td>ID do Telegram</td><td>Separar os dados de cada pessoa</td><td>Apagável a qualquer momento</td></tr>
+      <tr><td>UF</td><td>Mostrar o link do estado certo</td><td>Muda ou apaga nos Ajustes</td></tr>
+      <tr><td>Temas e horário do resumo</td><td>Montar o resumo da manhã</td><td>Ajustes</td></tr>
+      <tr><td>Tarefas e lembretes</td><td>Avisar na hora marcada</td><td>Conclui ou apaga</td></tr>
+      <tr><td>Documentos do cofre (cifrados)</td><td>Guardar o que você enviar</td><td>Apaga de verdade, com confirmação</td></tr>
+      <tr><td>Texto das perguntas</td><td>Nada: não é gravado nem registrado</td><td>—</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <!-- ===== TÉCNICA ===== -->
+  <section class="sec rev" id="tecnica">
+    <span class="rot">Arquitetura</span>
+    <h2>Por dentro do sistema</h2>
+    <p class="lead" data-nivel="simples">Por baixo, o Citizen Assist tem uma base verificada, um mecanismo de busca e três formas de falar com você. A IA só ajuda a escolher a ferramenta certa; quem responde é a base.</p>
+    <div data-nivel="tecnico">
+      <div class="fluxo"><span>Usuário</span><span class="s">→</span><span>Telegram</span><span class="s">→</span><span>telegram_bot.py</span><span class="s">→</span><span>roteador.py (Gemini + regras)</span><span class="s">→</span><span>ferramenta</span><span class="s">→</span><span>base.json / armazenamento</span></div>
+      <div class="arq" id="arq">
+        <button class="no-arq n1" type="button" aria-pressed="true" data-i="0"><b>Núcleo</b><small>base · busca · respostas · sistema</small></button>
+        <button class="no-arq n2" type="button" aria-pressed="false" data-i="1"><b>Roteador</b><small>Gemini + function calling</small></button>
+        <button class="no-arq n2" type="button" aria-pressed="false" data-i="2"><b>Bot e painel</b><small>Telegram · FastAPI</small></button>
+        <button class="no-arq n3" type="button" aria-pressed="false" data-i="3"><b>Cofre</b><small>criptografia · documentos</small></button>
+        <button class="no-arq n3" type="button" aria-pressed="false" data-i="4"><b>Rotinas</b><small>tarefas · agendador · resumo</small></button>
+        <button class="no-arq n1" type="button" aria-pressed="false" data-i="5"><b>Armazenamento</b><small>SQLite · Supabase</small></button>
+      </div>
+      <div class="detalhe" id="arq-det" aria-live="polite"></div>
+
+      <h3 style="margin-top:26px">Módulos</h3>
+      <div class="filtros" id="filtros-mod" role="group" aria-label="Filtrar módulos"></div>
+      <div class="tab"><table><thead><tr><th>Arquivo</th><th>Camada</th><th>Função</th></tr></thead><tbody id="mods"></tbody></table></div>
+
+      <h3 style="margin-top:26px">Decisões técnicas</h3>
+      <div class="grade">
+        <div class="cartao"><h3>Importação tardia</h3><p>Telegram, FastAPI, Gemini, <code>cryptography</code> e Supabase só são importados no modo <code>--servidor</code>. O terminal roda numa máquina limpa, sem <code>pip install</code>.</p></div>
+        <div class="cartao"><h3>Armazenamento com volta automática</h3><p>SQLite é o padrão. O Supabase (API REST pela biblioteca padrão) liga com URL e chave secreta; se a verificação falhar, volta sozinho para o SQLite.</p></div>
+        <div class="cartao"><h3>IA só escolhe a ferramenta</h3><p>O Gemini decide entre 4 ferramentas com argumentos validados e, se falhar, as regras assumem. O conteúdo de arquivos é dado, nunca instrução.</p></div>
+        <div class="cartao"><h3>CI e deploy</h3><p>GitHub Actions roda a suíte no Python 3.9 e 3.12. O deploy por SSH só liga com <code>DEPLOY_ATIVO=true</code> e grava o <code>.env</code> a partir dos Secrets.</p></div>
+        <div class="cartao"><h3>Testes</h3><p>256 testes: validação da base, busca, as 4 saídas, Dijkstra, isolamento por usuário, criptografia, <code>initData</code>, agendador, painel e o Supabase contra um servidor falso.</p></div>
+        <div class="cartao"><h3>Python</h3><p>Núcleo em 3.9+ só com biblioteca padrão. Camada de produto em 3.11+ (aiogram, APScheduler, FastAPI, <code>cryptography</code>, <code>feedparser</code>).</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== RESULTADOS ===== -->
+  <section class="sec rev" id="qualidade">
+    <span class="rot">Resultados</span>
+    <h2>O que foi medido</h2>
+    <p class="lead">Números reais de 09/11/2026, medidos no Mac do autor com Python 3.14. A página mostra também o que ainda não foi medido.</p>
     <div class="metricas">
-      <div class="card metrica rev d1">
-        <h3>Integridade <span>testes e acertos</span></h3>
-        <div class="valor">256<small> / 256 testes</small></div>
-        <div class="barra"><div class="barra-topo"><span>Testes automatizados</span><b>100%</b></div><div class="fio"><i class="v" data-w="100"></i></div></div>
-        <div class="barra"><div class="barra-topo"><span>Busca (perguntas da equipe)</span><b>19/19</b></div><div class="fio"><i class="v" data-w="100"></i></div></div>
-        <div class="barra"><div class="barra-topo"><span>Respostas com fonte e data</span><b>11/11</b></div><div class="fio"><i class="v" data-w="100"></i></div></div>
-        <div class="rodape-metrica">100% da equipe não é medida independente: o conjunto do público ainda será coletado.</div>
-      </div>
-      <div class="card metrica rev d2">
-        <h3>Latência <span>por consulta</span></h3>
-        <div class="valor">0,008<small> ms (índice)</small></div>
-        <div class="barra"><div class="barra-topo"><span>Índice invertido · 17 registros</span><b>0,0082 ms</b></div><div class="fio"><i data-w="2"></i></div></div>
-        <div class="barra"><div class="barra-topo"><span>Busca linear · 17 registros</span><b>0,8625 ms</b></div><div class="fio"><i class="a" data-w="100"></i></div></div>
-        <div class="barra"><div class="barra-topo"><span>Índice · 17.000 registros</span><b>4,5 ms</b></div><div class="fio"><i data-w="1"></i></div></div>
-        <div class="rodape-metrica">Com 17.000 registros sintéticos a busca linear leva 866 ms (cerca de 190 vezes mais). Barras na escala da busca linear de cada base.</div>
-      </div>
-      <div class="card metrica rev d3">
-        <h3>Consumo <span>memória do núcleo</span></h3>
-        <div class="valor">22,7<small> MB (pico)</small></div>
-        <div class="barra"><div class="barra-topo"><span>Pico de memória, 19 consultas</span><b>22,7 MB</b></div><div class="fio"><i data-w="2.3"></i></div></div>
-        <div class="barra"><div class="barra-topo"><span>Base de conhecimento (JSON)</span><b>18 KB</b></div><div class="fio"><i data-w="1"></i></div></div>
-        <div class="barra"><div class="barra-topo"><span>Pacotes externos</span><b>0</b></div><div class="fio"><i data-w="0"></i></div></div>
-        <div class="rodape-metrica">Barra de memória em relação a 1 GB (uma VM gratuita pequena). O modo servidor usa mais: Whisper local e bibliotecas do bot.</div>
-      </div>
+      <div class="cartao"><h3>Integridade</h3><div class="valor">256<small> / 256 testes</small></div>
+        <div class="bar"><div class="bar-t"><span>Testes automatizados</span><b>100%</b></div><div class="fio"><i class="v" data-w="100"></i></div></div>
+        <div class="bar"><div class="bar-t"><span>Busca (equipe)</span><b>19/19</b></div><div class="fio"><i class="v" data-w="100"></i></div></div>
+        <div class="bar"><div class="bar-t"><span>Respostas com fonte e data</span><b>11/11</b></div><div class="fio"><i class="v" data-w="100"></i></div></div>
+        <p class="nota">Na primeira medição, antes de ajustes, foram 17 de 19. Como a correção foi feita olhando essas perguntas, os 100% não são independentes; falta o conjunto do público.</p></div>
+      <div class="cartao"><h3>Latência</h3><div class="valor">0,008<small> ms por consulta</small></div>
+        <div class="bar"><div class="bar-t"><span>Índice · 17 registros</span><b>0,0082 ms</b></div><div class="fio"><i data-w="2"></i></div></div>
+        <div class="bar"><div class="bar-t"><span>Linear · 17 registros</span><b>0,8625 ms</b></div><div class="fio"><i class="a" data-w="100"></i></div></div>
+        <div class="bar"><div class="bar-t"><span>Índice · 17.000 registros</span><b>4,5 ms</b></div><div class="fio"><i data-w="1"></i></div></div>
+        <p class="nota">Com 17.000 registros sintéticos a busca linear leva 866 ms (cerca de 190 vezes mais). Barras na escala da busca linear de cada base.</p></div>
+      <div class="cartao"><h3>Consumo</h3><div class="valor">22,7<small> MB de pico</small></div>
+        <div class="bar"><div class="bar-t"><span>Memória do núcleo (19 consultas)</span><b>22,7 MB</b></div><div class="fio"><i data-w="2.3"></i></div></div>
+        <div class="bar"><div class="bar-t"><span>Base de conhecimento</span><b>18 KB</b></div><div class="fio"><i data-w="1"></i></div></div>
+        <div class="bar"><div class="bar-t"><span>Pacotes externos</span><b>0</b></div><div class="fio"><i data-w="0"></i></div></div>
+        <p class="nota">Memória em relação a 1 GB. O modo servidor usa mais (Whisper e bibliotecas do bot).</p></div>
+    </div>
+    <h3 style="margin-top:26px">Comparação dos dois formatos de resposta</h3>
+    <p class="nota" style="margin-top:0">O formato "resumido" (modelo A) e o "passo a passo" (modelo B) usam a mesma busca. Por isso acerto e tempo são iguais; a comparação mede o formato.</p>
+    <div class="tab"><table><thead><tr><th>Critério</th><th>A (resumido)</th><th>B (passo a passo)</th></tr></thead><tbody>
+      <tr><td>Fonte com link e data</td><td>11/11</td><td>11/11</td></tr>
+      <tr><td>Próximos assuntos</td><td>11/11</td><td>11/11</td></tr>
+      <tr><td>Tamanho médio</td><td>141,3 palavras</td><td>147,9 palavras</td></tr>
+      <tr><td>Passos numerados</td><td>0</td><td>4,6</td></tr>
+      <tr><td>Clareza (nota 1 a 5, cega)</td><td colspan="2"><span class="selo2 s-pe">Pendente: a folha cega está pronta, falta aplicar</span></td></tr>
+    </tbody></table></div>
+    <h3 style="margin-top:26px">Ainda não medido</h3>
+    <div class="grade">
+      <div class="cartao"><h3>Perguntas do público</h3><p>Meta: 10 ou mais, anônimas, medidas antes de ajustar a busca. É a medida confiável de acerto.</p></div>
+      <div class="cartao"><h3>Teste de usabilidade</h3><p>Cinco tarefas com pessoa de fora e questionário SUS. Metas: primeira resposta útil em menos de 1 minuto e 4 de 5 tarefas sem ajuda.</p></div>
+      <div class="cartao"><h3>Teste real do produto</h3><p>Foto/PDF, cofre, resumo da manhã e Mini App no Telegram real: roteiro de 14 casos pronto.</p></div>
     </div>
   </section>
 
-  <section id="status" class="rev">
-    <div class="rotulo">status</div>
+  <!-- ===== STATUS ===== -->
+  <section class="sec rev" id="status">
+    <span class="rot">Status</span>
     <h2>O que está pronto e o que falta</h2>
-    <p class="lead">Código congelado em <strong>13/11/2026</strong>; entrega na FIAP ON em <strong>19/11/2026</strong>. O que não estiver testado em 13/11 vira roadmap.</p>
-    <div class="tabela"><table>
-      <thead><tr><th>Área</th><th>Situação</th><th>Detalhe</th></tr></thead>
-      <tbody>
-      <tr><td>Núcleo no terminal</td><td><span class="selo ok">Pronto</span></td><td>Base com 17 registros, busca, grafo, Dijkstra, modelos A e B, <code>--avaliar</code>. Falta conferir numa máquina limpa e no Windows.</td></tr>
-      <tr><td>Bot no Telegram</td><td><span class="selo ok">Pronto</span></td><td>Texto, voz, UF, <code>/apagar_meus_dados</code> e roteador testados no Telegram real.</td></tr>
-      <tr><td>Tarefas e lembretes</td><td><span class="selo ok">Pronto</span></td><td>Lembrete chega no Telegram na hora certa (testado em 08/11).</td></tr>
-      <tr><td>Armazenamento</td><td><span class="selo ok">Pronto</span></td><td>SQLite por padrão; Supabase opcional, testado no projeto real, com volta automática para o SQLite.</td></tr>
-      <tr><td>Painel, cofre, foto/PDF, resumo da manhã</td><td><span class="selo parc">Parcial</span></td><td>Implementados e cobertos por testes; <strong>falta testar no Telegram real</strong> (roteiro de 14 casos no repositório).</td></tr>
-      <tr><td>Relatório PDF</td><td><span class="selo parc">Rascunho</span></td><td>7 páginas geradas dos dados reais; falta incluir público, usabilidade e clareza.</td></tr>
-      <tr><td>README</td><td><span class="selo parc">Parcial</span></td><td>Faltam nome do grupo, perfis, link do vídeo e "Participação na Competição".</td></tr>
-      <tr><td>Revisão das 17 orientações</td><td><span class="selo pend">Pendente</span></td><td>Rascunho escrito com apoio de IA a partir das páginas oficiais; precisa de conferência humana, incluindo os estados do DOC-001.</td></tr>
-      <tr><td>Perguntas do público</td><td><span class="selo pend">Pendente</span></td><td>Meta: pelo menos 10, anônimas, medidas antes de ajustar a busca.</td></tr>
-      <tr><td>Usabilidade e nota de clareza A × B</td><td><span class="selo pend">Pendente</span></td><td>Folha cega e roteiro de tarefas prontos; falta aplicar.</td></tr>
-      <tr><td>Hospedagem (VM, HTTPS, deploy)</td><td><span class="selo pend">Bloqueado</span></td><td>Ainda não há VM. Segredos já estão no GitHub Secrets; falta escolher onde hospedar.</td></tr>
-      <tr><td>Vídeo e envio na FIAP ON</td><td><span class="selo pend">Pendente</span></td><td>Vídeo "Não Listado" no YouTube e um <code>.txt</code> com os dois links.</td></tr>
-      </tbody>
-    </table></div>
-  </section>
-
-  <section id="quem" class="rev">
-    <div class="rotulo">equipe</div>
-    <h2>Quem faz o quê agora</h2>
-    <div class="cards">
-      <div class="card rev d1"><h3>Juan de Lucas Frois</h3><div class="leg">RM563260 · Núcleo e dados</div>
-        <ul style="margin-top:10px"><li>Revisar orientações de direitos</li><li>Consolidar README e relatório</li><li>Testar em máquina limpa e no Windows</li><li>Decidir o formato padrão (A ou B)</li></ul></div>
-      <div class="card rev d2"><h3>Flávia Roberta Pennachin</h3><div class="leg">RM561860 · Bot, testes e comparação A × B</div>
-        <ul style="margin-top:10px"><li>Coletar 10+ perguntas do público</li><li>Teste de usabilidade com pessoa de fora</li><li>Notas de clareza (folha cega)</li><li>Testar no Telegram real</li></ul></div>
-      <div class="card rev d3"><h3>Pedro Valente</h3><div class="leg">RM570394 · Cofre, painel e infraestrutura</div>
-        <ul style="margin-top:10px"><li>Escolher onde hospedar e subir a VM</li><li>HTTPS com DuckDNS + Caddy e deploy</li><li>Testar o Mini App no Telegram real</li><li>Revisão de segurança</li></ul></div>
+    <div class="anel-box">
+      <div class="anel" aria-hidden="true"><svg width="110" height="110" viewBox="0 0 110 110"><circle class="fund" cx="55" cy="55" r="50"/><circle class="prog" id="anel" cx="55" cy="55" r="50"/></svg><b id="anel-n">0%</b></div>
+      <div><b style="font-size:18px" id="anel-txt"></b><div class="nota">Calculado a partir da tabela abaixo (pronto = 1, parcial = 0,5).</div></div>
     </div>
-    <p class="leg" style="margin-top:12px">Detalhes e prazos no <a href="https://github.com/JFrois/GlobalSolution_CitizenTech/blob/main/docs/planejamento.md">planejamento</a>.</p>
+    <div class="filtros" id="filtros-status" role="group" aria-label="Filtrar por situação"></div>
+    <div class="tab"><table><thead><tr><th>Área</th><th>Situação</th><th>Detalhe</th></tr></thead><tbody id="tb-status"></tbody></table></div>
+    <div class="tempo">
+      <div class="cartao"><svg class="i" aria-hidden="true" style="color:var(--acao)"><use href="#i-relogio"/></svg><b id="d-congela">—</b>para o congelamento do código (13/11/2026). O que não estiver testado vira roadmap.</div>
+      <div class="cartao"><svg class="i" aria-hidden="true" style="color:var(--acao)"><use href="#i-relogio"/></svg><b id="d-entrega">—</b>para a entrega na FIAP ON (19/11/2026): repositório público, vídeo "Não Listado" e um .txt com os dois links.</div>
+    </div>
   </section>
 
-  <section id="rodar" class="rev">
-    <div class="rotulo">quickstart</div>
-    <h2>Como rodar o núcleo</h2>
-    <p class="lead">Só Python 3.9 ou superior. Sem chaves, sem internet, sem instalar nada.</p>
-    <div class="bloco"><button class="copiar" id="copiar" type="button" aria-label="Copiar comandos">copiar</button><span class="p">$</span> git clone https://github.com/JFrois/GlobalSolution_CitizenTech.git
-<span class="p">$</span> cd GlobalSolution_CitizenTech
-<span class="p">$</span> python src/sistema.py            <span style="color:var(--apoio)"># menu: digite sua pergunta</span>
-<span class="p">$</span> python src/sistema.py --avaliar  <span style="color:var(--apoio)"># acerto e tempo médio</span>
-<span class="p">$</span> python -m unittest discover -s testes -t .</div>
-    <p class="leg" style="margin-top:12px">O bot, o painel e o cofre ficam no modo <code>--servidor</code> e exigem o ambiente descrito no README do repositório.</p>
+  <!-- ===== EQUIPE ===== -->
+  <section class="sec rev" id="equipe">
+    <span class="rot">Equipe</span>
+    <h2>Quem faz o quê agora</h2>
+    <div class="grade">
+      <div class="cartao lift"><div class="avatar">JF</div><h3>Juan de Lucas Frois</h3><p>RM563260 · núcleo e dados</p><ul><li>Revisar orientações de direitos</li><li>Consolidar README e relatório</li><li>Testar em máquina limpa e no Windows</li><li>Decidir o formato padrão (A ou B)</li></ul></div>
+      <div class="cartao lift"><div class="avatar">FP</div><h3>Flávia Roberta Pennachin</h3><p>RM561860 · bot, testes e comparação A × B</p><ul><li>Coletar 10+ perguntas do público</li><li>Teste de usabilidade com pessoa de fora</li><li>Notas de clareza (folha cega)</li><li>Testar no Telegram real</li></ul></div>
+      <div class="cartao lift"><div class="avatar">PV</div><h3>Pedro Valente</h3><p>RM570394 · cofre, painel e infraestrutura</p><ul><li>Escolher onde hospedar e subir a VM</li><li>HTTPS com DuckDNS e Caddy; deploy</li><li>Testar o Mini App no Telegram real</li><li>Revisão de segurança</li></ul></div>
+    </div>
+    <p class="nota">Projeto acadêmico da FIAP, Global Solution 2026.2 (CitizenTech).</p>
   </section>
 
-  <section id="links" class="rev">
-    <div class="rotulo">links</div>
-    <h2>Documentação</h2>
-    <ul class="lista">
-      <li><a href="https://github.com/JFrois/GlobalSolution_CitizenTech">Repositório</a></li>
-      <li><a href="relatorio.pdf">Relatório em PDF</a></li>
-      <li><a href="https://github.com/JFrois/GlobalSolution_CitizenTech/blob/main/README.md">README: estado do projeto e como executar</a></li>
-      <li><a href="https://github.com/JFrois/GlobalSolution_CitizenTech/blob/main/docs/especificacao/CITIZEN_ASSIST_SPEC.md">Especificação (fonte de verdade)</a></li>
-      <li><a href="https://github.com/JFrois/GlobalSolution_CitizenTech/blob/main/docs/planejamento.md">Planejamento e divisão de tarefas</a></li>
-      <li><a href="https://github.com/JFrois/GlobalSolution_CitizenTech/blob/main/docs/uso_ia.md">Uso de IA e validação crítica</a></li>
-    </ul>
+  <!-- ===== FAQ ===== -->
+  <section class="sec rev" id="faq">
+    <span class="rot">Perguntas frequentes</span>
+    <h2>Dúvidas comuns</h2>
+    <details><summary>É um canal oficial do governo?</summary><div class="resp">Não. O Citizen Assist é um projeto acadêmico e não representa nenhum órgão público. Cada resposta mostra a fonte oficial para você confirmar.</div></details>
+    <details><summary>Posso confiar nas respostas?</summary><div class="resp">As respostas vêm de orientações verificadas, com fonte e data. Elas foram escritas com apoio de IA a partir das páginas oficiais e <b>ainda passam por revisão humana</b>. Informações públicas mudam, por isso confirme no site oficial.</div></details>
+    <details><summary>E se o assunto não estiver na base?</summary><div class="resp">O assistente diz que não encontrou orientação verificada, que não é canal oficial, e aponta o portal gov.br e os temas disponíveis. Ele não inventa.</div></details>
+    <details><summary>Preciso instalar alguma coisa?</summary><div class="resp">Para o terminal, só o Python 3.9 ou superior. Sem internet, sem chaves, sem <code>pip install</code>. O Telegram e o painel dependem de um servidor ligado.</div></details>
+    <details><summary>Meus documentos ficam seguros?</summary><div class="resp">O cofre cifra antes de guardar e só abre com a sua senha, mas tem limites: no chat o servidor vê o arquivo ao enviar, e o Gemini (plano gratuito) pode reter o que for enviado para classificar. Por isso, nas demonstrações, usamos só documentos fictícios.</div></details>
+    <details><summary>O que a IA faz exatamente?</summary><div class="resp">Escolhe qual ferramenta usar e sugere o nome de um documento do cofre. Ela <b>não escreve</b> a resposta ao cidadão. A voz é transcrita localmente, sem IA na nuvem.</div></details>
+    <details data-nivel="tecnico"><summary>Como a busca decide entre responder e perguntar?</summary><div class="resp">Pela pontuação: se a melhor passa de 3 e a diferença para a segunda é de pelo menos 2, responde; se passa mas a diferença é menor, mostra até 3 candidatos; se não passa, avisa que não há base.</div></details>
+    <details data-nivel="tecnico"><summary>Como rodo os testes e a avaliação?</summary><div class="resp"><code>python -m unittest discover -s testes -t .</code> roda os 256 testes e <code>python src/sistema.py --avaliar</code> mede acerto e tempo e grava os CSVs em <code>testes/</code>.</div></details>
+    <details data-nivel="tecnico"><summary>Como trocar o armazenamento para o Supabase?</summary><div class="resp">Rode o schema (<code>deploy/supabase_schema.sql</code>) no SQL Editor e coloque <code>SUPABASE_URL</code> e a chave <code>sb_secret_...</code> no <code>.env</code>. Se algo falhar, o sistema usa o SQLite sozinho.</div></details>
+    <div class="bloco-cmd" style="margin-top:18px">
+      <h3>Quer rodar?</h3>
+      <div class="cartao" style="font:500 14px/1.7 var(--mono);background:#0B1622;color:#E6F1F8;position:relative;overflow-x:auto"><button class="btn claro press" id="copiar" type="button" style="position:absolute;right:12px;top:12px;min-height:44px;padding:0 14px;font-size:13px" aria-label="Copiar comandos">Copiar</button><span style="color:#5BD68F">$</span> git clone https://github.com/JFrois/GlobalSolution_CitizenTech.git<br><span style="color:#5BD68F">$</span> cd GlobalSolution_CitizenTech<br><span style="color:#5BD68F">$</span> python src/sistema.py<br><span style="color:#5BD68F">$</span> python src/sistema.py --avaliar</div>
+    </div>
+  </section>
+
+  <!-- ===== DOCS ===== -->
+  <section class="sec rev" id="docs">
+    <span class="rot">Documentos e links</span>
+    <h2>Tudo a um toque</h2>
+    <p class="lead">Os documentos completos ficam no repositório público. O relatório abre aqui mesmo.</p>
+    <div class="links">
+      <a class="link lift" href="relatorio.pdf"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-doc"/></svg></span><span><b>Relatório em PDF</b><small>7 páginas: problema, arquitetura, testes, Karnaugh, limites</small></span></a>
+      <a class="link lift" href="https://github.com/JFrois/GlobalSolution_CitizenTech" target="_blank" rel="noopener noreferrer"><span class="ic t"><svg class="i" aria-hidden="true"><use href="#i-codigo"/></svg></span><span><b>Repositório no GitHub</b><small>Código, dados, testes e documentos</small></span></a>
+      <a class="link lift" href="https://github.com/JFrois/GlobalSolution_CitizenTech/blob/main/README.md" target="_blank" rel="noopener noreferrer"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-doc"/></svg></span><span><b>README</b><small>Estado do projeto e como executar</small></span></a>
+      <a class="link lift" href="https://github.com/JFrois/GlobalSolution_CitizenTech/blob/main/docs/especificacao/CITIZEN_ASSIST_SPEC.md" target="_blank" rel="noopener noreferrer"><span class="ic v"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg></span><span><b>Especificação</b><small>Fonte de verdade do projeto</small></span></a>
+      <a class="link lift" href="https://github.com/JFrois/GlobalSolution_CitizenTech/blob/main/docs/planejamento.md" target="_blank" rel="noopener noreferrer"><span class="ic c"><svg class="i" aria-hidden="true"><use href="#i-pessoas"/></svg></span><span><b>Planejamento</b><small>Divisão de tarefas e prazos</small></span></a>
+      <a class="link lift" href="https://github.com/JFrois/GlobalSolution_CitizenTech/blob/main/docs/ux.md" target="_blank" rel="noopener noreferrer"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-chat"/></svg></span><span><b>Guia de UX</b><small>Telas, textos e acessibilidade</small></span></a>
+      <a class="link lift" href="https://github.com/JFrois/GlobalSolution_CitizenTech/blob/main/docs/arquitetura.md" target="_blank" rel="noopener noreferrer"><span class="ic t"><svg class="i" aria-hidden="true"><use href="#i-codigo"/></svg></span><span><b>Arquitetura</b><small>Diagramas e decisões técnicas</small></span></a>
+      <a class="link lift" href="https://github.com/JFrois/GlobalSolution_CitizenTech/blob/main/docs/uso_ia.md" target="_blank" rel="noopener noreferrer"><span class="ic v"><svg class="i" aria-hidden="true"><use href="#i-escudo"/></svg></span><span><b>Uso de IA</b><small>Ferramentas, prompts e validação crítica</small></span></a>
+      <a class="link lift" href="#identidade"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-lupa"/></svg></span><span><b>Identidade visual</b><small>Cores, tipografia e componentes, nesta página</small></span></a>
+    </div>
   </section>
 
 </div>
-</main>
 
-<footer><div class="wrap">Citizen Assist AI · projeto acadêmico da FIAP (Global Solution 2026.2). Não é um canal oficial de nenhum órgão público. Esta página resume o que é público sobre o projeto; o repositório é a fonte completa.</div></footer>
+<footer>
+  <div class="wrap">
+    <b style="color:#fff;font-size:18px">Citizen Assist AI</b>
+    <p style="margin:6px 0 0;max-width:70ch">Projeto acadêmico da FIAP (Global Solution 2026.2 · CitizenTech). <b>Não é um canal oficial</b> de nenhum órgão público. Esta página reúne o que é público sobre o projeto; o repositório é a fonte completa. Última atualização desta página: 09/11/2026.</p>
+    <p style="margin:12px 0 0"><a href="#topo">Voltar ao topo</a> · <a href="relatorio.pdf">Relatório</a> · <a href="https://github.com/JFrois/GlobalSolution_CitizenTech" target="_blank" rel="noopener noreferrer">GitHub</a></p>
+  </div>
+</footer>
+</div>
+
+<button class="topo-btn" id="topo-btn" type="button" aria-label="Voltar ao topo"><svg class="i" aria-hidden="true" style="margin:auto"><use href="#i-cima"/></svg></button>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 (function () {
   "use strict";
   document.body.classList.remove("sem-js");
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var reduz = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   function guardar(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   function ler(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function pausa(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt) e.textContent = txt; return e; }
+  function toast(t) { var x = $("#toast"); x.textContent = t; x.classList.add("on"); clearTimeout(toast.t); toast.t = setTimeout(function () { x.classList.remove("on"); }, 1800); }
 
-  /* CRT (scanlines) */
-  var crt = document.getElementById("crt");
-  function aplicaCrt(on) {
-    document.body.classList.toggle("crt-on", on);
-    crt.setAttribute("aria-pressed", on ? "true" : "false");
-    crt.textContent = "CRT: " + (on ? "on" : "off");
+  /* ---------- Visão: Para todos / Tudo / Técnico ---------- */
+  function visao(v) {
+    document.body.setAttribute("data-visao", v);
+    $$(".seg button").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-v") === v ? "true" : "false"); });
+    guardar("visao", v);
   }
-  aplicaCrt(ler("crt") === "1");
-  crt.addEventListener("click", function () {
-    var on = !document.body.classList.contains("crt-on");
-    aplicaCrt(on); guardar("crt", on ? "1" : "0");
-  });
+  $$(".seg button").forEach(function (b) { b.addEventListener("click", function () { visao(b.getAttribute("data-v")); }); });
+  var vs = ler("visao"); if (vs === "simples" || vs === "tecnico" || vs === "tudo") visao(vs);
 
-  /* Glitch no título: surto curto a cada poucos segundos e ao passar o mouse */
-  var gl = document.getElementById("glitch");
-  function surto() {
-    if (reduz) return;
-    gl.classList.add("ativo");
-    setTimeout(function () { gl.classList.remove("ativo"); }, 520);
-  }
-  gl.addEventListener("mouseenter", surto);
-  if (!reduz) { setTimeout(surto, 700); setInterval(surto, 4200); }
-
-  /* Texto digitado no hero */
-  var frases = ["> orientação com fonte oficial e data", "> sem base? o assistente avisa, não inventa", "> cofre cifrado, senha só no painel", "> núcleo offline: python src/sistema.py"];
-  var alvo = document.getElementById("digita");
-  async function digitar() {
-    if (reduz) { alvo.textContent = frases[0]; return; }
-    var i = 0;
-    for (;;) {
-      var f = frases[i % frases.length];
-      for (var c = 1; c <= f.length; c++) { alvo.textContent = f.slice(0, c); await pausa(38); }
-      await pausa(1700);
-      for (c = f.length; c >= 0; c--) { alvo.textContent = f.slice(0, c); await pausa(16); }
-      await pausa(300); i++;
-    }
-  }
-  digitar();
-
-  /* Revelar ao rolar + contadores + barras */
-  function conta(el) {
-    var fim = +el.getAttribute("data-conta"), t0 = null;
-    if (reduz) { el.textContent = fim; return; }
-    function passo(t) {
+  /* ---------- Revelar ao rolar, contadores e barras ---------- */
+  function conta(e) {
+    var fim = +e.getAttribute("data-conta"), t0 = null;
+    if (reduz) { e.textContent = fim; return; }
+    (function passo(t) {
       if (t0 === null) t0 = t;
-      var p = Math.min(1, (t - t0) / 1100);
-      el.textContent = Math.round(fim * (1 - Math.pow(1 - p, 3)));
+      var p = Math.min(1, (t - t0) / 1000);
+      e.textContent = Math.round(fim * (1 - Math.pow(1 - p, 3)));
       if (p < 1) requestAnimationFrame(passo);
-    }
-    requestAnimationFrame(passo);
+    })(performance.now());
   }
-  function revela(el) {
-    el.classList.add("vis");
-    var cs = el.querySelectorAll("[data-conta]"); for (var i = 0; i < cs.length; i++) conta(cs[i]);
-    if (el.hasAttribute && el.hasAttribute("data-conta")) conta(el);
-    var bs = el.querySelectorAll("[data-w]");
-    for (var j = 0; j < bs.length; j++) (function (b) { setTimeout(function () { b.style.width = b.getAttribute("data-w") + "%"; }, 150); })(bs[j]);
+  $$("[data-conta]").forEach(function (e) { if (!e.closest(".rev")) conta(e); });
+  function revela(e) {
+    e.classList.add("vis");
+    $$("[data-conta]", e).forEach(conta);
+    $$("[data-w]", e).forEach(function (b) { setTimeout(function () { b.style.width = b.getAttribute("data-w") + "%"; }, 200); });
+    if (e.id === "status") animaStatus();
   }
-  var itens = document.querySelectorAll(".rev");
   if ("IntersectionObserver" in window) {
     var obs = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { if (e.isIntersecting) { revela(e.target); obs.unobserve(e.target); } });
-    }, { threshold: 0.15 });
-    itens.forEach(function (el) { obs.observe(el); });
-  } else { itens.forEach(revela); }
+      es.forEach(function (x) { if (x.isIntersecting) { revela(x.target); obs.unobserve(x.target); } });
+    }, { threshold: 0.08 });
+    $$(".rev").forEach(function (e) { obs.observe(e); });
+  } else { $$(".rev").forEach(revela); }
 
-  /* Abas (setas, Home e End) */
-  var abas = Array.prototype.slice.call(document.querySelectorAll("[role=tab]"));
-  function seleciona(aba, foco) {
-    abas.forEach(function (a) {
-      var on = a === aba;
-      a.setAttribute("aria-selected", on ? "true" : "false");
-      a.tabIndex = on ? 0 : -1;
-      document.getElementById(a.getAttribute("aria-controls")).hidden = !on;
+  /* ---------- Navegação: item ativo ao rolar + voltar ao topo ---------- */
+  var links = $$("#nav a");
+  var secs = links.map(function (a) { return $(a.getAttribute("href")); });
+  function ativo() {
+    var y = window.scrollY + 140, atual = -1;
+    secs.forEach(function (s, i) { if (s && s.offsetTop <= y) atual = i; });
+    links.forEach(function (a, i) {
+      if (i === atual) { a.setAttribute("aria-current", "true"); } else { a.removeAttribute("aria-current"); }
     });
-    if (foco) aba.focus();
+    if (atual >= 0) {
+      var a = links[atual], nav = $("#nav");
+      if (nav.scrollWidth > nav.clientWidth) nav.scrollLeft = a.offsetLeft - nav.clientWidth / 2 + a.clientWidth / 2;
+    }
+    $("#topo-btn").classList.toggle("on", window.scrollY > 700);
   }
-  abas.forEach(function (a, i) {
-    a.addEventListener("click", function () { seleciona(a, false); });
-    a.addEventListener("keydown", function (e) {
-      var n = null;
-      if (e.key === "ArrowRight") n = abas[(i + 1) % abas.length];
-      else if (e.key === "ArrowLeft") n = abas[(i - 1 + abas.length) % abas.length];
-      else if (e.key === "Home") n = abas[0];
-      else if (e.key === "End") n = abas[abas.length - 1];
-      if (n) { e.preventDefault(); seleciona(n, true); }
-    });
-  });
+  var tk = false;
+  window.addEventListener("scroll", function () { if (!tk) { tk = true; requestAnimationFrame(function () { tk = false; ativo(); }); } }, { passive: true });
+  ativo();
+  $("#topo-btn").addEventListener("click", function () { window.scrollTo({ top: 0, behavior: reduz ? "auto" : "smooth" }); });
 
-  /* Terminal de demonstração */
-  var term = document.getElementById("term");
-  var rodando = 0;
-  var SAIDAS = {
-    rg: {
-      cmd: "como tirar a segunda via do RG?",
-      saida: [
-        ["t", "2ª via da identidade (CIN/RG)"],
-        ["d", "--------------------------------------------------------------------------------"],
-        ["", "1. A segunda via da CIN é emitida pelos órgãos de identificação dos estados e do\n   Distrito Federal, e pode ser pedida em qualquer estado."],
-        ["", "2. Se perdeu o documento, registre um boletim de ocorrência no seu estado."],
-        ["", "3. Acesse gov.br/identidade e clique em \"Saiba como fazer a sua\" para ver as\n   regras do seu estado e agendar a emissão."],
-        ["", "4. Leve a certidão de nascimento ou de casamento atualizada. O valor e os\n   documentos exigidos variam de estado para estado."],
-        ["", "5. Enquanto a nova via não fica pronta, a versão digital da CIN no aplicativo\n   gov.br pode ser usada."],
-        ["", ""],
-        ["at", "Atenção: o procedimento e a taxa mudam de estado para estado. Confirme no site\noficial antes de ir."],
-        ["f", "Fonte: gov.br (verificado em 07/11/2026)"],
-        ["d", "Continue consultando: 1) CIN digital no app gov.br  2) 2ª via do título de eleitor\n  3) Certidão de nascimento gratuita"],
-        ["d", "Não sou um canal oficial. Confirme no site indicado."]
-      ]
-    },
-    ipva: {
-      cmd: "como pagar o IPVA?",
-      saida: [
-        ["at", "Não encontrei orientação verificada sobre isso na minha base."],
-        ["", "Não sou um canal oficial e não vou inventar instruções. Você pode consultar o\nportal oficial (https://www.gov.br) ou tentar um destes assuntos:"],
-        ["d", "  Documentação pessoal · Serviços públicos · Direitos e orientações comunitárias"]
-      ]
-    }
-  };
-  function linha(cls, texto) {
-    var s = document.createElement("span");
-    if (cls) s.className = cls;
-    s.textContent = texto + "\n";
-    return s;
+  /* ---------- Passos (como funciona) ---------- */
+  var PASSOS = [
+    ["Você escreve a dúvida em linguagem comum, como \"perdi meu RG, o que faço?\". Pode ser no terminal, no Telegram (por texto ou voz) ou no painel.", "A entrada é normalizada: minúsculas, sem acentos, sem pontuação e sem palavras vazias (\"como\", \"quero\", \"meu\"). A mesma normalização vale para a base."],
+    ["O assistente compara a pergunta com as 17 orientações verificadas e dá uma pontuação a cada uma.", "Índice invertido palavra → registros. Pesos: palavra-chave 3, pergunta 2, orientação 1, expressão completa +2. Sinônimos vêm do base.json."],
+    ["Uma regra simples decide: responder, pedir para você escolher entre assuntos parecidos, ou avisar que não há base.", "Variáveis C (entrada válida), A (pontuação ≥ 3) e B (margem ≥ 2). Se nada casa, tenta corrigir a digitação uma vez antes de dar sem base."],
+    ["Você recebe os passos, um aviso para confirmar quando for o caso, a fonte oficial com a data e os próximos assuntos.", "O Dijkstra no grafo de relacionados escolhe os 3 assuntos mais próximos. Modelo A (resumido) ou B (passo a passo) formatam o mesmo resultado."]
+  ];
+  var passoBtns = $$("#passos .passo"), passoAtual = 0, passoTimer = null, passoParado = false;
+  function mostraPasso(i) {
+    passoAtual = i;
+    passoBtns.forEach(function (b, k) { b.setAttribute("aria-pressed", k === i ? "true" : "false"); });
+    var d = $("#passo-det"); d.textContent = "";
+    d.appendChild(el("p", "", PASSOS[i][0])).style.margin = "0";
+    var t = el("div", "tec"); t.setAttribute("data-nivel", "tecnico"); t.textContent = "Técnico: " + PASSOS[i][1]; d.appendChild(t);
   }
-  function boasVindas() {
-    term.textContent = "";
-    term.appendChild(linha("t", "CITIZEN ASSIST AI · orientação cidadã não oficial"));
-    term.appendChild(linha("d", "Digite sua pergunta. Menu: 1 assuntos · 2 caminho · 3 formato · ? ajuda · 0 sair\n"));
-    var c = document.createElement("span"); c.className = "cursor"; c.id = "cur-term"; term.appendChild(c);
-  }
-  async function executa(chave) {
-    var meu = ++rodando;
-    var cur = document.getElementById("cur-term");
-    if (cur) cur.remove();
-    var d = SAIDAS[chave];
-    var p = document.createElement("span"); p.className = "p"; p.textContent = "> "; term.appendChild(p);
-    var cmd = document.createElement("span"); term.appendChild(cmd);
-    for (var i = 1; i <= d.cmd.length; i++) {
-      if (meu !== rodando) return;
-      cmd.textContent = d.cmd.slice(0, i); await pausa(reduz ? 0 : 28);
+  passoBtns.forEach(function (b, i) { b.addEventListener("click", function () { passoParado = true; mostraPasso(i); }); });
+  mostraPasso(0);
+  if (!reduz) { passoTimer = setInterval(function () { if (!passoParado) mostraPasso((passoAtual + 1) % 4); }, 4500); }
+
+  /* ---------- Abas (telas) ---------- */
+  function iniciaAbas(lista) {
+    var abas = $$("[role=tab]", lista);
+    function sel(a, foco) {
+      abas.forEach(function (x) {
+        var on = x === a;
+        x.setAttribute("aria-selected", on ? "true" : "false"); x.tabIndex = on ? 0 : -1;
+        $("#" + x.getAttribute("aria-controls")).hidden = !on;
+      });
+      var painel = $("#" + a.getAttribute("aria-controls"));
+      reinicia(painel);
+      if (foco) a.focus();
     }
-    term.appendChild(document.createTextNode("\n"));
-    await pausa(reduz ? 0 : 350);
-    for (var k = 0; k < d.saida.length; k++) {
-      if (meu !== rodando) return;
-      term.appendChild(linha(d.saida[k][0], d.saida[k][1]));
-      term.scrollTop = term.scrollHeight;
-      await pausa(reduz ? 0 : 230);
-    }
-    if (meu !== rodando) return;
-    term.appendChild(document.createTextNode("\n"));
-    var c = document.createElement("span"); c.className = "cursor"; c.id = "cur-term"; term.appendChild(c);
-    term.scrollTop = term.scrollHeight;
+    abas.forEach(function (a, i) {
+      a.addEventListener("click", function () { sel(a); });
+      a.addEventListener("keydown", function (e) {
+        var n = null;
+        if (e.key === "ArrowRight") n = abas[(i + 1) % abas.length];
+        else if (e.key === "ArrowLeft") n = abas[(i - 1 + abas.length) % abas.length];
+        else if (e.key === "Home") n = abas[0]; else if (e.key === "End") n = abas[abas.length - 1];
+        if (n) { e.preventDefault(); sel(n, true); }
+      });
+    });
+    return sel;
   }
-  boasVindas();
-  document.querySelectorAll(".chip").forEach(function (b) {
+  var selTela = iniciaAbas($("#abas-telas"));
+  function reinicia(painel) {
+    $$(".anim", painel).forEach(function (a) { a.classList.remove("anim"); void a.offsetWidth; a.classList.add("anim"); });
+    if (painel.id === "p-terminal") terminal();
+  }
+  $$("[data-replay]").forEach(function (b) { b.addEventListener("click", function () { reinicia(b.closest("[role=tabpanel]")); }); });
+  $$("[data-vai=resposta]").forEach(function (b) { b.addEventListener("click", function () { selTela($("#t-resposta")); $("#telas").scrollIntoView({ behavior: reduz ? "auto" : "smooth" }); }); });
+  $$("#chips-temas .chip").forEach(function (c) { c.addEventListener("click", function () { c.setAttribute("aria-pressed", c.getAttribute("aria-pressed") === "true" ? "false" : "true"); }); });
+
+  /* cofre */
+  var COF = 600, cofRest = COF, cofTimer = null, cofAberto = true;
+  function fmt(s) { var m = Math.floor(s / 60), r = s % 60; return m + ":" + (r < 10 ? "0" : "") + r; }
+  function cofreTick() { if (!cofAberto) return; cofRest--; if (cofRest <= 0) { cofreFecha(); } else { $("#cofre-tempo").textContent = fmt(cofRest); } }
+  function cofreFecha() { cofAberto = false; clearInterval(cofTimer); $("#cofre-status").classList.add("fechado"); $("#cofre-txt").textContent = "Cofre bloqueado · abra pelo painel com a sua senha"; $("#cofre-btn").textContent = "Desbloquear (demo)"; }
+  function cofreAbre() { cofAberto = true; cofRest = COF; $("#cofre-status").classList.remove("fechado"); $("#cofre-txt").innerHTML = "Cofre aberto · bloqueia sozinho em <span id=\"cofre-tempo\">10:00</span>"; $("#cofre-btn").textContent = "Bloquear"; clearInterval(cofTimer); cofTimer = setInterval(cofreTick, 1000); }
+  $("#cofre-btn").addEventListener("click", function () { if (cofAberto) cofreFecha(); else cofreAbre(); });
+  cofTimer = setInterval(cofreTick, 1000);
+
+  /* terminal */
+  var tcorpo = $("#term-corpo"), tId = 0;
+  var TLINHAS = [
+    ["az", "╭──────────────────────────────────────────────────────────╮"],
+    ["", "<span class=\"az\">│</span><b class=\"az\">  C I T I Z E N   A S S I S T   A I</b>                          <span class=\"az\">│</span>"],
+    ["", "<span class=\"az\">│</span><span class=\"ap\">  Orientação cidadã, não oficial. Fontes verificadas.</span>        <span class=\"az\">│</span>"],
+    ["az", "╰──────────────────────────────────────────────────────────╯"],
+    ["", "<b>Digite sua pergunta</b> <span class=\"ap\">ou escolha uma opção:</span>"],
+    ["", "<span class=\"az\">1</span>  Ver assuntos por tema     <span class=\"az\">2</span>  Caminho entre assuntos"],
+    ["", "<span class=\"az\">3</span>  Formato: resumido         <span class=\"az\">?</span>  Ajuda      <span class=\"az\">0</span>  Sair"],
+    ["", "<b class=\"az\">&gt;</b> como tirar a 2ª via do título de eleitor?"],
+    ["", ""],
+    ["", "<b>2ª via do título de eleitor</b>"],
+    ["", "<span class=\"az\">1</span>  Entre no site do atendimento eleitoral."],
+    ["", "<span class=\"az\">2</span>  Informe os dados e leve um documento com foto."],
+    ["", "<b class=\"vd\">Fonte conferida</b>  <span class=\"az\">tse.jus.br</span> <span class=\"ap\">(verificado em 07/11/2026)</span>"],
+    ["", "<b class=\"la\">Atenção:</b> confirme no site oficial antes de ir."],
+    ["", "<span class=\"ap\">Continue consultando:</span> <span class=\"az\">1</span> Situação eleitoral  <span class=\"az\">2</span> Título cancelado"],
+    ["ap", "Orientação não oficial. Este programa não é um canal do governo."]
+  ];
+  async function terminal() {
+    var meu = ++tId; tcorpo.textContent = "";
+    for (var i = 0; i < TLINHAS.length; i++) {
+      if (meu !== tId) return;
+      var l = el("div", "l " + TLINHAS[i][0]); l.innerHTML = TLINHAS[i][1] || "&nbsp;"; tcorpo.appendChild(l);
+      await pausa(reduz ? 0 : 170);
+    }
+    if (meu !== tId) return;
+    var f = el("div", "l"); f.innerHTML = "<b class=\"az\">&gt;</b> <span class=\"cur\"></span>"; tcorpo.appendChild(f);
+  }
+
+  /* ---------- Identidade: copiar cor, selo ---------- */
+  $$("#swatches .sw").forEach(function (b) {
     b.addEventListener("click", function () {
-      var q = b.getAttribute("data-q");
-      if (q === "limpar") { rodando++; boasVindas(); } else { executa(q); }
+      var h = b.getAttribute("data-hex");
+      try { navigator.clipboard.writeText(h).then(function () { toast("Cor " + h + " copiada"); }, function () { toast(h); }); } catch (e) { toast(h); }
     });
   });
+  $("#pop-replay").addEventListener("click", function () { var p = $("#pop-demo"); p.classList.remove("go"); void p.offsetWidth; p.classList.add("go"); });
 
-  /* Cofre de demonstração */
-  var cofre = document.getElementById("cofre"), relogio = document.getElementById("relogio");
-  var trilho = document.getElementById("trilho"), estado = document.getElementById("estado");
-  var TOTAL = 600, restante = TOTAL, cron = null;
-  function fmt(s) { var m = Math.floor(s / 60), r = s % 60; return (m < 10 ? "0" : "") + m + ":" + (r < 10 ? "0" : "") + r; }
-  function mostra() { relogio.textContent = fmt(restante); trilho.style.width = (restante / TOTAL * 100) + "%"; }
-  function bloqueia() {
-    clearInterval(cron); cron = null; restante = TOTAL;
-    cofre.classList.remove("aberto"); estado.textContent = "BLOQUEADO"; relogio.textContent = fmt(TOTAL); trilho.style.width = "0%";
+  /* ---------- Explorador das 17 orientações + Dijkstra ---------- */
+  var D = [{"id":"DOC-001","t":"2ª via da identidade (CIN/RG)","tema":"doc","d":"gov.br","v":"2026-11-07","r":["DOC-002","DOC-003","SRV-004","DIR-004"],"c":true},{"id":"DOC-002","t":"CIN digital no app gov.br","tema":"doc","d":"gov.br","v":"2026-11-07","r":["DOC-001"],"c":false},{"id":"DOC-003","t":"2ª via do título de eleitor","tema":"doc","d":"tse.jus.br","v":"2026-11-07","r":["DOC-001","DOC-004","DOC-005"],"c":true},{"id":"DOC-004","t":"Título de eleitor cancelado","tema":"doc","d":"tse.jus.br","v":"2026-11-07","r":["DOC-003","DOC-005"],"c":true},{"id":"DOC-005","t":"Situação eleitoral","tema":"doc","d":"tse.jus.br","v":"2026-11-07","r":["DOC-003","DOC-004"],"c":false},{"id":"SRV-001","t":"Meu INSS e telefone 135","tema":"ser","d":"gov.br","v":"2026-11-07","r":["SRV-002","SRV-003","SRV-004","SRV-006"],"c":false},{"id":"SRV-002","t":"Perícia médica do INSS","tema":"ser","d":"gov.br","v":"2026-11-07","r":["SRV-001"],"c":true},{"id":"SRV-003","t":"Extrato CNIS e aposentadoria","tema":"ser","d":"gov.br","v":"2026-11-07","r":["SRV-001"],"c":false},{"id":"SRV-004","t":"Inscrição no CadÚnico","tema":"ser","d":"gov.br","v":"2026-11-07","r":["DOC-001","SRV-001","DIR-006"],"c":false},{"id":"SRV-005","t":"Cartão Nacional de Saúde","tema":"ser","d":"gov.br","v":"2026-11-07","r":["SRV-006"],"c":false},{"id":"SRV-006","t":"Meu SUS Digital","tema":"ser","d":"gov.br","v":"2026-11-07","r":["SRV-005","SRV-001"],"c":false},{"id":"DIR-001","t":"Reclamar no Consumidor.gov.br","tema":"dir","d":"consumidor.gov.br","v":"2026-11-07","r":["DIR-002","DIR-005"],"c":false},{"id":"DIR-002","t":"Defensoria Pública","tema":"dir","d":"dpu.def.br","v":"2026-11-07","r":["DIR-001","DIR-003","DIR-004","DIR-005"],"c":false},{"id":"DIR-003","t":"Disque 100 e Ligue 180","tema":"dir","d":"gov.br","v":"2026-11-07","r":["DIR-002"],"c":false},{"id":"DIR-004","t":"Certidão de nascimento gratuita","tema":"dir","d":"planalto.gov.br","v":"2026-11-07","r":["DIR-002","DOC-001"],"c":true},{"id":"DIR-005","t":"Juizado Especial Cível","tema":"dir","d":"cnj.jus.br","v":"2026-11-07","r":["DIR-001","DIR-002"],"c":false},{"id":"DIR-006","t":"Tarifa Social de Energia Elétrica","tema":"dir","d":"gov.br","v":"2026-11-07","r":["SRV-004"],"c":true}];
+  var TEMAS = { doc: ["Documentos", ""], ser: ["Serviços públicos", "t"], dir: ["Direitos", "c"] };
+  var porId = {}; D.forEach(function (r) { porId[r.id] = r; });
+  var temaFiltro = "todos";
+  function dataBr(iso) { var p = iso.split("-"); return p[2] + "/" + p[1] + "/" + p[0]; }
+  function filtros(cont, opcoes, atual, aoMudar) {
+    cont.textContent = "";
+    opcoes.forEach(function (o) {
+      var b = el("button", "chip", o[1]); b.type = "button"; b.setAttribute("aria-pressed", o[0] === atual ? "true" : "false");
+      b.addEventListener("click", function () { aoMudar(o[0]); }); cont.appendChild(b);
+    });
   }
-  function desbloqueia() {
-    if (cron) return;
-    cofre.classList.add("aberto"); estado.textContent = "DESBLOQUEADO"; restante = TOTAL; mostra();
-    cron = setInterval(function () { restante--; if (restante <= 0) { bloqueia(); } else { mostra(); } }, 1000);
+  function desenhaBase() {
+    filtros($("#filtros-base"), [["todos", "Todos (17)"], ["doc", "Documentos (5)"], ["ser", "Serviços (6)"], ["dir", "Direitos (6)"]], temaFiltro, function (t) { temaFiltro = t; desenhaBase(); });
+    var g = $("#grade-base"); g.textContent = "";
+    D.filter(function (r) { return temaFiltro === "todos" || r.tema === temaFiltro; }).forEach(function (r) {
+      var b = el("button", "ficha"); b.type = "button"; b.setAttribute("aria-pressed", "false"); b.setAttribute("data-id", r.id);
+      b.appendChild(el("b", "", r.t));
+      var m = el("div", "m"); m.appendChild(el("span", "tag " + TEMAS[r.tema][1], TEMAS[r.tema][0])); m.appendChild(el("span", "tag v", "Fonte: " + r.d));
+      if (r.c) m.appendChild(el("span", "tag n", "Confirmar antes")); b.appendChild(m);
+      b.addEventListener("click", function () { abreFicha(r.id); });
+      g.appendChild(b);
+    });
   }
-  document.getElementById("abrir").addEventListener("click", desbloqueia);
-  document.getElementById("fechar").addEventListener("click", bloqueia);
+  function abreFicha(id) {
+    var r = porId[id], d = $("#det-base"); d.hidden = false; d.textContent = "";
+    $$("#grade-base .ficha").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-id") === id ? "true" : "false"); });
+    d.appendChild(el("h3", "", r.t));
+    var m = el("div", "m"); m.style.cssText = "display:flex;flex-wrap:wrap;gap:6px;font-size:13px;font-weight:700;margin-bottom:8px";
+    m.appendChild(el("span", "tag " + TEMAS[r.tema][1], TEMAS[r.tema][0]));
+    m.appendChild(el("span", "tag v", "Fonte conferida · " + r.d));
+    m.appendChild(el("span", "tag", "Verificado em " + dataBr(r.v)));
+    if (r.c) m.appendChild(el("span", "tag n", "Confirmar antes de ir"));
+    d.appendChild(m);
+    var t = el("p", "nota"); t.setAttribute("data-nivel", "tecnico"); t.style.margin = "0 0 8px"; t.textContent = "Registro " + id + " · " + r.r.length + " assunto(s) relacionado(s)."; d.appendChild(t);
+    d.appendChild(el("b", "", "Assuntos relacionados"));
+    var rels = el("div", "rels");
+    r.r.forEach(function (x) { var c = el("button", "chip", porId[x].t); c.type = "button"; c.addEventListener("click", function () { abreFicha(x); }); rels.appendChild(c); });
+    d.appendChild(rels);
+  }
+  desenhaBase();
+  function opcoes(sel, padrao) { D.forEach(function (r) { var o = el("option", "", r.t); o.value = r.id; sel.appendChild(o); }); sel.value = padrao; }
+  opcoes($("#sel-a"), "DOC-003"); opcoes($("#sel-b"), "DIR-006");
+  function dijkstra(a, b) {
+    var dist = {}, prev = {}, fila = [];
+    D.forEach(function (r) { dist[r.id] = Infinity; }); dist[a] = 0; fila.push(a);
+    var viz = {}; D.forEach(function (r) { viz[r.id] = viz[r.id] || {}; r.r.forEach(function (x) { viz[r.id][x] = 1; viz[x] = viz[x] || {}; viz[x][r.id] = 1; }); });
+    var feito = {};
+    while (fila.length) {
+      fila.sort(function (x, y) { return dist[x] - dist[y]; });
+      var u = fila.shift(); if (feito[u]) continue; feito[u] = true; if (u === b) break;
+      Object.keys(viz[u]).forEach(function (v) {
+        var custo = porId[u].tema === porId[v].tema ? 1 : 2;
+        if (dist[u] + custo < dist[v]) { dist[v] = dist[u] + custo; prev[v] = u; fila.push(v); }
+      });
+    }
+    if (dist[b] === Infinity) return null;
+    var p = [], c = b; while (c) { p.unshift(c); c = prev[c]; }
+    return { p: p, custo: dist[b] };
+  }
+  var rotaId = 0;
+  async function mostraRota() {
+    var a = $("#sel-a").value, b = $("#sel-b").value, r = $("#rota"), meu = ++rotaId; r.textContent = ""; $("#rota-nota").textContent = "";
+    if (a === b) { $("#rota-nota").textContent = "Escolha dois assuntos diferentes."; return; }
+    var res = dijkstra(a, b);
+    if (!res) { $("#rota-nota").textContent = "Sem caminho entre esses assuntos."; return; }
+    for (var i = 0; i < res.p.length; i++) {
+      if (meu !== rotaId) return;
+      if (i > 0) { var c = porId[res.p[i - 1]].tema === porId[res.p[i]].tema ? 1 : 2; r.appendChild(el("span", "seta", "→ custo " + c)); }
+      r.appendChild(el("span", "no", porId[res.p[i]].t)); await pausa(reduz ? 0 : 260);
+    }
+    $("#rota-nota").textContent = "Custo total: " + res.custo + " · " + (res.p.length - 1) + " passo(s)";
+  }
+  $("#calc").addEventListener("click", mostraRota);
 
-  /* Copiar comandos */
-  var cp = document.getElementById("copiar");
+  /* ---------- Arquitetura ---------- */
+  var ARQ = [
+    ["Núcleo (avaliado pela GS)", "base.py carrega e valida o JSON; busca.py faz normalização, índice invertido, pontuação, regra de decisão, grafo e Dijkstra; respostas.py monta os modelos A e B; sistema.py é o terminal; avaliacao.py mede acerto e tempo. Só biblioteca padrão, Python 3.9+."],
+    ["Roteador", "roteador.py recebe a mensagem e usa o Gemini (function calling) para escolher entre 4 ferramentas: buscar_orientacao, cofre_documento, gerenciar_tarefas e briefing_matinal. Os argumentos são validados e, se o Gemini falhar, regras simples assumem. A IA só entra quando a base não resolve sozinha."],
+    ["Bot e painel", "telegram_bot.py (aiogram) cuida do chat, dos botões e da autorização; painel.py (FastAPI) serve a API e o front estático de painel/. Login por initData assinado do Telegram ou por link de uso único. HTTPS, cabeçalhos de segurança e limite de pedidos."],
+    ["Cofre", "criptografia.py deriva a chave (PBKDF2) e cifra com AES-256-GCM; cofre.py guarda, lista e abre filtrando por usuário, com a chave só na memória e TTL de 10 min; classificador.py pede ao Gemini o tipo do documento, com consentimento, e usa nome padrão se falhar."],
+    ["Rotinas", "tarefas.py lê datas por regras; agendador.py (APScheduler) dispara um tick a cada 30 s que cumpre lembretes, resumo da manhã e exclusões vencidas, inclusive após reiniciar; briefing.py monta até 3 manchetes por tema a partir de feeds RSS, rotuladas como não oficiais."],
+    ["Armazenamento", "armazenamento.py define a interface e escolhe a implementação: SQLite local (padrão) ou Supabase (armazenamento_supabase.py, API REST pela biblioteca padrão). O Supabase só liga com URL e chave secreta e volta sozinho para o SQLite se a verificação falhar. Schema em deploy/supabase_schema.sql."]
+  ];
+  function mostraArq(i) {
+    $$("#arq .no-arq").forEach(function (b, k) { b.setAttribute("aria-pressed", k === i ? "true" : "false"); });
+    var d = $("#arq-det"); d.textContent = ""; d.appendChild(el("h3", "", ARQ[i][0])); d.appendChild(el("p", "", ARQ[i][1])).style.margin = "0";
+  }
+  $$("#arq .no-arq").forEach(function (b) { b.addEventListener("click", function () { mostraArq(+b.getAttribute("data-i")); }); });
+  mostraArq(0);
+
+  var MODS = [
+    ["base.py", "n", "Carrega e valida data/base.json (arquivo ausente, vazio, ids duplicados, relacionados inexistentes)"],
+    ["busca.py", "n", "Normalização, índice invertido, pontuação, decisão C·A·B, grafo e Dijkstra"],
+    ["respostas.py", "n", "Modelos de resposta A e B e aviso de limitação"],
+    ["sistema.py", "n", "Terminal interativo, --avaliar, --validar-entrega e --servidor"],
+    ["avaliacao.py", "n", "Taxa de acerto, tempo (linear × índice) e comparação A × B"],
+    ["roteador.py", "p", "Gemini com function calling e regras de reserva"],
+    ["telegram_bot.py", "p", "Interface do Telegram, botões, autorização e ordem das respostas"],
+    ["painel.py", "p", "API do painel: perguntar, tarefas, cofre, ajustes, initData"],
+    ["cofre.py · criptografia.py", "p", "Cofre cifrado, chave em memória com TTL"],
+    ["classificador.py · documentos.py", "p", "Tipo e nome de documentos, fluxo de foto e PDF"],
+    ["tarefas.py · agendador.py", "p", "Lembretes, resumo da manhã e autodestruição de mensagens"],
+    ["briefing.py", "p", "Manchetes por tema (5 temas) e resumo da manhã"],
+    ["transcricao.py", "p", "Voz transcrita localmente com Whisper"],
+    ["armazenamento.py · armazenamento_supabase.py", "p", "SQLite padrão e Supabase opcional com volta automática"],
+    ["servidor.py · ponte.py", "p", "Sobe bot, painel e agendador; liga o servidor ao núcleo"]
+  ];
+  var modFiltro = "todos";
+  function desenhaMods() {
+    filtros($("#filtros-mod"), [["todos", "Todos"], ["n", "Núcleo"], ["p", "Produto"]], modFiltro, function (t) { modFiltro = t; desenhaMods(); });
+    var tb = $("#mods"); tb.textContent = "";
+    MODS.filter(function (m) { return modFiltro === "todos" || m[1] === modFiltro; }).forEach(function (m) {
+      var tr = el("tr"); var c1 = el("td"); c1.appendChild(el("code", "", m[0])); tr.appendChild(c1);
+      var c2 = el("td"); c2.appendChild(el("span", "tag " + (m[1] === "n" ? "" : "t"), m[1] === "n" ? "Núcleo" : "Produto")); tr.appendChild(c2);
+      tr.appendChild(el("td", "", m[2])); tb.appendChild(tr);
+    });
+  }
+  desenhaMods();
+
+  /* ---------- Status ---------- */
+  var ST = [
+    ["Núcleo no terminal", "ok", "Base com 17 registros, busca, grafo, Dijkstra, modelos A e B e --avaliar. Falta conferir numa máquina limpa e no Windows."],
+    ["Bot no Telegram", "ok", "Texto, voz, UF, /apagar_meus_dados e roteador testados no Telegram real."],
+    ["Tarefas e lembretes", "ok", "O lembrete chega no Telegram na hora certa (testado em 08/11)."],
+    ["Armazenamento", "ok", "SQLite padrão; Supabase opcional testado no projeto real, com volta automática."],
+    ["Painel, cofre, foto/PDF e resumo da manhã", "pa", "Implementados e cobertos por testes; falta testar no Telegram real (roteiro de 14 casos)."],
+    ["Relatório PDF", "pa", "7 páginas geradas dos dados reais; falta incluir público, usabilidade e clareza."],
+    ["README", "pa", "Faltam nome do grupo, perfis, link do vídeo e Participação na Competição."],
+    ["Revisão das 17 orientações", "pe", "Rascunho escrito com apoio de IA; precisa de conferência humana, incluindo os estados do DOC-001."],
+    ["Perguntas do público", "pe", "Meta: 10 ou mais, anônimas, medidas antes de ajustar a busca."],
+    ["Usabilidade e clareza A × B", "pe", "Folha cega e roteiro prontos; falta aplicar."],
+    ["Hospedagem (VM, HTTPS, deploy)", "bl", "Ainda não há VM. Segredos já estão no GitHub Secrets; falta escolher onde hospedar."],
+    ["Vídeo e envio na FIAP ON", "pe", "Vídeo Não Listado no YouTube e um .txt com os dois links."]
+  ];
+  var ROT = { ok: "Pronto", pa: "Parcial", pe: "Pendente", bl: "Bloqueado" };
+  var stFiltro = "todos";
+  function desenhaStatus() {
+    filtros($("#filtros-status"), [["todos", "Todos (12)"], ["ok", "Pronto (4)"], ["pa", "Parcial (3)"], ["pe", "Pendente (4)"], ["bl", "Bloqueado (1)"]], stFiltro, function (t) { stFiltro = t; desenhaStatus(); });
+    var tb = $("#tb-status"); tb.textContent = "";
+    ST.filter(function (s) { return stFiltro === "todos" || s[1] === stFiltro; }).forEach(function (s) {
+      var tr = el("tr"); tr.appendChild(el("td", "", s[0]));
+      var c = el("td"); c.appendChild(el("span", "selo2 s-" + s[1], ROT[s[1]])); tr.appendChild(c); tr.appendChild(el("td", "", s[2])); tb.appendChild(tr);
+    });
+  }
+  desenhaStatus();
+  var pts = 0; ST.forEach(function (s) { pts += s[1] === "ok" ? 1 : s[1] === "pa" ? 0.5 : 0; });
+  var pct = Math.round(pts / ST.length * 100);
+  function animaStatus() {
+    $("#anel").style.strokeDashoffset = String(314 * (1 - pct / 100));
+    var n = $("#anel-n"); if (reduz) { n.textContent = pct + "%"; } else { var t0 = null; (function p(t) { if (t0 === null) t0 = t; var k = Math.min(1, (t - t0) / 1200); n.textContent = Math.round(pct * k) + "%"; if (k < 1) requestAnimationFrame(p); })(performance.now()); }
+    $("#anel-txt").textContent = pct + "% do projeto pronto";
+  }
+  function dias(alvo, id) {
+    var h = new Date(); h.setHours(0, 0, 0, 0);
+    var n = Math.round((new Date(alvo + "T00:00:00") - h) / 86400000);
+    $(id).textContent = n > 0 ? n + (n === 1 ? " dia" : " dias") : n === 0 ? "Hoje" : "Prazo passou";
+  }
+  dias("2026-11-13", "#d-congela"); dias("2026-11-19", "#d-entrega");
+
+  /* ---------- Copiar comandos ---------- */
+  var cp = $("#copiar");
   cp.addEventListener("click", function () {
-    var txt = "git clone https://github.com/JFrois/GlobalSolution_CitizenTech.git\ncd GlobalSolution_CitizenTech\npython src/sistema.py\npython src/sistema.py --avaliar\npython -m unittest discover -s testes -t .";
-    function ok() { cp.textContent = "copiado"; setTimeout(function () { cp.textContent = "copiar"; }, 1600); }
-    try { navigator.clipboard.writeText(txt).then(ok, function () { cp.textContent = "selecione"; }); } catch (e) { cp.textContent = "selecione"; }
+    var txt = "git clone https://github.com/JFrois/GlobalSolution_CitizenTech.git\ncd GlobalSolution_CitizenTech\npython src/sistema.py\npython src/sistema.py --avaliar";
+    function ok() { cp.textContent = "Copiado"; setTimeout(function () { cp.textContent = "Copiar"; }, 1600); }
+    try { navigator.clipboard.writeText(txt).then(ok, function () { cp.textContent = "Selecione"; }); } catch (e) { cp.textContent = "Selecione"; }
   });
 })();
 </script>
