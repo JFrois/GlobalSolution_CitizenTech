@@ -32,7 +32,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 
 > Global Solution 2026.2 · Desafio CitizenTech
 
-## Estado do projeto (atualizado em 09/11/2026, `main` até o PR #50)
+## Estado do projeto (atualizado em 09/11/2026, `main` até o PR #52)
 
 > Resumo para quem está chegando agora. O detalhe de quem faz o quê está em [`docs/planejamento.md`](docs/planejamento.md) (seção "Status e onde parou"). Prazos: **código congelado em 13/11**, **entrega em 19/11**.
 
