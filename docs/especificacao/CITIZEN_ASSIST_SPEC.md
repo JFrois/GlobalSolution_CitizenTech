@@ -289,7 +289,7 @@ Dois modelos documentados, comparados nos testes (clareza, consistência, presen
 
 ## 9. Roteador (modo `--servidor`)
 
-- Gemini (plano **pago**) com **function calling**. O modelo recebe a mensagem (texto, ou transcrição de voz) e escolhe **uma** ferramenta:
+- Gemini (plano **gratuito**, §12) com **function calling**. O modelo recebe a mensagem (texto, ou transcrição de voz) e escolhe **uma** ferramenta:
   - `buscar_orientacao(pergunta: str)` → chama `busca.py` (determinístico) e responde com o Modelo B.
   - `cofre_documento(acao: "enviar"|"listar"|"abrir", nome?: str)` → ver §10.
   - `gerenciar_tarefas(acao, titulo?, quando?)` → criar/listar/concluir tarefas e lembretes.
@@ -347,7 +347,7 @@ Dois modelos documentados, comparados nos testes (clareza, consistência, presen
 
 - **Tarefas no painel (decisão de 08/11):** aba "Tarefas" com o mesmo núcleo do chat (`tarefas.tentar_criar`, sem IA): `GET /api/tarefas`, `POST /api/tarefas` (`titulo`, `quando` opcional em texto livre, lido por regras) e `POST /api/tarefas/{id}/concluir`. Tudo filtrado por `user_id`, com limite de pedidos; título até 200 e "quando" até 80 caracteres. O aviso no horário continua saindo pelo bot. **Não há tarefas no terminal:** o núcleo avaliado não guarda dado do usuário (§13.4).
 - **Tarefas/lembretes (`tarefas.py`):** título, data/hora (fuso do usuário **(EM ABERTO: assumir America/Sao_Paulo por padrão)**), status. Alertas via APScheduler. **Persistência (decisão de 08/11):** o estado fica nas tabelas `tarefas` e `exclusoes` do armazenamento; o APScheduler só dispara um tick a cada 30 s que cumpre o que venceu, então a subida do servidor já executa o vencido, sem jobstore próprio. O fuso é America/Sao_Paulo para todos (fuso por usuário = roadmap).
-- **Briefing (`briefing.py`) — temas (decisão de 08/11): o usuário escolhe entre Cultura, Tecnologia, Saúde e bem-estar, Música e Filmes (não são os temas da base verificada).** todo dia no horário configurado, envia (1) tarefas/lembretes do dia e (2) até **3 manchetes por tema** do usuário, de feeds RSS, com rótulo **"Notícias — fonte não oficial"**. Lista curada de feeds por tema **(EM ABERTO: equipe escolher 1–2 feeds por tema; preferir veículos públicos/governamentais)**. Falha de um feed não derruba o briefing.
+- **Briefing (`briefing.py`) — temas (decisão de 08/11): o usuário escolhe entre Cultura, Tecnologia, Saúde e bem-estar, Música e Filmes (não são os temas da base verificada).** todo dia no horário configurado, envia (1) tarefas/lembretes do dia e (2) até **3 manchetes por tema** do usuário, de feeds RSS, com rótulo **"Notícias — fonte não oficial"**. Feeds por tema em `data/feeds.json` (escolhidos em 08/11; a fonte de Filmes é fraca e deve ser reavaliada). Falha de um feed não derruba o briefing.
 - **UF:** `/localizacao` (teclado com UFs) ou painel. Ao responder um registro `abrangencia: estadual`, usar `referencias_estaduais[UF]` se existir; senão o link nacional gov.br e um aviso de que o procedimento varia por estado. Se a UF não foi informada, perguntar uma vez.
 - **Autodestruição (`agendador.py`):** job por mensagem com documento, em 5 min. Só apaga mensagens com < 48 h (limite do Telegram). **Ao iniciar o servidor, executar exclusões vencidas** (persistência).
 - **Privacidade:** coletar o mínimo — `user_id` do Telegram, UF, temas do briefing, tarefas, metadados do cofre. Comando `/apagar_meus_dados` remove tudo do usuário.
@@ -482,7 +482,7 @@ Faça nesta ordem e **faça commit a cada marco**. Não avance sem os testes do 
 - [ ] README com as 10 seções; relatório 4–8 páginas; `uso_ia.md`; `link_video.txt`.
 - [ ] Repositório público, sem segredos (verificar histórico do Git).
 - [ ] Vídeo Não Listado; `.txt` com os dois links enviado na FIAP ON.
-- [ ] Onda 2: cofre testado com senha errada, expiração de desbloqueio e isolamento por usuário; ou movida para o roadmap. (08/11: cofre, cripto, classificador, tarefas, agendador, briefing, foto/PDF no bot e front do painel **implementados e cobertos por 214 testes automatizados** — senha errada, expiração e isolamento por usuário testados; bot, UF, voz e roteador testados no Telegram real em 07/11. **Falta testar no Telegram real** foto/PDF, cofre, lembretes, resumo e Mini App, e **VM/HTTPS/deploy**; feeds RSS por tema e fuso por usuário seguem EM ABERTO.)
+- [ ] Onda 2: cofre testado com senha errada, expiração de desbloqueio e isolamento por usuário; ou movida para o roadmap. (08/11: cofre, cripto, classificador, tarefas, agendador, briefing, foto/PDF no bot e front do painel **implementados e cobertos por 248 testes automatizados** — senha errada, expiração e isolamento por usuário testados; bot, UF, voz e roteador testados no Telegram real em 07/11. **Falta testar no Telegram real** foto/PDF, cofre, lembretes, resumo e Mini App, e **VM/HTTPS/deploy**; feeds RSS por tema decididos em 08/11; fuso por usuário segue EM ABERTO.)
 
 ---
 

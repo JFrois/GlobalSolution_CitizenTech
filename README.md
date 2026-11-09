@@ -32,7 +32,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 
 > Global Solution 2026.2 · Desafio CitizenTech
 
-## Estado do projeto (atualizado em 08/11/2026, `main` até o PR #44)
+## Estado do projeto (atualizado em 09/11/2026, `main` até o PR #48)
 
 > Resumo para quem está chegando agora. O detalhe de quem faz o quê está em [`docs/planejamento.md`](docs/planejamento.md) (seção "Status e onde parou"). Prazos: **código congelado em 13/11**, **entrega em 19/11**.
 
@@ -43,7 +43,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 - Modelos de resposta A e B, aviso de limitação e mensagens de entrada inválida (`src/respostas.py`).
 - Terminal completo (`python src/sistema.py`), com cores e texto puro de reserva, `--validar-entrega` e `--avaliar`.
 - Perguntas de teste da equipe congeladas antes das palavras-chave: **19/19 (100%)**; índice invertido cerca de 100 vezes mais rápido que a busca linear. Resultados em `testes/resultados.csv` e `testes/comparacao_modelos.csv`.
-- **243 testes automatizados** (`python -m unittest discover -s testes -t .`), todos passando. O CI roda a suíte duas vezes: no Python 3.9 só com a biblioteca padrão (o que o avaliador usa) e no 3.12 com as bibliotecas do servidor, sem pular os testes do painel, cofre e bot.
+- **248 testes automatizados** (`python -m unittest discover -s testes -t .`), todos passando. O CI roda a suíte duas vezes: no Python 3.9 só com a biblioteca padrão (o que o avaliador usa) e no 3.12 com as bibliotecas do servidor, sem pular os testes do painel, cofre e bot.
 
 **Concluído e testado no Telegram real (Onda 2, camada de produto), em 07/11:**
 
@@ -79,7 +79,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 4. **Infraestrutura:** VM, DuckDNS/Caddy e deploy automático (nunca testados; o deploy só liga com `DEPLOY_ATIVO=true`); `ffmpeg` e Whisper na VM.
 5. **Segurança:** `cryptography` atualizada para 50.0.2 em 08/11 (fecha os 6 alertas do Dependabot). Para atualizar um ambiente já criado: `.venv/bin/python -m pip install cryptography==50.0.2` (não use `pip install -r requirements.txt` fora do `.venv` nem antes do passo do Whisper, ver §6). Antes da VM, gerar **novo** token do bot e **nova** chave do Gemini (os de teste foram compartilhados fora do `.env`) e conferir o histórico do Git (busca feita em 08/11 não achou tokens).
 6. **Decisões EM ABERTO:** fuso por usuário (hoje todos em America/Sao_Paulo), armazenamento definitivo (hoje SQLite; Supabase não foi adotado). Gemini no plano gratuito (decidido em 08/11; ver spec §12).
-7. **Documentação e entrega:** textos das seções 1, 2, 8, 9 e 10 deste README e "Participação na Competição"; relatório PDF (`docs/relatorio.pdf`); vídeo e `docs/link_video.txt`; `.txt` na FIAP ON.
+7. **Documentação e entrega:** seções 2, 8 e 10 escritas em 09/11 (revisar). Faltam o nome do grupo e os perfis da seção 1, o link da seção 9, "Participação na Competição", conferir o `docs/relatorio.pdf` (rascunho gerado em 09/11 por `scripts/gerar_relatorio.py`), o vídeo e `docs/link_video.txt`, e o `.txt` na FIAP ON.
 8. **Roadmap planejado (opcional, baixa prioridade):** números de contexto da Base dos Dados para o relatório (ver seção 10, "Melhorias e roadmap").
 
 Melhorias conhecidas que não bloqueiam a entrega:
@@ -122,19 +122,21 @@ _A preencher_
 
 ### O problema
 
-_A preencher_
+Quem precisa de um documento ou serviço público costuma encontrar a informação espalhada em vários portais, com termos técnicos e instruções incompletas ou desatualizadas. Perguntas simples ("perdi meu RG, o que faço?") exigem abrir vários sites, e há risco de seguir um passo errado ou cair em páginas não oficiais.
+
+O Citizen Assist AI responde **somente com orientações verificadas** (`data/base.json`), sempre com a fonte oficial e a data de verificação. Quando não há base suficiente, avisa e não inventa instrução. Não é um canal oficial de nenhum órgão.
 
 ### Público beneficiado
 
-_A preencher_
+Cidadãos que precisam de orientação básica sobre documentos, serviços e direitos e têm pouca familiaridade com portais públicos: quem perdeu um documento, quem vai pedir um benefício, quem quer reclamar de uma empresa ou buscar ajuda jurídica gratuita. A linguagem é simples, e o assistente funciona no terminal (avaliação), no Telegram e em um painel web.
 
 ### Temas abordados
 
 | Tema | Assuntos | Registros |
 |---|---|---|
-| Documentação pessoal | _A preencher_ | DOC-001 a DOC-005 |
-| Serviços públicos | _A preencher_ | SRV-001 a SRV-006 |
-| Direitos e orientações comunitárias | _A preencher_ | DIR-001 a DIR-006 |
+| Documentação pessoal | 2ª via da CIN/RG, CIN digital, 2ª via do título de eleitor, título cancelado, situação eleitoral | DOC-001 a DOC-005 |
+| Serviços públicos | Meu INSS e 135, perícia médica, extrato CNIS, CadÚnico, Cartão Nacional de Saúde, Meu SUS Digital | SRV-001 a SRV-006 |
+| Direitos e orientações comunitárias | Consumidor.gov.br, Defensoria Pública, Disque 100 e Ligue 180, certidão de nascimento gratuita, Juizado Especial Cível, Tarifa Social de Energia | DIR-001 a DIR-006 |
 
 ---
 
@@ -256,7 +258,7 @@ Sem base suficiente, o assistente diz que não encontrou orientação verificada
 
 São 19 perguntas em `testes/perguntas.json`: 8 diretas, 3 reformuladas, 3 fora da base e 5 de limite (entrada vazia, consulta ambígua "documento", tópico sem base, só símbolos e texto longo). Todas são fictícias, sem dado pessoal. As perguntas da equipe foram **congeladas num commit antes** de preencher as palavras-chave (histórico do Git). O conjunto do público (≥ 10 perguntas anônimas) será coletado depois e medido **antes** de qualquer ajuste.
 
-Testes automatizados: `python -m unittest discover -s testes -t .` (243 testes: base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal e avaliação, além do servidor, que só rodam com o ambiente do bot).
+Testes automatizados: `python -m unittest discover -s testes -t .` (248 testes: base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal e avaliação, além do servidor, que só rodam com o ambiente do bot).
 
 ### Indicadores da busca
 
@@ -478,15 +480,25 @@ _A preencher_
 
 ### Conclusões
 
-_A preencher_
+O núcleo roda só com Python, offline e sem chaves. Acertou 19 de 19 perguntas da equipe (8 diretas, 3 reformuladas, 3 fora da base e 5 de limite), e o índice invertido é de 100 a 200 vezes mais rápido que a busca linear nos tamanhos testados. A resposta ao cidadão nunca é gerada livremente pela IA: o conteúdo vem sempre da base, com fonte e data. Sobre a camada de produto, o bot no Telegram, os lembretes e o roteador foram testados no Telegram real; cofre, foto/PDF, resumo da manhã e Mini App têm testes automatizados, mas ainda faltam testes reais (ver "Estado do projeto").
 
 ### Limitações
 
-_A preencher_
+- **Base pequena:** 17 registros em 3 temas, escritos a partir das fontes oficiais e ainda sem revisão humana completa.
+- **Avaliação enviesada:** as 19 perguntas foram escritas pela própria equipe. O conjunto do público (anônimo) e o teste de usabilidade ainda não foram aplicados, então 100% não deve ser lido como taxa de acerto geral.
+- **Busca por palavras-chave:** não entende o sentido da frase. Perguntas muito diferentes das palavras-chave caem em "sem base".
+- **Informação que muda:** taxas, prazos e regras mudam. Por isso cada resposta mostra a data de verificação e orienta a confirmar no site oficial.
+- **Cofre e Gemini:** o Gemini usado é o plano gratuito, em que o Google pode usar o conteúdo enviado para melhorar produtos; o aviso de consentimento explica isso. Só E2E real existe no painel; no chat, o servidor vê o arquivo enquanto o cofre está desbloqueado.
+- **Infraestrutura:** VM, HTTPS e deploy automático ainda não foram testados em produção.
 
 ### Melhorias e roadmap
 
 <!-- Completar com o que virar roadmap na regra de corte de 13/11. -->
+
+- **Ampliar sinônimos e palavras-chave** na base (hoje o `base.json` não tem sinônimos), medindo antes e depois com o conjunto do público.
+- **Ampliar a base** com novos temas e registros (por exemplo CNH e CPF), mantendo a conferência na fonte oficial.
+- **Detalhar os estados** em `referencias_estaduais` do DOC-001 e do que mais variar por UF.
+- **Classificador de documentos local**, para não enviar arquivos ao Gemini.
 
 - **Números de contexto para o relatório (planejado, opcional, baixa prioridade):** consultar uma única vez na [Base dos Dados](https://basedosdados.org) alguns números públicos que justifiquem o problema e o impacto social (ex.: famílias no CadÚnico, eleitores por UF). O resultado vai só para o relatório, com fonte e data citadas; não entra no código, porque a Base dos Dados exige `pip install`, BigQuery e internet (spec §5.3) e traz estatísticas, não orientações passo a passo.
 - Ferramenta `consultar_site_oficial`, classificador de documentos local, CNH e CPF na base, fuso por usuário (spec §3 e §11).
