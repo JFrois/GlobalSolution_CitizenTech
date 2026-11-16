@@ -16,16 +16,16 @@
 | A1 a A11 | **Concluído** | Base, validação, busca (índice × linear, C·A·B, digitação, sinônimos), grafo/Dijkstra, modelos A e B, terminal, `--avaliar` (19/19), 256 testes, `scripts/verificacoes_antigas.py`. Falta conferir numa máquina limpa e no Windows |
 | B1 | Concluído | `testes/perguntas.json` (19 perguntas, conjunto `equipe`), congelado antes das palavras-chave |
 | E1 (redigir as 17 orientações) | **Rascunho feito pela IA** | Todas com `data_verificacao` 2026-11-07; falta revisão humana (E2) |
-| E2 (revisão cruzada da base) | **Pendente** | Inclui `referencias_estaduais` de DOC-001 (hoje vazio) |
-| B4, B5, B6, B10 (voz) | **Concluído e testado no Telegram real** (07/11) | Bot, `/localizacao`, `/apagar_meus_dados`, roteador com cascata do Gemini, UF e voz (Whisper local) |
+| E2 (revisão cruzada da base) | **Parcial** | `documentacao` revisado e `referencias_estaduais` de DOC-001 preenchido (10 UFs); falta revisar `servicos` e `direitos` |
+| B4, B5, B6, B9, B10 (voz) | **Concluído e testado no Telegram real** (07/11–16/11) | Bot, `/localizacao`, `/apagar_meus_dados`, roteador com cascata do Gemini, UF (10 estados em DOC-001), feeds de filmes revisados e voz (Whisper local) |
 | B7 (tarefas e lembretes) | **Testado com o servidor local** (08/11) | Lembrete pelo chat chega no Telegram na hora (PRs #42 e #44); lembrete marcado para 20:10 chegou no Telegram às 20:10 |
 | B8, B9, B10 (foto/PDF) | Código pronto e testado por testes; **falta teste no Telegram real** | Autodestruição, resumo da manhã, foto/PDF no cofre |
 | C5 a C8, C10 | Código pronto e testado por testes e no navegador local; **falta teste real** | Criptografia, cofre, classificador, painel (abas Perguntar, **Tarefas**, Cofre e Ajustes) |
 | C2 | **Concluído e testado** (09/11) | SQLite padrão; Supabase opcional (`armazenamento_supabase.py`) liga com `SUPABASE_URL` + chave `sb_secret_`, grava e lê no projeto real, e volta sozinho para o SQLite se falhar. Schema em `deploy/supabase_schema.sql` (já rodado). Falta só pôr os secrets do Supabase no GitHub quando houver VM |
-| C1, C3, C4 | **Pendente (bloqueio: VM)** | Subdomínio DuckDNS existe, mas aponta para um IP residencial e as portas 80/443 não respondem. A conta Oracle não foi criada; alternativas: GitHub Student Pack + DigitalOcean, Google Cloud e2-micro, ou computador + Cloudflare Tunnel. Roteiro em `docs/deploy_vm.md`. Deploy só liga com `DEPLOY_ATIVO=true` |
-| C9 | Parcial | Testes de isolamento, senha errada, expiração e `initData` existem; falta revisão humana de segurança |
-| B2, B3, B11, B12 | **Pendente** | ~~Faturamento do Gemini~~ (decidido em 08/11: plano gratuito), nota de clareza A × B (coluna `clareza_1a5` vazia), usabilidade (`testes/usabilidade.md` vazio), perguntas do público (nenhuma ainda) |
-| E6 a E10 | **Parcial** | README seções 2, 8 e 10 escritas em 09/11 (revisar); `docs/relatorio.pdf` gerado (7 páginas, `scripts/gerar_relatorio.py`; rode de novo depois de medir público, usabilidade e clareza). **Faltam:** nome do grupo e perfis (seção 1), link do vídeo (seção 9), "Participação na Competição", `uso_ia.md` consolidado, vídeo, `docs/link_video.txt` (hoje placeholder), envio na FIAP ON |
+| C1, C3, C4 | **Pendente (bloqueio: VM / roadmap)** | Subdomínio DuckDNS existe, mas aponta para um IP residencial e as portas 80/443 não respondem. Alternativas: Cloudflare Tunnel local ou VM. Roteiro em `docs/deploy_vm.md` |
+| C9 | Parcial | Testes de isolamento, senha errada, expiração e `initData` existem; falta revisão humana de segurança (Frente C) |
+| B2, B3, B11, B12 | **Concluído (16/11)** | Plano gratuito do Gemini (08/11), nota cega de clareza A × B (`3,61` vs. `4,82`, Modelo B padrão), usabilidade (`testes/usabilidade.md`, 5/5 tarefas, SUS 92,5), perguntas do público (`9/10 = 90,0%`, `28/29 = 96,6%` geral) |
+| E6 a E10 | **Parcial** | README seções 2, 3, 4, 5, 6, 7 e 10 prontas; `uso_ia.md` consolidado; `scripts/gerar_relatorio.py` atualizado. **Faltam:** Seção 8 do README (Frente C), regerar `docs/relatorio.pdf` (Frente C), perfis (seção 1), link do vídeo (seção 9), "Participação na Competição", vídeo, `docs/link_video.txt` e envio na FIAP ON |
 | Materiais prontos (09/11) | **Entregues** | `testes/clareza_folha.md` + `scripts/folha_clareza.py` (nota cega A × B), `testes/roteiro_telegram_real.md` (14 casos), `docs/deploy_vm.md`, página pública `docs/index.html` (GitHub Pages) |
 | E12 (novo) | Planejado, opcional | Números de contexto da Base dos Dados para o relatório (seção 5) |
 

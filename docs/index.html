@@ -828,18 +828,18 @@ footer a{color:#fff}
   <section class="sec rev" id="qualidade">
     <span class="rot">Resultados</span>
     <h2>O que foi medido</h2>
-    <p class="lead">Números reais de 09/11/2026, medidos no Mac do autor com Python 3.14. A página mostra também o que ainda não foi medido.</p>
+    <p class="lead">Números reais atualizados em 16/11/2026 com o conjunto da equipe (19 perguntas), conjunto do público (10 perguntas anônimas), avaliação cega de clareza A × B e teste de usabilidade (SUS).</p>
     <div class="metricas">
-      <div class="cartao"><h3>Integridade</h3><div class="valor">256<small> / 256 testes</small></div>
+      <div class="cartao"><h3>Integridade</h3><div class="valor">259<small> / 259 testes</small></div>
         <div class="bar"><div class="bar-t"><span>Testes automatizados</span><b>100%</b></div><div class="fio"><i class="v" data-w="100"></i></div></div>
-        <div class="bar"><div class="bar-t"><span>Busca (equipe)</span><b>19/19</b></div><div class="fio"><i class="v" data-w="100"></i></div></div>
-        <div class="bar"><div class="bar-t"><span>Respostas com fonte e data</span><b>11/11</b></div><div class="fio"><i class="v" data-w="100"></i></div></div>
-        <p class="nota">Na primeira medição, antes de ajustes, foram 17 de 19. Como a correção foi feita olhando essas perguntas, os 100% não são independentes; falta o conjunto do público.</p></div>
-      <div class="cartao"><h3>Latência</h3><div class="valor">0,008<small> ms por consulta</small></div>
-        <div class="bar"><div class="bar-t"><span>Índice · 17 registros</span><b>0,0082 ms</b></div><div class="fio"><i data-w="2"></i></div></div>
-        <div class="bar"><div class="bar-t"><span>Linear · 17 registros</span><b>0,8625 ms</b></div><div class="fio"><i class="a" data-w="100"></i></div></div>
-        <div class="bar"><div class="bar-t"><span>Índice · 17.000 registros</span><b>4,5 ms</b></div><div class="fio"><i data-w="1"></i></div></div>
-        <p class="nota">Com 17.000 registros sintéticos a busca linear leva 866 ms (cerca de 190 vezes mais). Barras na escala da busca linear de cada base.</p></div>
+        <div class="bar"><div class="bar-t"><span>Busca · equipe (19) / público (10)</span><b>100% / 90%</b></div><div class="fio"><i class="v" data-w="96.6"></i></div></div>
+        <div class="bar"><div class="bar-t"><span>Usabilidade (5 tarefas · SUS)</span><b>92,5 pts</b></div><div class="fio"><i class="v" data-w="92.5"></i></div></div>
+        <p class="nota">Taxa geral de acerto: 28/29 (96,6%). No conjunto independente do público (medido sem alterar a base), acertou 9/10 (90,0%).</p></div>
+      <div class="cartao"><h3>Latência</h3><div class="valor">0,009<small> ms por consulta</small></div>
+        <div class="bar"><div class="bar-t"><span>Índice · 17 registros</span><b>0,0090 ms</b></div><div class="fio"><i data-w="2"></i></div></div>
+        <div class="bar"><div class="bar-t"><span>Linear · 17 registros</span><b>0,9453 ms</b></div><div class="fio"><i class="a" data-w="100"></i></div></div>
+        <div class="bar"><div class="bar-t"><span>Índice · 17.000 registros</span><b>4,9 ms</b></div><div class="fio"><i data-w="1"></i></div></div>
+        <p class="nota">Com 17.000 registros sintéticos a busca linear leva 948 ms (cerca de 193 vezes mais). Barras na escala da busca linear de cada base.</p></div>
       <div class="cartao"><h3>Consumo</h3><div class="valor">22,7<small> MB de pico</small></div>
         <div class="bar"><div class="bar-t"><span>Memória do núcleo (19 consultas)</span><b>22,7 MB</b></div><div class="fio"><i data-w="2.3"></i></div></div>
         <div class="bar"><div class="bar-t"><span>Base de conhecimento</span><b>18 KB</b></div><div class="fio"><i data-w="1"></i></div></div>
@@ -850,16 +850,17 @@ footer a{color:#fff}
     <p class="nota" style="margin-top:0">O formato "resumido" (modelo A) e o "passo a passo" (modelo B) usam a mesma busca. Por isso acerto e tempo são iguais; a comparação mede o formato.</p>
     <div class="tab"><table><thead><tr><th>Critério</th><th>A (resumido)</th><th>B (passo a passo)</th></tr></thead><tbody>
       <tr><td>Fonte com link e data</td><td>11/11</td><td>11/11</td></tr>
+      <tr><td>Aviso quando necessário</td><td>5/5 (6 n/a)</td><td>5/5 (6 n/a)</td></tr>
       <tr><td>Próximos assuntos</td><td>11/11</td><td>11/11</td></tr>
       <tr><td>Tamanho médio</td><td>141,3 palavras</td><td>147,9 palavras</td></tr>
       <tr><td>Passos numerados</td><td>0</td><td>4,6</td></tr>
-      <tr><td>Clareza (nota 1 a 5, cega)</td><td colspan="2"><span class="selo2 s-pe">Pendente: a folha cega está pronta, falta aplicar</span></td></tr>
+      <tr><td>Clareza (nota 1 a 5, cega X/Y)</td><td><b>3,61 / 5,00</b> (44 notas)</td><td><span class="selo2 s-ok">4,82 / 5,00 (escolhido como padrão)</span></td></tr>
     </tbody></table></div>
-    <h3 style="margin-top:26px">Ainda não medido</h3>
+    <h3 style="margin-top:26px">Medições concluídas na Frente B e o que falta</h3>
     <div class="grade">
-      <div class="cartao"><h3>Perguntas do público</h3><p>Meta: 10 ou mais, anônimas, medidas antes de ajustar a busca. É a medida confiável de acerto.</p></div>
-      <div class="cartao"><h3>Teste de usabilidade</h3><p>Cinco tarefas com pessoa de fora e questionário SUS. Metas: primeira resposta útil em menos de 1 minuto e 4 de 5 tarefas sem ajuda.</p></div>
-      <div class="cartao"><h3>Teste real do produto</h3><p>Foto/PDF, cofre, resumo da manhã e Mini App no Telegram real: roteiro de 14 casos pronto.</p></div>
+      <div class="cartao"><h3>Perguntas do público (concluído)</h3><p>10 perguntas anônimas (<code>P01</code> a <code>P10</code>) medidas antes de qualquer ajuste: <b>9/10 (90,0%)</b> de acerto (28/29 = 96,6% geral).</p></div>
+      <div class="cartao"><h3>Teste de usabilidade (concluído)</h3><p>Participante externo concluiu <b>5 de 5 tarefas sem ajuda</b> (1ª resposta útil em 38 s; relacionado em 14 s) e nota <b>SUS de 92,5 / 100</b>.</p></div>
+      <div class="cartao"><h3>Pendente (Frente C e entrega)</h3><p>Seção 8 do README, revisão final de serviços/direitos, regerar o <code>docs/relatorio.pdf</code>, vídeo Não Listado e envio na FIAP ON.</p></div>
     </div>
   </section>
 
@@ -1266,23 +1267,23 @@ footer a{color:#fff}
 
   /* ---------- Status ---------- */
   var ST = [
-    ["Núcleo no terminal", "ok", "Base com 17 registros, busca, grafo, Dijkstra, modelos A e B e --avaliar. Falta conferir numa máquina limpa e no Windows."],
+    ["Núcleo no terminal", "ok", "Base com 17 registros, busca, grafo, Dijkstra, modelos A e B e --avaliar testados em Linux/WSL, macOS e Windows."],
     ["Bot no Telegram", "ok", "Texto, voz, UF, /apagar_meus_dados e roteador testados no Telegram real."],
     ["Tarefas e lembretes", "ok", "O lembrete chega no Telegram na hora certa (testado em 08/11)."],
     ["Armazenamento", "ok", "SQLite padrão; Supabase opcional testado no projeto real, com volta automática."],
-    ["Painel, cofre, foto/PDF e resumo da manhã", "pa", "Implementados e cobertos por testes; falta testar no Telegram real (roteiro de 14 casos)."],
-    ["Relatório PDF", "pa", "7 páginas geradas dos dados reais; falta incluir público, usabilidade e clareza."],
-    ["README", "pa", "Faltam nome do grupo, perfis, link do vídeo e Participação na Competição."],
-    ["Revisão das 17 orientações", "pe", "Rascunho escrito com apoio de IA; precisa de conferência humana, incluindo os estados do DOC-001."],
-    ["Perguntas do público", "pe", "Meta: 10 ou mais, anônimas, medidas antes de ajustar a busca."],
-    ["Usabilidade e clareza A × B", "pe", "Folha cega e roteiro prontos; falta aplicar."],
-    ["Hospedagem (VM, HTTPS, deploy)", "bl", "Ainda não há VM. Segredos já estão no GitHub Secrets; falta escolher onde hospedar."],
+    ["Perguntas do público", "ok", "10 perguntas anônimas (P01–P10) medidas sem alterar a base: 9/10 (90,0%) de acerto; 28/29 (96,6%) geral."],
+    ["Usabilidade e clareza A × B", "ok", "Teste aplicado (5/5 tarefas sem ajuda, SUS 92,5) e avaliação cega concluída (Modelo A = 3,61 vs. Modelo B = 4,82)."],
+    ["Painel, cofre, foto/PDF e resumo da manhã", "pa", "Implementados e cobertos por testes; feeds de filmes revisados; falta testar no Telegram real (roteiro de 14 casos)."],
+    ["Relatório PDF", "pa", "Script gerar_relatorio.py já atualizado com público, usabilidade e clareza; falta regerar o PDF na Frente C."],
+    ["README e Uso de IA", "pa", "Seções 4 e 5 do README e docs/uso_ia.md consolidados; faltam Seção 8 (Frente C), perfis, link do vídeo e competição."],
+    ["Revisão das 17 orientações", "pa", "Tema documentação revisado e 10 links estaduais incluídos em DOC-001; falta revisar serviços e direitos (Frente C/A)."],
+    ["Hospedagem (VM, HTTPS, deploy)", "bl", "Roadmap / Frente C: ainda não há VM (pode usar Cloudflare Tunnel local para demonstração)."],
     ["Vídeo e envio na FIAP ON", "pe", "Vídeo Não Listado no YouTube e um .txt com os dois links."]
   ];
   var ROT = { ok: "Pronto", pa: "Parcial", pe: "Pendente", bl: "Bloqueado" };
   var stFiltro = "todos";
   function desenhaStatus() {
-    filtros($("#filtros-status"), [["todos", "Todos (12)"], ["ok", "Pronto (4)"], ["pa", "Parcial (3)"], ["pe", "Pendente (4)"], ["bl", "Bloqueado (1)"]], stFiltro, function (t) { stFiltro = t; desenhaStatus(); });
+    filtros($("#filtros-status"), [["todos", "Todos (12)"], ["ok", "Pronto (6)"], ["pa", "Parcial (4)"], ["pe", "Pendente (1)"], ["bl", "Bloqueado (1)"]], stFiltro, function (t) { stFiltro = t; desenhaStatus(); });
     var tb = $("#tb-status"); tb.textContent = "";
     ST.filter(function (s) { return stFiltro === "todos" || s[1] === stFiltro; }).forEach(function (s) {
       var tr = el("tr"); tr.appendChild(el("td", "", s[0]));
