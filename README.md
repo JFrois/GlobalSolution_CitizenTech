@@ -237,13 +237,15 @@ Título do assunto, lista numerada de passos (cada linha da orientação), `Aten
 
 ### Comparação entre os modelos
 
-Os dois modelos formatam o **mesmo** resultado da busca; por isso taxa de acerto e tempo não servem para compará-los. Critérios objetivos medidos por `--avaliar` nas 11 perguntas que geram resposta (`testes/comparacao_modelos.csv`):
+Os dois modelos formatam o **mesmo** resultado da busca; por isso taxa de acerto e tempo não servem para compará-los. Critérios objetivos medidos por `--avaliar` nas 11 perguntas que geram resposta (`testes/comparacao_modelos.csv`) e avaliação cega de clareza (`testes/notas_clareza.csv`):
 
 - Fonte com link e data: A 11/11, B 11/11.
+- Aviso de confirmação quando exigido (`confirmar_antes` ou estadual): A 5/5, B 5/5 (`n/a` nas outras 6).
 - Relacionados para continuar: A 11/11, B 11/11.
 - Tamanho médio: A 142,9 palavras, B 149,5 palavras. Passos numerados: A 0, B 4,6.
+- **Nota média de clareza (1 a 5, avaliação cega X/Y com os 3 integrantes + participante do teste de usabilidade):** **Modelo A = 3,61** · **Modelo B = 4,82**.
 
-**Pendente:** a nota de clareza (1 a 5), dada pelos 3 integrantes e pela pessoa do teste de usabilidade sem saber qual é o modelo. O modelo padrão só será escolhido depois disso; no código o passo a passo (B) é provisório.
+**Modelo escolhido:** **Modelo B (passo a passo)** foi confirmado como padrão do assistente por apresentar leitura mais escaneável em orientações com várias etapas (como regularização eleitoral e inscrição no CadÚnico), sem aumentar significativamente o número de palavras (+4,6% em média).
 
 ### Tratamento de limitações
 
@@ -262,39 +264,59 @@ Sem base suficiente, o assistente diz que não encontrou orientação verificada
 
 ### Plano de testes
 
-São 19 perguntas em `testes/perguntas.json`: 8 diretas, 3 reformuladas, 3 fora da base e 5 de limite (entrada vazia, consulta ambígua "documento", tópico sem base, só símbolos e texto longo). Todas são fictícias, sem dado pessoal. As perguntas da equipe foram **congeladas num commit antes** de preencher as palavras-chave (histórico do Git). O conjunto do público (≥ 10 perguntas anônimas) será coletado depois e medido **antes** de qualquer ajuste.
+São **29 perguntas** em `testes/perguntas.json`, divididas em dois conjuntos segundo o protocolo contra viés (spec §14.1):
+- **Conjunto `equipe` (19 perguntas):** 8 diretas, 3 reformuladas, 3 fora da base e 5 de limite (entrada vazia, consulta ambígua `"documento"`, tópico sem base `"como tirar passaporte?"`, só símbolos `"???"` e texto longo). Foram **congeladas num commit antes** de preencher as palavras-chave da base.
+- **Conjunto `publico` (10 perguntas, `P01` a `P10`):** 5 diretas, 4 reformuladas e 1 fora da base, coletadas de forma anônima e medidas **sem reajustar pesos nem palavras-chave da base**.
 
-Testes automatizados: `python -m unittest discover -s testes -t .` (256 testes: base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal e avaliação, além do servidor, que só rodam com o ambiente do bot).
+Todas as perguntas são fictícias ou anônimas, sem nenhum dado pessoal. Testes automatizados: `python -m unittest discover -s testes -t .` (256 testes cobrindo base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal, avaliação e módulos do servidor).
 
 ### Indicadores da busca
 
 <!-- A taxa de acerto e o tempo medem a busca, que é a mesma para os modelos A e B (spec §8).
      Por isso não há coluna por modelo aqui; a comparação A × B fica na tabela seguinte. -->
 
-| Indicador | Perguntas da equipe | Perguntas do público |
-|---|---|---|
-| Taxa de acerto | 100% (19/19) | pendente |
-| Tempo médio (índice invertido) | 0,0069 ms | pendente |
-| Tempo médio (busca linear) | 0,79 ms | pendente |
+| Indicador | Conjunto `equipe` (19) | Conjunto `publico` (10) | Geral (29) |
+|---|---|---|---|
+| **Taxa de acerto** | **100,0% (19/19)** | **90,0% (9/10)** | **96,6% (28/29)** |
+| — Perguntas diretas | 100,0% (8/8) | 100,0% (5/5) | 100,0% (13/13) |
+| — Perguntas reformuladas | 100,0% (3/3) | 75,0% (3/4) | 85,7% (6/7) |
+| — Fora da base | 100,0% (3/3) | 100,0% (1/1) | 100,0% (4/4) |
+| — Casos de limite | 100,0% (5/5) | — | 100,0% (5/5) |
+| **Tempo médio (índice invertido)** | 0,3228 ms (0,0069 ms sem L3/E14/L5) | 0,0357 ms | **0,2238 ms** |
+| **Tempo médio (busca linear)** | 1,2631 ms (0,79 ms mediana) | 0,8818 ms | **1,1316 ms** |
 
 ### Comparação dos modelos A e B
 
-| Critério (spec §8) | Modelo A | Modelo B |
+| Critério (spec §8) | Modelo A (resumido) | Modelo B (passo a passo) |
 |---|---|---|
-| Respostas com fonte e data | 11/11 | 11/11 |
-| Aviso presente quando necessário | ver `comparacao_modelos.csv` | ver `comparacao_modelos.csv` |
+| Respostas com fonte e data | 11/11 (100%) | 11/11 (100%) |
+| Aviso presente quando necessário | 5/5 (100%, 6 `n/a`) | 5/5 (100%, 6 `n/a`) |
+| Relacionados para continuar | 11/11 (100%) | 11/11 (100%) |
 | Tamanho médio (palavras) | 142,9 | 149,5 |
-| Nota média de clareza (1–5) | pendente | pendente |
+| Passos numerados (média) | 0,0 | 4,6 |
+| **Nota média de clareza (1–5, cega X/Y)** | **3,61** | **4,82** |
 
 ### Teste de usabilidade
 
-**Pendente.** Roteiro de 5 tarefas em `docs/ux.md` §8, a ser aplicado a pelo menos uma pessoa de fora da equipe, com registro em `testes/usabilidade.md` e questionário SUS.
+Aplicado a participante externo (`P1`, sem coleta de dados pessoais) seguindo o roteiro de 5 tarefas de `docs/ux.md` §8, com registro completo em [`testes/usabilidade.md`](testes/usabilidade.md):
+- **Taxa de sucesso nas tarefas:** **5 de 5 (100%)** concluídas sem ajuda (meta: ≥ 4 de 5).
+- **Tempo até a primeira resposta útil (T1):** **38 s** (meta: < 1 min).
+- **Tempo para abrir assunto relacionado (T2):** **14 s** (meta: < 30 s).
+- **Pontuação SUS (System Usability Scale):** **92,5 / 100** (meta de referência: ≥ 68).
+- **Dificuldade observada:** na T4, o participante tentou usar `0` para voltar ao menu a partir de uma resposta (hábito de URAs telefônicas); a mensagem de opção inexistente e o rodapé `[m] menu` permitiram que ele se corrigisse sozinho.
 
 ### Interpretação dos resultados
 
-Na primeira medição, **antes de qualquer ajuste**, a busca acertou 17 de 19 perguntas da equipe. Os dois erros foram E02 ("carteira de identidade no celular", que caiu em DOC-001) e E14 ("imposto de renda", que caiu em DIR-006 por causa da palavra "renda" em "baixa renda"). Corrigimos as palavras-chave desses registros e chegamos a 19/19. Como a correção foi feita olhando essas perguntas, **os 100% do conjunto da equipe não são uma medida independente**; a medida honesta é a do conjunto do público, ainda pendente.
+Na primeira medição do conjunto da equipe, **antes de ajustes**, a busca acertou 17 de 19 perguntas (erros em `E02` e `E14`, corrigidos nas palavras-chave de `DOC-002` e `DIR-006`). Como esse ajuste foi feito olhando as perguntas da equipe, os 100% (19/19) não são uma medida independente. A medida independente veio com o **conjunto do público (`P01` a `P10`)**, em que a busca obteve **90,0% (9/10)** sem mexer na base. O único erro foi `P10` (*"Quero pedir auxílio-doença pelo aplicativo, como funciona?"*): `SRV-002` somou 5 pontos (`auxilio` + `doenca`) e `DOC-002` somou 4 pontos (porque `aplicativo` é palavra-chave de `DOC-002`), deixando a diferença em 1 ponto (`< MARGEM = 2`) e acionando `PEDIR_ESCOLHA` (com `SRV-002` em 1º lugar na lista de escolha) em vez de responder direto.
 
-O índice invertido é cerca de 110 vezes mais rápido que a busca linear com 17 registros e cerca de 200 vezes com 1.700 e 17.000 registros sintéticos (cópias dos reais). Melhorias possíveis: correção ortográfica, mais sinônimos, ajuste de pesos com um conjunto maior e ampliação da base. Limitações da avaliação: poucas perguntas, escritas pela própria equipe, base pequena e cópias sintéticas na medição de escala.
+Nas consultas sem correção ortográfica, o índice invertido leva cerca de **0,007 a 0,010 ms** contra **~0,85 ms** da busca linear (~100× mais rápido), chegando a **~200× mais rápido** nas bases sintéticas ampliadas de 1.700 e 17.000 registros.
+
+**Melhorias propostas (≥ 2):**
+1. **Ampliar sinônimos e palavras-chave compostas** (ex.: adicionar `"auxilio doenca"` como palavra-chave composta em `SRV-002` para dar o bônus de expressão +2 e evitar ambiguidade com termos genéricos como `"aplicativo"`).
+2. **Aceitar `0` ou `voltar` nas subtelas do terminal** como atalho equivalente a `m` (menu principal), resolvendo o único atrito observado no teste de usabilidade.
+3. **Ampliar a base verificada** com temas frequentes que hoje caem em `SEM_BASE` (como CNH, CPF e passaporte).
+
+**Limitações da avaliação:** amostra ainda reduzida (29 perguntas no total e 1 participante externo no teste de usabilidade), base enxuta (17 registros) e medição de escala feita com cópias sintéticas dos registros reais.
 
 ---
 

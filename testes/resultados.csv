@@ -18,3 +18,13 @@ equipe,L2,limite,documento,PEDIR_ESCOLHA,PEDIR_ESCOLHA,acerto,0.0058,0.8807
 equipe,L3,limite,como tirar passaporte?,SEM_BASE,SEM_BASE,acerto,0.2704,1.1085
 equipe,L4,limite,???,INVALIDA,INVALIDA,acerto,0.0010,0.0010
 equipe,L5,limite,quero saber sobre o campeonato de futebol da cidade e também sobre a previsão do tempo para o fim de semana e a receita de bolo de cenoura com cobertura de chocolate que minha tia faz e o horário do ônibus que passa perto de casa e o preço da gasolina no posto da esquina e o filme que estreou no cinema ontem à noite,SEM_BASE,SEM_BASE,acerto,5.4311,7.2946
+publico,P01,direta,Como emitir o extrato CNIS para simular aposentadoria?,SRV-003,SRV-003,acerto,0.0078,0.8512
+publico,P02,direta,Onde faço o cartão nacional de saúde do SUS?,SRV-005,SRV-005,acerto,0.0071,0.8465
+publico,P03,direta,Como ver minhas vacinas e exames no Meu SUS Digital?,SRV-006,SRV-006,acerto,0.0081,0.8590
+publico,P04,direta,Qual telefone ligar para denunciar violência contra a mulher?,DIR-003,DIR-003,acerto,0.0089,0.8634
+publico,P05,direta,Como tirar certidão de nascimento gratuita no cartório?,DIR-004,DIR-004,acerto,0.0075,0.8482
+publico,P06,reformulada,Posso abrir processo no juizado de pequenas causas sem advogado?,DIR-005,DIR-005,acerto,0.0086,0.8601
+publico,P07,reformulada,Como conseguir desconto na conta de luz pela tarifa social?,DIR-006,DIR-006,acerto,0.0079,0.8523
+publico,P08,reformulada,Como cadastrar minha família no Cadastro Único para o Bolsa Família?,SRV-004,SRV-004,acerto,0.0082,0.8554
+publico,P09,fora da base,Como renovar a CNH vencida no Detran?,SEM_BASE,SEM_BASE,acerto,0.2845,1.1240
+publico,P10,reformulada,"Quero pedir auxílio-doença pelo aplicativo, como funciona?",SRV-002,PEDIR_ESCOLHA,erro,0.0084,0.8578

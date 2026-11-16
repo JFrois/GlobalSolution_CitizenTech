@@ -17,7 +17,18 @@
       "confirmar_antes": true,
       "abrangencia": "estadual",
       "referencia": "https://www.gov.br/secom/pt-br/acompanhe-a-secom/noticias/2026/02/saiba-como-solicitar-a-2a-via-da-cin-apos-caso-de-perda",
-      "referencias_estaduais": {},
+      "referencias_estaduais": {
+        "SP": "https://www.poupatempo.sp.gov.br",
+        "MG": "https://www.mg.gov.br/servico/obter-carteira-de-identidade-nacional-cin",
+        "RJ": "https://www.detran.rj.gov.br",
+        "PR": "https://www.policiacientifica.pr.gov.br/Pagina/Carteira-de-Identidade",
+        "RS": "https://igp.rs.gov.br/carteira-de-identidade",
+        "DF": "https://www.pcdf.df.gov.br/servicos/carteira-de-identidade",
+        "BA": "https://www.ba.gov.br",
+        "SC": "https://www.policiacientifica.sc.gov.br",
+        "PE": "https://www.iitb.pe.gov.br",
+        "CE": "https://www.pefoce.ce.gov.br"
+      },
       "data_verificacao": "2026-11-07",
       "relacionados": ["DOC-002", "DOC-003", "SRV-004", "DIR-004"]
     },

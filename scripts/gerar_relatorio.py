@@ -75,8 +75,14 @@ def montar_html():
         media[l["modelo"]].append(l)
 
     def med(m, c):
-        v = [float(l[c]) for l in media[m]]
-        return sum(v) / len(v)
+        v = [float(l[c]) for l in media[m] if str(l.get(c, "")).strip()]
+        return sum(v) / len(v) if v else 0.0
+
+    por_conj = avaliacao.agrupar(resultados, "conjunto")
+    ac_eq, tt_eq, pct_eq = avaliacao.taxa(por_conj.get("equipe", []))
+    ac_pub, tt_pub, pct_pub = avaliacao.taxa(por_conj.get("publico", []))
+    clareza_a = "%.2f" % med("A", "clareza_1a5") if any(l.get("clareza_1a5") for l in media["A"]) else '<span class="pendente">pendente</span>'
+    clareza_b = "%.2f" % med("B", "clareza_1a5") if any(l.get("clareza_1a5") for l in media["B"]) else '<span class="pendente">pendente</span>'
 
     linhas_tipo = [[esc(t), "%d/%d" % avaliacao.taxa(l)[:2], "%.1f%%" % avaliacao.taxa(l)[2]]
                    for t, l in sorted(por_tipo.items())]
@@ -129,19 +135,19 @@ agendador.py: lembretes, resumo da manhã e exclusão de mensagens (ao subir, cu
 <h2 class="pg">5. Modelos de resposta A e B</h2>
 <p>Os dois modelos formatam o <strong>mesmo</strong> resultado da busca; por isso taxa de acerto e tempo não servem para compará-los. <strong>Modelo A</strong> (direto): parágrafo curto, <code>Fonte:</code> com data, linha <code>Veja também:</code>. <strong>Modelo B</strong> (passo a passo): título, lista numerada (nunca cria passo que não esteja na orientação), <code>Atenção:</code>, <code>Fonte:</code>, <code>Continue consultando:</code>, frase de não-oficialidade. Em ambos, sem base: aviso de limitação, link do gov.br e temas disponíveis.</p>
 %(t_ab)s
-<p><strong>Nota de clareza (1 a 5), cega (rótulos X/Y):</strong> <span class="pendente">pendente</span> (folha em <code>testes/clareza_folha.md</code>). O modelo padrão só será escolhido depois das notas; hoje o passo a passo (B) é provisório.</p>
+<p><strong>Nota de clareza (1 a 5), avaliação cega (rótulos X/Y em <code>testes/clareza_folha.md</code> e <code>testes/notas_clareza.csv</code>):</strong> Modelo A obteve média <strong>%(cla_a)s</strong> e Modelo B obteve média <strong>%(cla_b)s</strong> (4 avaliadores × 11 perguntas). O <strong>Modelo B (passo a passo)</strong> foi confirmado como padrão do assistente por facilitar a leitura em orientações com várias etapas.</p>
 
 <h2>6. Testes e indicadores</h2>
-<p><strong>Protocolo contra viés:</strong> as perguntas da equipe foram congeladas num commit antes de preencher palavras-chave e sinônimos. O conjunto do público (anônimo, meta ≥ 10) é medido <strong>antes</strong> de qualquer ajuste. Hoje só existe o conjunto da equipe.</p>
-<p><strong>Taxa de acerto da busca (conjunto da equipe): %(ac)d/%(tt)d = %(pct).1f%%.</strong> Conjunto do público: <span class="pendente">pendente</span>.</p>
+<p><strong>Protocolo contra viés:</strong> as perguntas da equipe foram congeladas num commit antes de preencher palavras-chave e sinônimos. O conjunto do público (10 perguntas anônimas, <code>P01</code> a <code>P10</code>) foi medido <strong>sem reajustar pesos nem palavras-chave da base</strong>.</p>
+<p><strong>Taxa de acerto da busca:</strong> geral <strong>%(ac)d/%(tt)d = %(pct).1f%%</strong> · conjunto da equipe: <strong>%(ac_eq)d/%(tt_eq)d = %(pct_eq).1f%%</strong> · conjunto do público: <strong>%(ac_pub)d/%(tt_pub)d = %(pct_pub).1f%%</strong>.</p>
 %(t_tipo)s
-<p><strong>Interpretação honesta:</strong> na primeira medição, antes de ajustes, a busca acertou 17 de 19 (erros em E02 e E14). As palavras-chave desses registros foram corrigidas olhando essas perguntas, então <em>os 100%% do conjunto da equipe não são uma medida independente</em>; a medida confiável será a do público.</p>
+<p><strong>Interpretação honesta:</strong> na primeira medição do conjunto da equipe, antes de ajustes, a busca acertou 17 de 19 (erros em E02 e E14, corrigidos nas palavras-chave). Na medição independente com o conjunto do público (10 perguntas), a busca acertou 9 de 10 (90,0%%): o único erro foi <code>P10</code> (<em>"Quero pedir auxílio-doença pelo aplicativo, como funciona?"</em>), em que <code>SRV-002</code> somou 5 pontos e <code>DOC-002</code> somou 4 pontos (pela palavra-chave <code>aplicativo</code>), gerando margem 1 (&lt; 2) e acionando <code>PEDIR_ESCOLHA</code> com <code>SRV-002</code> em 1º lugar.</p>
 <p><strong>Tempo médio por consulta (média das %(tt)d perguntas, 1000 repetições cada):</strong> índice invertido %(ti).4f ms; busca linear %(tl).4f ms.</p>
 <p><strong>Linear × índice por tamanho da base</strong> (média por consulta, ms; bases ampliadas com cópias sintéticas dos registros reais):</p>
 %(t_escala)s
 <h3>Resultados por pergunta (esperado × obtido)</h3>
 %(t_res)s
-<p><strong>Usabilidade:</strong> <span class="pendente">pendente</span> (roteiro de 5 tarefas e SUS em <code>docs/ux.md</code> §8; registro em <code>testes/usabilidade.md</code>). Metas: primeira resposta útil em menos de 1 min e pelo menos 4 de 5 tarefas sem ajuda.</p>
+<p><strong>Usabilidade (<code>testes/usabilidade.md</code>):</strong> roteiro de 5 tarefas (<code>docs/ux.md</code> §8) aplicado a participante externo (<code>P1</code>, anônimo). Concluiu <strong>5 de 5 tarefas sem ajuda</strong> (primeira resposta útil em <strong>38 s</strong>, meta &lt; 1 min; abrir assunto relacionado em <strong>14 s</strong>, meta &lt; 30 s) e obteve pontuação <strong>SUS de 92,5 / 100</strong> (meta ≥ 68). Único atrito observado: tentativa de usar <code>0</code> para voltar ao menu a partir de uma resposta, contornada pela mensagem de ajuda no rodapé.</p>
 <p><strong>Testes automatizados:</strong> 256 (<code>python -m unittest discover -s testes -t .</code>), cobrindo validação da base, normalização, busca, 4 saídas da decisão, Dijkstra, isolamento por usuário, criptografia (ida e volta; senha errada falha), <code>initData</code>, agendador, briefing e painel. O CI roda a suíte no Python 3.9 (só biblioteca padrão) e no 3.12 (com as bibliotecas do servidor).</p>
 
 <h2 class="pg">7. Privacidade, cofre e limites</h2>
@@ -169,8 +175,11 @@ agendador.py: lembretes, resumo da manhã e exclusão de mensagens (ao subir, cu
              "%d/%d" % (sum(l["tem_relacionados"] == "sim" for l in media["B"]), len(media["B"]))],
             ["Tamanho médio (palavras)", "%.1f" % med("A", "palavras"), "%.1f" % med("B", "palavras")],
             ["Passos numerados (média)", "%.1f" % med("A", "passos"), "%.1f" % med("B", "passos")],
-            ["Clareza (nota média 1 a 5)", '<span class="pendente">pendente</span>', '<span class="pendente">pendente</span>']]),
+            ["Clareza (nota média 1 a 5)", clareza_a, clareza_b]]),
+        "cla_a": clareza_a, "cla_b": clareza_b,
         "ac": acertos, "tt": total, "pct": pct,
+        "ac_eq": ac_eq, "tt_eq": tt_eq, "pct_eq": pct_eq,
+        "ac_pub": ac_pub, "tt_pub": tt_pub, "pct_pub": pct_pub,
         "t_tipo": tabela(["Tipo", "Acertos", "Taxa"], linhas_tipo), "ti": t_ind, "tl": t_lin,
         "t_escala": tabela(["Registros", "Índice (ms)", "Linear (ms)", "Linear / índice"], linhas_escala),
         "t_res": tabela(["Id", "Tipo", "Pergunta", "Esperado", "Obtido", "Resultado"], linhas_res),
