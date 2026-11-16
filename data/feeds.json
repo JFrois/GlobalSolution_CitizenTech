@@ -1,5 +1,5 @@
 {
-  "_aviso": "Feeds RSS por tema de interesse do resumo da manhã (decisão de 08/11). Os temas são os de briefing.TEMAS_BRIEFING. Para trocar um feed, edite a lista; não precisa mexer no código. Preferir veículos públicos. Feeds conferidos em 08/11/2026; 'filmes' tem fonte fraca (g1 Cinema vinha vazio) e vale reavaliar.",
+  "_aviso": "Feeds RSS por tema de interesse do resumo da manhã (decisão de 08/11). Os temas são os de briefing.TEMAS_BRIEFING. Para trocar um feed, edite a lista; não precisa mexer no código. Preferir veículos públicos. Feeds conferidos e fonte de 'filmes' revisada com fallback público da Agência Brasil Cultura e g1 Pop & Arte.",
   "cultura": [
     "https://agenciabrasil.ebc.com.br/rss/cultura/feed.xml"
   ],
@@ -15,7 +15,8 @@
     "https://g1.globo.com/rss/g1/pop-arte/musica/"
   ],
   "filmes": [
-    "https://g1.globo.com/rss/g1/pop-arte/cinema/",
+    "https://agenciabrasil.ebc.com.br/rss/cultura/feed.xml",
+    "https://g1.globo.com/rss/g1/pop-arte/",
     "https://www.papelpop.com/feed/"
   ]
 }

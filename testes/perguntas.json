@@ -20,6 +20,16 @@
     {"id": "L2", "conjunto": "equipe", "tipo": "limite", "pergunta": "documento", "esperado": "PEDIR_ESCOLHA"},
     {"id": "L3", "conjunto": "equipe", "tipo": "limite", "pergunta": "como tirar passaporte?", "esperado": "SEM_BASE"},
     {"id": "L4", "conjunto": "equipe", "tipo": "limite", "pergunta": "???", "esperado": "INVALIDA"},
-    {"id": "L5", "conjunto": "equipe", "tipo": "limite", "pergunta": "quero saber sobre o campeonato de futebol da cidade e também sobre a previsão do tempo para o fim de semana e a receita de bolo de cenoura com cobertura de chocolate que minha tia faz e o horário do ônibus que passa perto de casa e o preço da gasolina no posto da esquina e o filme que estreou no cinema ontem à noite", "esperado": "SEM_BASE"}
+    {"id": "L5", "conjunto": "equipe", "tipo": "limite", "pergunta": "quero saber sobre o campeonato de futebol da cidade e também sobre a previsão do tempo para o fim de semana e a receita de bolo de cenoura com cobertura de chocolate que minha tia faz e o horário do ônibus que passa perto de casa e o preço da gasolina no posto da esquina e o filme que estreou no cinema ontem à noite", "esperado": "SEM_BASE"},
+    {"id": "P01", "conjunto": "publico", "tipo": "direta", "pergunta": "Como emitir o extrato CNIS para simular aposentadoria?", "esperado": "SRV-003"},
+    {"id": "P02", "conjunto": "publico", "tipo": "direta", "pergunta": "Onde faço o cartão nacional de saúde do SUS?", "esperado": "SRV-005"},
+    {"id": "P03", "conjunto": "publico", "tipo": "direta", "pergunta": "Como ver minhas vacinas e exames no Meu SUS Digital?", "esperado": "SRV-006"},
+    {"id": "P04", "conjunto": "publico", "tipo": "direta", "pergunta": "Qual telefone ligar para denunciar violência contra a mulher?", "esperado": "DIR-003"},
+    {"id": "P05", "conjunto": "publico", "tipo": "direta", "pergunta": "Como tirar certidão de nascimento gratuita no cartório?", "esperado": "DIR-004"},
+    {"id": "P06", "conjunto": "publico", "tipo": "reformulada", "pergunta": "Posso abrir processo no juizado de pequenas causas sem advogado?", "esperado": "DIR-005"},
+    {"id": "P07", "conjunto": "publico", "tipo": "reformulada", "pergunta": "Como conseguir desconto na conta de luz pela tarifa social?", "esperado": "DIR-006"},
+    {"id": "P08", "conjunto": "publico", "tipo": "reformulada", "pergunta": "Como cadastrar minha família no Cadastro Único para o Bolsa Família?", "esperado": "SRV-004"},
+    {"id": "P09", "conjunto": "publico", "tipo": "fora da base", "pergunta": "Como renovar a CNH vencida no Detran?", "esperado": "SEM_BASE"},
+    {"id": "P10", "conjunto": "publico", "tipo": "reformulada", "pergunta": "Quero pedir auxílio-doença pelo aplicativo, como funciona?", "esperado": "SRV-002"}
   ]
 }

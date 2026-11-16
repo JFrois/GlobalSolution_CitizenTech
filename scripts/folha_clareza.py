@@ -37,6 +37,8 @@ def montar_pares():
     sorteio = random.Random(SEMENTE)
     pares = []
     for p in avaliacao.carregar_perguntas():
+        if p.get("conjunto", "equipe") != "equipe":
+            continue
         r = buscador.buscar(p["pergunta"])
         if r.decisao != busca.RESPONDER:
             continue

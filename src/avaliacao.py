@@ -144,10 +144,26 @@ def criterios_do_formato(texto: str, reg: dict) -> dict:
     }
 
 
+def _clareza_salva() -> dict:
+    """Lê notas de clareza já registradas em comparacao_modelos.csv {(id, modelo): valor}."""
+    arq = PASTA_TESTES / "comparacao_modelos.csv"
+    if not arq.is_file():
+        return {}
+    try:
+        with open(arq, encoding="utf-8", newline="") as f:
+            return {(l["id"], l["modelo"]): l.get("clareza_1a5", "")
+                    for l in csv.DictReader(f) if l.get("clareza_1a5")}
+    except Exception:
+        return {}
+
+
 def comparar_modelos(buscador, perguntas: list) -> list:
     """Aplica A e B ao MESMO resultado de cada pergunta que gera resposta."""
+    clareza = _clareza_salva()
     linhas = []
     for p in perguntas:
+        if p.get("conjunto", "equipe") != "equipe":
+            continue
         r = buscador.buscar(p["pergunta"])
         if r.decisao != busca.RESPONDER:
             continue
@@ -157,7 +173,7 @@ def comparar_modelos(buscador, perguntas: list) -> list:
         for modelo in ("A", "B"):
             texto = respostas.montar_resposta(modelo, reg, sugestoes, buscador.por_id)
             linha = {"id": p["id"], "pergunta": p["pergunta"], "registro": rid,
-                     "modelo": modelo, "clareza_1a5": ""}
+                     "modelo": modelo, "clareza_1a5": clareza.get((p["id"], modelo), "")}
             linha.update(criterios_do_formato(texto, reg))
             linhas.append(linha)
     return linhas
