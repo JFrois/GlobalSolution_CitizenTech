@@ -158,7 +158,8 @@ tbody tr:hover{background:#F2F8FC}
 .abas [role=tab][aria-selected="true"]::before{content:"✓ "}
 [role=tabpanel][hidden]{display:none}
 .tela-grid{display:grid;gap:28px;grid-template-columns:minmax(0,360px) minmax(0,1fr);align-items:start}
-@media (max-width:820px){.tela-grid{grid-template-columns:1fr;justify-items:center}.tela-grid .explica{width:100%}}
+.tela-grid.tela-term{grid-template-columns:minmax(0,640px) minmax(0,1fr)}
+@media (max-width:820px){.tela-grid,.tela-grid.tela-term{grid-template-columns:1fr;justify-items:center}.tela-grid .explica{width:100%}}
 .explica h3{font-size:22px}
 .explica .cartao{margin-top:12px}
 .etq{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
@@ -668,7 +669,7 @@ footer a{color:#fff}
 
     <!-- Terminal -->
     <div role="tabpanel" id="p-terminal" aria-labelledby="t-terminal" hidden>
-      <div class="tela-grid" style="grid-template-columns:minmax(0,640px) minmax(0,1fr)">
+      <div class="tela-grid tela-term">
         <div class="term" aria-label="Terminal de demonstração"><div class="term-top"><i style="background:#FF7A66"></i><i style="background:#FFC857"></i><i style="background:#5BD68F"></i><span>python src/sistema.py</span></div><div class="term-corpo" id="term-corpo" role="log" aria-live="polite"></div></div>
         <div class="explica">
           <h3>Terminal (o que a GS avalia)</h3>
