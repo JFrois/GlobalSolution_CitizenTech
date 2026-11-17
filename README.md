@@ -480,15 +480,19 @@ A opção 7 não existe aqui. Escolha um dos números da lista.
 
 ### Clareza e acessibilidade
 
-_A preencher_
+O assistente usa linguagem simples, instruções diretas e rótulos como **Atenção** e **Fonte**, que continuam legíveis sem cor. 
+No terminal, as orientações são quebradas em até 80 colunas, preservando links inteiros. O modo `--simples` ou a variável `NO_COLOR` habilita a saída em texto puro, sem cores nem molduras. 
+No painel, o critério de contraste para texto comum é de pelo menos 4,5:1, conforme o nível AA da WCAG.
 
 ### Privacidade
 
-_A preencher_
+O núcleo em terminal roda localmente e não coleta dados pessoais. Na camada extra, o cofre é opcional. Ele cifra o nome e o conteúdo dos arquivos antes de armazená-los, usando AES-256-GCM e uma chave derivada da senha com PBKDF2-HMAC-SHA-256, 600 mil iterações e um sal aleatório por cofre. As operações são filtradas por `user_id`. Após confirmação, `/apagar_meus_dados` remove os dados da pessoa armazenados pelo aplicativo, inclusive os documentos do cofre.
+
+No ambiente publicado, a senha digitada no painel chega ao servidor via HTTPS. O servidor mantém a chave temporariamente em memória e pode decifrar documentos enquanto o cofre está aberto. A proteção combina criptografia em trânsito e em repouso, sem criptografia de ponta a ponta. Quando o Gemini gratuito está habilitado para sugerir nomes, o envio do documento depende de consentimento. A pessoa pode escolher o nome manualmente. As demonstrações, os testes e o vídeo usam documentos fictícios.
 
 ### Informação não oficial
 
-_A preencher_
+O Citizen Assist AI é um projeto acadêmico independente e não representa nenhum órgão público. Cada orientação da base exibe o link oficial e a data de verificação. O assistente apresenta apenas os passos cadastrados na base. Se faltar informação, ele avisa que a pergunta está fora da base ou pede que a pessoa escolha entre os assuntos encontrados. Confirme os requisitos e prazos no canal oficial indicado.
 
 ---
 
