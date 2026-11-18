@@ -20,6 +20,7 @@ import secrets
 import time
 from pathlib import Path
 from urllib.parse import parse_qsl
+from base import links_da_referencia
 
 import armazenamento
 import briefing
@@ -195,9 +196,10 @@ def resposta_estruturada(pergunta, base, uf=None):
         rid = r["candidatos"][0][0]
         reg = por_id[rid]
         link, aviso = ponte.fonte_e_aviso(reg, uf)
+        fontes = links_da_referencia(link)
         saida.update({
             "id": rid, "titulo": reg["pergunta"], "passos": ponte.passos(reg),
-            "atencao": aviso or None, "fonte": link,
+            "atencao": aviso or None, "fonte": fontes[0],"fontes": fontes,
             "verificado_em": ponte.formatar_data(reg["data_verificacao"]),
             "relacionados": [{"id": i, "titulo": por_id[i]["pergunta"]}
                              for i in ponte.relacionados(base, rid)],
@@ -281,6 +283,7 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
     def exigir_cofre():
         if cofre is None or armazem is None:
             raise HTTPException(status_code=503, detail="O cofre não está disponível.")
+        return cofre, armazem
 
     async def json_ou_400(request):
         try:
@@ -308,7 +311,7 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
     async def configurar(request: Request, x_telegram_init_data: str = Header(default=""),
                          sessao: str = Cookie(default="")):
         uid = usuario(x_telegram_init_data, sessao)
-        exigir_cofre()
+        _, armazem =exigir_cofre()
         try:
             uf, temas, hora = validar_config(await json_ou_400(request), briefing.TEMAS_BRIEFING)
         except ValueError as erro:
@@ -325,7 +328,7 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
     async def cofre_criar(request: Request, x_telegram_init_data: str = Header(default=""),
                           sessao: str = Cookie(default="")):
         uid = usuario(x_telegram_init_data, sessao)
-        exigir_cofre()
+        cofre, _ = exigir_cofre()
         senha = campo_texto(await json_ou_400(request), "senha")
         try:
             cofre.criar(uid, senha)
@@ -338,7 +341,7 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
     async def cofre_desbloquear(request: Request, x_telegram_init_data: str = Header(default=""),
                                 sessao: str = Cookie(default="")):
         uid = usuario(x_telegram_init_data, sessao)
-        exigir_cofre()
+        cofre, _ = exigir_cofre()
         if not limitador_senha.permitir(uid):
             raise HTTPException(status_code=429, detail="Muitas tentativas. Aguarde alguns minutos.")
         senha = campo_texto(await json_ou_400(request), "senha")
@@ -353,7 +356,7 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
     @app.post("/api/cofre/bloquear")
     def cofre_bloquear(x_telegram_init_data: str = Header(default=""), sessao: str = Cookie(default="")):
         uid = usuario(x_telegram_init_data, sessao)
-        exigir_cofre()
+        cofre, _ = exigir_cofre()
         cofre.bloquear(uid)
         return {"ok": True}
 
@@ -366,7 +369,7 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
     @app.get("/api/cofre/docs")
     def cofre_listar(x_telegram_init_data: str = Header(default=""), sessao: str = Cookie(default="")):
         uid = usuario(x_telegram_init_data, sessao)
-        exigir_cofre()
+        cofre, _ = exigir_cofre()
         docs = com_cofre_aberto(lambda: cofre.listar(uid))
         return {"docs": [{"id": i, "nome": n} for i, n in docs]}
 
@@ -374,7 +377,7 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
     def cofre_abrir(doc_id: int, x_telegram_init_data: str = Header(default=""),
                     sessao: str = Cookie(default="")):
         uid = usuario(x_telegram_init_data, sessao)
-        exigir_cofre()
+        cofre, _ = exigir_cofre()
         achado = com_cofre_aberto(lambda: cofre.abrir(uid, doc_id))
         if achado is None:
             raise HTTPException(status_code=404, detail="Documento não encontrado.")
@@ -385,7 +388,7 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
     def cofre_apagar(doc_id: int, x_telegram_init_data: str = Header(default=""),
                      sessao: str = Cookie(default="")):
         uid = usuario(x_telegram_init_data, sessao)
-        exigir_cofre()
+        cofre, _ = exigir_cofre()
         if not cofre.apagar(uid, doc_id):
             raise HTTPException(status_code=404, detail="Documento não encontrado.")
         return {"ok": True}
@@ -394,18 +397,19 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
     def exigir_armazem():
         if armazem is None:
             raise HTTPException(status_code=503, detail="As tarefas não estão disponíveis agora.")
+        return armazem
 
     @app.get("/api/tarefas")
     def tarefas_listar(x_telegram_init_data: str = Header(default=""), sessao: str = Cookie(default="")):
         uid = usuario(x_telegram_init_data, sessao)
-        exigir_armazem()
+        armazem = exigir_armazem()
         return {"tarefas": tarefas.lista_para_painel(armazem, uid)}
 
     @app.post("/api/tarefas")
     async def tarefas_criar(request: Request, x_telegram_init_data: str = Header(default=""),
                             sessao: str = Cookie(default="")):
         uid = usuario(x_telegram_init_data, sessao)
-        exigir_armazem()
+        armazem = exigir_armazem()
         if not limitador.permitir(uid):
             raise HTTPException(status_code=429, detail="Muitos pedidos seguidos. Aguarde um instante.")
         corpo = await json_ou_400(request)
@@ -421,7 +425,7 @@ def criar_app(base, token_bot, segredo_sessao, links, painel_url="", cofre=None,
     def tarefas_concluir(tarefa_id: int, x_telegram_init_data: str = Header(default=""),
                          sessao: str = Cookie(default="")):
         uid = usuario(x_telegram_init_data, sessao)
-        exigir_armazem()
+        armazem =exigir_armazem()
         if not armazem.concluir_tarefa(uid, tarefa_id):
             raise HTTPException(status_code=404, detail="Tarefa não encontrada.")
         return {"ok": True, "tarefas": tarefas.lista_para_painel(armazem, uid)}

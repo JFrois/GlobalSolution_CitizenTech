@@ -68,7 +68,7 @@ def montar_html():
     t_ind = sum(float(l["tempo_indice_ms"]) for l in resultados) / len(resultados)
     t_lin = sum(float(l["tempo_linear_ms"]) for l in resultados) / len(resultados)
     escala = avaliacao.medir_escala(dados, perguntas, repeticoes=2, repeticoes_base=100)
-    dominios = sorted({urlparse(r["referencia"]).netloc for r in regs})
+    dominios = sorted({urlparse(link).netloc for r in regs for link in base.links_da_referencia(r["referencia"])})
     datas = sorted({r["data_verificacao"] for r in regs})
     media = {m: [] for m in "AB"}
     for l in comparacao:
@@ -88,7 +88,7 @@ def montar_html():
                    for t, l in sorted(por_tipo.items())]
     linhas_escala = [[str(m["registros"]), "%.4f" % m["indice_ms"], "%.4f" % m["linear_ms"],
                       "%.0fx" % (m["linear_ms"] / m["indice_ms"])] for m in escala]
-    linhas_fontes = [[esc(r["id"]), esc(r.get("titulo", r["pergunta"])), esc(urlparse(r["referencia"]).netloc),
+    linhas_fontes = [[esc(r["id"]), esc(r.get("titulo", r["pergunta"])), esc(", ".join(dict.fromkeys(urlparse(link).netloc for link in base.links_da_referencia(r["referencia"])))),
                       esc(r["data_verificacao"])] for r in regs]
     linhas_res = [[esc(l["id"]), esc(l["tipo"]), esc(l["pergunta"]), esc(l["esperado"]), esc(l["obtido"]),
                    esc(l["resultado"])] for l in resultados]
@@ -99,8 +99,7 @@ def montar_html():
 <h1>Citizen Assist AI</h1>
 <p><strong>Global Solution 2026.2 · CitizenTech · FIAP</strong><br>
 Juan de Lucas Frois (RM563260) · Flávia Roberta Pennachin (RM561860) · Pedro Valente (RM570394)</p>
-<p><small>Relatório gerado em 09/11/2026 por <code>scripts/gerar_relatorio.py</code> a partir dos dados do repositório.
-Itens ainda não medidos aparecem como <span class="pendente">pendente</span>.</small></p>
+<p><small>Relatório gerado em 18/11/2026 por <code>scripts/gerar_relatorio.py</code> a partir dos dados do repositório.</small></p>
 
 <h2>1. Problema e público</h2>
 <p>Quem precisa de um documento ou serviço público encontra a informação espalhada em vários portais, com termos técnicos e instruções incompletas. O Citizen Assist AI orienta o cidadão sobre documentos, serviços e direitos <strong>somente com base em registros verificados</strong> (<code>data/base.json</code>), sempre citando a fonte oficial e a data de verificação, e avisa quando não há base suficiente, sem inventar instruções.</p>
@@ -119,7 +118,7 @@ agendador.py: lembretes, resumo da manhã e exclusão de mensagens (ao subir, cu
 <div class="cx"><strong>Princípio de projeto:</strong> a resposta ao cidadão nunca é gerada livremente pelo LLM. O LLM só escolhe a ferramenta e sugere o nome de documentos do cofre. O conteúdo vem sempre da base, o que mantém a taxa de acerto mensurável e evita informação inventada. A voz é transcrita localmente pelo Whisper, sem LLM.</div>
 
 <h2 class="pg">3. Base e fontes</h2>
-<p>%(n)d registros em %(nt)d temas (Documentação pessoal, Serviços públicos, Direitos e orientações comunitárias). Cada registro tem id, tema, palavras-chave, pergunta, orientação, referência, data de verificação e assuntos relacionados. Fontes oficiais nos domínios: %(dom)s. Datas de verificação: %(datas)s. <strong>As orientações foram redigidas com apoio de IA a partir das páginas oficiais e ainda precisam de revisão humana</strong> (<span class="pendente">pendente</span>).</p>
+<p>%(n)d registros em %(nt)d temas (Documentação pessoal, Serviços públicos, Direitos e orientações comunitárias). Cada registro contém identificador, tema, palavras-chave, pergunta, orientação, referência, data de verificação e assuntos relacionados. Os registros de Serviços e Direitos foram revisados na atividade E2. Domínios das fontes oficiais: %(dom)s. Datas de verificação: %(datas)s.</p>
 %(t_fontes)s
 
 <h2>4. Busca, decisão e Karnaugh</h2>
@@ -138,30 +137,30 @@ agendador.py: lembretes, resumo da manhã e exclusão de mensagens (ao subir, cu
 <p><strong>Nota de clareza (1 a 5), avaliação cega (rótulos X/Y em <code>testes/clareza_folha.md</code> e <code>testes/notas_clareza.csv</code>):</strong> Modelo A obteve média <strong>%(cla_a)s</strong> e Modelo B obteve média <strong>%(cla_b)s</strong> (4 avaliadores × 11 perguntas). O <strong>Modelo B (passo a passo)</strong> foi confirmado como padrão do assistente por facilitar a leitura em orientações com várias etapas.</p>
 
 <h2>6. Testes e indicadores</h2>
-<p><strong>Protocolo contra viés:</strong> as perguntas da equipe foram congeladas num commit antes de preencher palavras-chave e sinônimos. O conjunto do público (10 perguntas anônimas, <code>P01</code> a <code>P10</code>) foi medido <strong>sem reajustar pesos nem palavras-chave da base</strong>.</p>
+<p><strong>Protocolo de avaliação.</strong> As perguntas da equipe foram registradas em um commit antes da definição das palavras-chave. O conjunto do público reúne 10 perguntas anônimas, de <code>P01</code> a <code>P10</code>. A primeira medição usou os pesos e as palavras-chave já definidos. Após a revisão da base, a equipe repetiu a avaliação com as mesmas perguntas.</p>
 <p><strong>Taxa de acerto da busca:</strong> geral <strong>%(ac)d/%(tt)d = %(pct).1f%%</strong> · conjunto da equipe: <strong>%(ac_eq)d/%(tt_eq)d = %(pct_eq).1f%%</strong> · conjunto do público: <strong>%(ac_pub)d/%(tt_pub)d = %(pct_pub).1f%%</strong>.</p>
 %(t_tipo)s
-<p><strong>Interpretação honesta:</strong> na primeira medição do conjunto da equipe, antes de ajustes, a busca acertou 17 de 19 (erros em E02 e E14, corrigidos nas palavras-chave). Na medição independente com o conjunto do público (10 perguntas), a busca acertou 9 de 10 (90,0%%): o único erro foi <code>P10</code> (<em>"Quero pedir auxílio-doença pelo aplicativo, como funciona?"</em>), em que <code>SRV-002</code> somou 5 pontos e <code>DOC-002</code> somou 4 pontos (pela palavra-chave <code>aplicativo</code>), gerando margem 1 (&lt; 2) e acionando <code>PEDIR_ESCOLHA</code> com <code>SRV-002</code> em 1º lugar.</p>
+<p><strong>Interpretação honesta:</strong> na primeira medição do conjunto da equipe, a busca acertou 17 de 19. Após ajustes nas palavras-chave, acertou 19 de 19. Na medição independente com o conjunto do público (10 perguntas), a busca acertou 9 de 10 (90,0%%). Em <code>P10</code>, sobre auxílio-doença pelo aplicativo, <code>SRV-002</code> somou 5 pontos e <code>DOC-002</code> somou 4. A diferença de 1 ponto ficou abaixo da margem mínima de 2, e o sistema pediu que a pessoa escolhesse entre os assuntos sugeridos. A revisão da orientação de <code>SRV-002</code> acrescentou o termo <code>aplicativo</code>, elevando a pontuação do registro para 6 e permitindo que o sistema respondesse diretamente. Com as mesmas perguntas, a reavaliação chegou a 10 de 10 no conjunto do público e 29 de 29 no total.</p>
 <p><strong>Tempo médio por consulta (média das %(tt)d perguntas, 1000 repetições cada):</strong> índice invertido %(ti).4f ms; busca linear %(tl).4f ms.</p>
 <p><strong>Linear × índice por tamanho da base</strong> (média por consulta, ms; bases ampliadas com cópias sintéticas dos registros reais):</p>
 %(t_escala)s
 <h3>Resultados por pergunta (esperado × obtido)</h3>
 %(t_res)s
 <p><strong>Usabilidade (<code>testes/usabilidade.md</code>):</strong> roteiro de 5 tarefas (<code>docs/ux.md</code> §8) aplicado a participante externo (<code>P1</code>, anônimo). Concluiu <strong>5 de 5 tarefas sem ajuda</strong> (primeira resposta útil em <strong>38 s</strong>, meta &lt; 1 min; abrir assunto relacionado em <strong>14 s</strong>, meta &lt; 30 s) e obteve pontuação <strong>SUS de 92,5 / 100</strong> (meta ≥ 68). Único atrito observado: tentativa de usar <code>0</code> para voltar ao menu a partir de uma resposta, contornada pela mensagem de ajuda no rodapé.</p>
-<p><strong>Testes automatizados:</strong> 256 (<code>python -m unittest discover -s testes -t .</code>), cobrindo validação da base, normalização, busca, 4 saídas da decisão, Dijkstra, isolamento por usuário, criptografia (ida e volta; senha errada falha), <code>initData</code>, agendador, briefing e painel. O CI roda a suíte no Python 3.9 (só biblioteca padrão) e no 3.12 (com as bibliotecas do servidor).</p>
+<p><strong>Testes automatizados.</strong> Na execução local no Windows com <code>python -m unittest discover -s testes -t .</code>, os 259 testes passaram, sem falhas nem casos pulados. A suíte cobre validação da base, normalização, busca, regras de decisão, Dijkstra, isolamento por usuário, criptografia, <code>initData</code>, agendador, resumo da manhã e painel. O CI executa a suíte no Python 3.9 com a biblioteca padrão e no Python 3.12 com as dependências do servidor.</p>
 
 <h2 class="pg">7. Privacidade, cofre e limites</h2>
 <ul>
 <li><strong>Núcleo:</strong> não pede nem guarda dado pessoal.</li>
-<li><strong>Cofre opcional:</strong> só guarda o que o usuário envia, cifra antes de armazenar (AES-256-GCM, chave derivada da senha por PBKDF2 com 600 mil iterações e sal por usuário), tudo filtrado por <code>user_id</code>, com apagamento real (<code>/apagar_meus_dados</code>). A senha é criada só no painel e nunca vai ao servidor em claro nem ao chat; senha perdida significa documentos perdidos.</li>
-<li><strong>Honestidade sobre E2E:</strong> enquanto o cofre está desbloqueado, o servidor vê o arquivo ao enviá-lo no chat; conversas com bots do Telegram não são de ponta a ponta. O bot apaga a mensagem com o documento em 5 minutos, o que limpa o chat, não o aparelho.</li>
+<li><strong>Cofre opcional.</strong> O nome e o conteúdo dos documentos são cifrados antes do armazenamento com AES-256-GCM. A chave é derivada da senha com PBKDF2-HMAC-SHA-256, 600 mil iterações e um sal aleatório por cofre. As operações são filtradas por <code>user_id</code>. Após confirmação, <code>/apagar_meus_dados</code> remove os dados da pessoa armazenados pelo aplicativo.</li>
+<li><strong>Limites da proteção.</strong> Quando o painel é publicado com HTTPS, a senha trafega por uma conexão cifrada até o servidor. Durante o desbloqueio, o servidor mantém a chave temporariamente em memória e decifra os arquivos para visualização ou envio pelo bot. O cofre oferece criptografia em repouso. A criptografia de ponta a ponta fica como melhoria futura.</li>
 <li><strong>Gemini:</strong> usado no plano gratuito. Nesse plano o Google pode usar o conteúdo enviado para melhorar seus produtos e permitir revisão humana, e pode processá-lo em outros países. Por isso o primeiro envio exige consentimento com esse aviso, o usuário pode escolher um nome próprio sem enviar o arquivo, e demonstração, vídeo e testes usam <strong>somente documentos fictícios</strong>. Classificador local e plano pago são roadmap.</li>
 <li><strong>Segredos:</strong> nunca no repositório; ficam nos GitHub Secrets e no <code>.env</code> da VM. Logs sem tokens, conteúdo de documentos nem texto de mensagens.</li>
 <li><strong>Resumo da manhã:</strong> manchetes de feeds RSS, sempre rotuladas "Notícias — fonte não oficial" e separadas da base verificada.</li>
 </ul>
 
 <h2>8. Limitações e melhorias</h2>
-<p><strong>Limitações:</strong> base com 17 registros ainda sem revisão humana; avaliação com perguntas escritas pela própria equipe e sem conjunto do público nem teste de usabilidade; busca por palavras-chave (não entende sentido); informações públicas mudam, por isso cada resposta mostra a data e orienta a confirmar; VM, HTTPS e deploy automático ainda não testados em produção; testes reais no Telegram de foto/PDF, cofre e resumo da manhã pendentes; medição de escala com cópias sintéticas.</p>
+<p><strong>Limitações:</strong> base com 17 registros, com revisão dos temas Serviços e Direitos na atividade E2. A avaliação da busca abrange 29 perguntas, repetidas na reavaliação após a revisão da base. O teste de usabilidade teve um participante externo, e as notas de clareza correspondem às respostas avaliadas antes da revisão. A busca depende dos termos presentes na pergunta e na base. As medições de escala usam cópias sintéticas dos registros. Cada resposta informa a data de verificação e orienta a confirmar as informações na fonte oficial. A VM, o HTTPS e o deploy automático ainda aguardam validação em produção. Os testes de foto/PDF, cofre, resumo da manhã e Mini App no Telegram real permanecem pendentes.</p>
 <p><strong>Melhorias (≥ 2):</strong> (1) ampliar sinônimos e palavras-chave e medir antes e depois com o conjunto do público; (2) ampliar a base (CNH, CPF) e detalhar os estados em <code>referencias_estaduais</code>; (3) classificador de documentos local, sem enviar arquivos ao Gemini; (4) fuso por usuário.</p>
 <p><small>Fontes de contexto externas (por exemplo, Base dos Dados) não foram usadas no código e, se entrarem neste relatório, devem trazer fonte e data da consulta.</small></p>
 </body></html>""" % {

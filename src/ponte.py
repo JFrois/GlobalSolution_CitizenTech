@@ -7,6 +7,7 @@ Tudo aqui é só biblioteca padrão. O núcleo continua sendo a única fonte da
 orientação (a resposta nunca vem do LLM).
 """
 from __future__ import annotations
+from base import links_da_referencia
 
 import html
 from urllib.parse import urlparse
@@ -85,12 +86,24 @@ def formatar_telegram(reg: dict, uf=None) -> str:
     aviso = respostas.texto_do_aviso(reg)
     if aviso:
         partes += ["", "<b>Atenção:</b> " + esc(aviso.replace("Atenção: ", "", 1))]
-    dominio = urlparse(link).netloc.replace("www.", "") or link
-    verificado = ("verificado em " + formatar_data(reg["data_verificacao"])
-                  if reg["data_verificacao"] else formatar_data(""))
-    partes += ["", '<b>Fonte:</b> <a href="%s">%s</a> (%s)' % (esc(link, quote=True), esc(dominio), verificado),
-               "", "Quer ver outro assunto? Toque num botão abaixo ou escreva sua dúvida.",
-               "", "<i>%s</i>" % esc(NAO_OFICIAL)]
+    verificado = (
+        "verificado em " + formatar_data(reg["data_verificacao"])
+        if reg["data_verificacao"]
+        else formatar_data("")
+    )
+    partes.append("")
+    for url in links_da_referencia(link):
+        dominio = urlparse(url).netloc.removeprefix("www.") or url
+        partes.append(
+            '<b>Fonte:</b> <a href="%s">%s</a> (%s)'
+            % (esc(url, quote=True), esc(dominio), verificado)
+        )
+    partes += [
+        "",
+        "Quer ver outro assunto? Toque num botão abaixo ou escreva sua dúvida.",
+        "",
+        "<i>%s</i>" % esc(NAO_OFICIAL),
+    ]
     return "\n".join(partes)
 
 
