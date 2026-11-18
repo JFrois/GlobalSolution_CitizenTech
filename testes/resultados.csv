@@ -1,30 +1,30 @@
 conjunto,id,tipo,pergunta,esperado,obtido,resultado,tempo_indice_ms,tempo_linear_ms
-equipe,E01,direta,Como tirar a segunda via do RG?,DOC-001,DOC-001,acerto,0.0072,0.8421
-equipe,E02,direta,Como ter a carteira de identidade no celular?,DOC-002,DOC-002,acerto,0.0083,0.8571
-equipe,E03,direta,Como pedir segunda via do título de eleitor?,DOC-003,DOC-003,acerto,0.0102,0.8619
-equipe,E04,direta,"Meu título foi cancelado, o que faço?",DOC-004,DOC-004,acerto,0.0066,0.8378
-equipe,E05,direta,Como consultar minha situação eleitoral?,DOC-005,DOC-005,acerto,0.0077,0.8536
-equipe,E06,direta,Como acessar o Meu INSS?,SRV-001,SRV-001,acerto,0.0059,0.8420
-equipe,E07,direta,Como me inscrever no CadÚnico?,SRV-004,SRV-004,acerto,0.0049,0.8244
-equipe,E08,direta,Como reclamar de uma empresa no Consumidor.gov.br?,DIR-001,DIR-001,acerto,0.0064,0.8406
-equipe,E09,reformulada,"Perdi minha identidade, como faço outra?",DOC-001,DOC-001,acerto,0.0074,0.8611
-equipe,E10,reformulada,Quero marcar perícia do INSS,SRV-002,SRV-002,acerto,0.0074,0.8647
-equipe,E11,reformulada,"Não tenho dinheiro para advogado, onde busco ajuda?",DIR-002,DIR-002,acerto,0.0101,0.8697
-equipe,E12,fora da base,Como pagar o IPVA?,SEM_BASE,SEM_BASE,acerto,0.0156,0.8685
-equipe,E13,fora da base,Como abrir um MEI?,SEM_BASE,SEM_BASE,acerto,0.0150,0.8449
-equipe,E14,fora da base,Como declarar o imposto de renda?,SEM_BASE,SEM_BASE,acerto,0.3120,2.0258
-equipe,L1,limite,,INVALIDA,INVALIDA,acerto,0.0008,0.0008
-equipe,L2,limite,documento,PEDIR_ESCOLHA,PEDIR_ESCOLHA,acerto,0.0058,0.8807
-equipe,L3,limite,como tirar passaporte?,SEM_BASE,SEM_BASE,acerto,0.2704,1.1085
-equipe,L4,limite,???,INVALIDA,INVALIDA,acerto,0.0010,0.0010
-equipe,L5,limite,quero saber sobre o campeonato de futebol da cidade e também sobre a previsão do tempo para o fim de semana e a receita de bolo de cenoura com cobertura de chocolate que minha tia faz e o horário do ônibus que passa perto de casa e o preço da gasolina no posto da esquina e o filme que estreou no cinema ontem à noite,SEM_BASE,SEM_BASE,acerto,5.4311,7.2946
-publico,P01,direta,Como emitir o extrato CNIS para simular aposentadoria?,SRV-003,SRV-003,acerto,0.0078,0.8512
-publico,P02,direta,Onde faço o cartão nacional de saúde do SUS?,SRV-005,SRV-005,acerto,0.0071,0.8465
-publico,P03,direta,Como ver minhas vacinas e exames no Meu SUS Digital?,SRV-006,SRV-006,acerto,0.0081,0.8590
-publico,P04,direta,Qual telefone ligar para denunciar violência contra a mulher?,DIR-003,DIR-003,acerto,0.0089,0.8634
-publico,P05,direta,Como tirar certidão de nascimento gratuita no cartório?,DIR-004,DIR-004,acerto,0.0075,0.8482
-publico,P06,reformulada,Posso abrir processo no juizado de pequenas causas sem advogado?,DIR-005,DIR-005,acerto,0.0086,0.8601
-publico,P07,reformulada,Como conseguir desconto na conta de luz pela tarifa social?,DIR-006,DIR-006,acerto,0.0079,0.8523
-publico,P08,reformulada,Como cadastrar minha família no Cadastro Único para o Bolsa Família?,SRV-004,SRV-004,acerto,0.0082,0.8554
-publico,P09,fora da base,Como renovar a CNH vencida no Detran?,SEM_BASE,SEM_BASE,acerto,0.2845,1.1240
-publico,P10,reformulada,"Quero pedir auxílio-doença pelo aplicativo, como funciona?",SRV-002,PEDIR_ESCOLHA,erro,0.0084,0.8578
+equipe,E01,direta,Como tirar a segunda via do RG?,DOC-001,DOC-001,acerto,0.0189,3.4828
+equipe,E02,direta,Como ter a carteira de identidade no celular?,DOC-002,DOC-002,acerto,0.0168,3.1857
+equipe,E03,direta,Como pedir segunda via do título de eleitor?,DOC-003,DOC-003,acerto,0.0203,3.4083
+equipe,E04,direta,"Meu título foi cancelado, o que faço?",DOC-004,DOC-004,acerto,0.0152,3.1740
+equipe,E05,direta,Como consultar minha situação eleitoral?,DOC-005,DOC-005,acerto,0.0213,3.3053
+equipe,E06,direta,Como acessar o Meu INSS?,SRV-001,SRV-001,acerto,0.0164,3.1267
+equipe,E07,direta,Como me inscrever no CadÚnico?,SRV-004,SRV-004,acerto,0.0100,3.0175
+equipe,E08,direta,Como reclamar de uma empresa no Consumidor.gov.br?,DIR-001,DIR-001,acerto,0.0131,3.2104
+equipe,E09,reformulada,"Perdi minha identidade, como faço outra?",DOC-001,DOC-001,acerto,0.0162,3.2145
+equipe,E10,reformulada,Quero marcar perícia do INSS,SRV-002,SRV-002,acerto,0.0123,3.3309
+equipe,E11,reformulada,"Não tenho dinheiro para advogado, onde busco ajuda?",DIR-002,DIR-002,acerto,0.0284,3.4521
+equipe,E12,fora da base,Como pagar o IPVA?,SEM_BASE,SEM_BASE,acerto,0.0420,3.2202
+equipe,E13,fora da base,Como abrir um MEI?,SEM_BASE,SEM_BASE,acerto,0.0413,3.1651
+equipe,E14,fora da base,Como declarar o imposto de renda?,SEM_BASE,SEM_BASE,acerto,1.1337,7.3535
+equipe,L1,limite,,INVALIDA,INVALIDA,acerto,0.0015,0.0016
+equipe,L2,limite,documento,PEDIR_ESCOLHA,PEDIR_ESCOLHA,acerto,0.0138,3.2706
+equipe,L3,limite,como tirar passaporte?,SEM_BASE,SEM_BASE,acerto,1.0961,4.1962
+equipe,L4,limite,???,INVALIDA,INVALIDA,acerto,0.0017,0.0018
+equipe,L5,limite,quero saber sobre o campeonato de futebol da cidade e também sobre a previsão do tempo para o fim de semana e a receita de bolo de cenoura com cobertura de chocolate que minha tia faz e o horário do ônibus que passa perto de casa e o preço da gasolina no posto da esquina e o filme que estreou no cinema ontem à noite,SEM_BASE,SEM_BASE,acerto,16.7760,23.1928
+publico,P01,direta,Como emitir o extrato CNIS para simular aposentadoria?,SRV-003,SRV-003,acerto,0.0186,3.1474
+publico,P02,direta,Onde faço o cartão nacional de saúde do SUS?,SRV-005,SRV-005,acerto,0.0217,3.1761
+publico,P03,direta,Como ver minhas vacinas e exames no Meu SUS Digital?,SRV-006,SRV-006,acerto,0.0214,3.1100
+publico,P04,direta,Qual telefone ligar para denunciar violência contra a mulher?,DIR-003,DIR-003,acerto,0.0310,3.1703
+publico,P05,direta,Como tirar certidão de nascimento gratuita no cartório?,DIR-004,DIR-004,acerto,0.0248,3.3438
+publico,P06,reformulada,Posso abrir processo no juizado de pequenas causas sem advogado?,DIR-005,DIR-005,acerto,0.0192,3.1695
+publico,P07,reformulada,Como conseguir desconto na conta de luz pela tarifa social?,DIR-006,DIR-006,acerto,0.0244,3.2381
+publico,P08,reformulada,Como cadastrar minha família no Cadastro Único para o Bolsa Família?,SRV-004,SRV-004,acerto,0.0244,3.1575
+publico,P09,fora da base,Como renovar a CNH vencida no Detran?,SEM_BASE,SEM_BASE,acerto,2.9603,5.9308
+publico,P10,reformulada,"Quero pedir auxílio-doença pelo aplicativo, como funciona?",SRV-002,SRV-002,acerto,0.0262,3.3893
