@@ -10,22 +10,6 @@
 
 <br>
 
-<!--
-=====================================================================
-  ESQUELETO DO README: COMO PREENCHER (apagar este bloco antes da entrega)
----------------------------------------------------------------------
-  - Este README junta o modelo da coordenação (FIAP-PORTFOLIO-1CCON,
-    pasta GLOBAL-SOLUTION) com as 10 seções exigidas pelo enunciado,
-    na ordem pedida.
-  - Cada seção tem um comentário com o responsável, o prazo e o que
-    escrever. Os responsáveis seguem docs/planejamento.md (atividade E6).
-  - Textos marcados com "_A preencher_" ainda precisam ser escritos.
-  - Prazo do README completo: 16/11/2026. Integrante A consolida.
-  - Antes de entregar: apagar TODOS os comentários HTML (como este)
-    e conferir o checklist da spec §18.
-=====================================================================
--->
-
 # Citizen Assist AI
 
 Assistente de orientação cidadã **não oficial** que responde dúvidas sobre documentos, serviços públicos e direitos **somente com base em informações verificadas**, sempre citando a fonte oficial e avisando quando não há base suficiente para responder.
@@ -43,7 +27,7 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 - Modelos de resposta A e B, aviso de limitação e mensagens de entrada inválida (`src/respostas.py`).
 - Terminal completo (`python src/sistema.py`), com cores e texto puro de reserva, `--validar-entrega` e `--avaliar`.
 - Perguntas de teste da equipe congeladas antes das palavras-chave: **19/19 (100%)**; índice invertido cerca de 100 vezes mais rápido que a busca linear. Resultados em `testes/resultados.csv` e `testes/comparacao_modelos.csv`.
-- **256 testes automatizados** (`python -m unittest discover -s testes -t .`), todos passando. O CI roda a suíte duas vezes: no Python 3.9 só com a biblioteca padrão (o que o avaliador usa) e no 3.12 com as bibliotecas do servidor, sem pular os testes do painel, cofre e bot.
+- **259 testes automatizados** (`python -m unittest discover -s testes -t .`), todos passando. O CI roda a suíte duas vezes: no Python 3.9 só com a biblioteca padrão (o que o avaliador usa) e no 3.12 com as bibliotecas do servidor, sem pular os testes do painel, cofre e bot.
 
 **Concluído e testado no Telegram real (Onda 2, camada de produto), em 07/11:**
 
@@ -106,9 +90,9 @@ Melhorias conhecidas que não bloqueiam a entrega:
 
 | Nome | RM | Frente no projeto | Perfil |
 |---|---|---|---|
-| Juan de Lucas Frois | RM563260 | Núcleo e dados (Integrante A) | <a href="">GitHub/LinkedIn</a> |
-| Flávia Roberta Pennachin | RM561860 | Bot e roteador (Integrante B) | <a href="">GitHub/LinkedIn</a> |
-| Pedro Valente | RM570394 | Cofre, painel e infraestrutura (Integrante C) | <a href="">GitHub/LinkedIn</a> |
+| Juan de Lucas Frois | RM563260 | Núcleo e dados (Integrante A) | [GitHub](https://github.com/JFrois) · [LinkedIn](https://www.linkedin.com/in/jfrois/) |
+| Flávia Roberta Pennachin | RM561860 | Bot e roteador (Integrante B) | [GitHub](https://github.com/flaviapennachin) · [LinkedIn](https://www.linkedin.com/in/flavia-pennachin/) |
+| Pedro Valente | RM570394 | Cofre, painel e infraestrutura (Integrante C) | [GitHub](https://github.com/P3dr0vt) · [LinkedIn](https://www.linkedin.com/in/pedro-valente-toledo/) |
 
 ### 👩‍🏫 Professores
 
@@ -187,32 +171,27 @@ O campo `relacionados` forma um grafo **não direcionado** (se A aponta para B, 
 
 | Registro | Fonte | Verificado em |
 |---|---|---|
-| DOC-001 (2ª via da identidade (CIN/RG)) | https://www.gov.br/secom/pt-br/acompanhe-a-secom/noticias/2026/02/saiba-como-solicitar-a-2a-via-da-cin-apos-caso-de-perda | 07/11/2026 |
-| DOC-002 (CIN digital no app gov.br) | https://www.gov.br/gestao/pt-br/assuntos/noticias/2026/junho/governo-do-brasil-envia-notificacoes-personalizadas-sobre-o-uso-da-versao-digital-da-cin-saiba-como-usar | 07/11/2026 |
-| DOC-003 (2ª via do título de eleitor) | https://www.tse.jus.br/comunicacao/noticias/2024/Janeiro/precisa-da-2a-via-do-seu-titulo-confira-como-emitir-em-apenas-3-passos | 07/11/2026 |
-| DOC-004 (Título de eleitor cancelado) | https://www.tse.jus.br/comunicacao/noticias/2025/Dezembro/eleitor-em-dia-veja-como-regularizar-o-titulo-cancelado | 07/11/2026 |
-| DOC-005 (Situação eleitoral) | https://www.tse.jus.br/comunicacao/noticias/2026/Abril/eleitor-em-dia-saiba-como-verificar-se-seu-titulo-esta-regular-1 | 07/11/2026 |
-| SRV-001 (Meu INSS e telefone 135) | https://www.gov.br/inss/pt-br/canais_atendimento/meu-inss/meu-inss | 07/11/2026 |
-| SRV-002 (Perícia médica do INSS) | https://www.gov.br/inss/pt-br/noticias/precisa-fazer-pericia-medica-confira-o-passo-a-passo-do-atestmed | 07/11/2026 |
-| SRV-003 (Extrato CNIS e aposentadoria) | https://www.gov.br/pt-br/servicos/emitir-extrato-de-contribuicao-cnis | 07/11/2026 |
-| SRV-004 (Inscrição no CadÚnico) | https://www.gov.br/pt-br/servicos/inscrever-se-no-cadastro-unico-para-programas-sociais-do-governo-federal | 07/11/2026 |
-| SRV-005 (Cartão Nacional de Saúde) | https://www.gov.br/saude/pt-br/composicao/seidigi/meususdigital/perguntas-e-respostas/cidadao/9-como-faco-o-cartao | 07/11/2026 |
-| SRV-006 (Meu SUS Digital) | https://www.gov.br/saude/pt-br/composicao/seidigi/meususdigital/perguntas-e-respostas/cidadao | 07/11/2026 |
-| DIR-001 (Reclamar no Consumidor.gov.br) | https://www.consumidor.gov.br/pages/conteudo/publico/1 | 07/11/2026 |
-| DIR-002 (Defensoria Pública) | https://www.dpu.def.br/noticias-institucional/233-slideshow/66949-saiba-como-a-defensoria-publica-da-uniao-pode-ajudar-voce | 07/11/2026 |
-| DIR-003 (Disque 100 e Ligue 180) | https://www.gov.br/mdh/pt-br/ondh | 07/11/2026 |
-| DIR-004 (Certidão de nascimento gratuita) | https://www.planalto.gov.br/ccivil_03/leis/l9534.htm | 07/11/2026 |
-| DIR-005 (Juizado Especial Cível) | https://www.cnj.jus.br/cnj-servico-para-que-servem-os-juizados-especiais/ | 07/11/2026 |
-| DIR-006 (Tarifa Social de Energia Elétrica) | https://www.gov.br/aneel/pt-br/assuntos/tarifas/tarifa-social | 07/11/2026 |
+| DOC-001 (2ª via da identidade (CIN/RG)) | https://www.gov.br/secom/pt-br/acompanhe-a-secom/noticias/2026/02/saiba-como-solicitar-a-2a-via-da-cin-apos-caso-de-perda | 16/11/2026 |
+| DOC-002 (CIN digital no app gov.br) | https://www.gov.br/gestao/pt-br/assuntos/noticias/2026/junho/governo-do-brasil-envia-notificacoes-personalizadas-sobre-o-uso-da-versao-digital-da-cin-saiba-como-usar, https://www.gov.br/governodigital/pt-br/identidade/carteira-de-documentos-digitais, https://www.gov.br/governodigital/pt-br/acessibilidade-e-usuario/atendimento-gov.br/duvidas-na-conta-gov.br/duvidas-para-aumentar-o-nivel-da-conta-gov.br/duvidas-para-aumentar-o-nivel-com-a-cin/duvidas-para-aumentar-o-nivel-com-a-cin | 16/11/2026 |
+| DOC-003 (2ª via do título de eleitor) | https://www.tse.jus.br/comunicacao/noticias/2024/Janeiro/precisa-da-2a-via-do-seu-titulo-confira-como-emitir-em-apenas-3-passos | 16/11/2026 |
+| DOC-004 (Título de eleitor cancelado) | https://www.tse.jus.br/comunicacao/noticias/2025/Dezembro/eleitor-em-dia-veja-como-regularizar-o-titulo-cancelado, https://www.tse.jus.br/servicos-eleitorais/titulo-eleitoral/quitacao-de-multas, https://www.tse.jus.br/legislacao/compilada/res/2026/resolucao-no-23-750-de-26-de-fevereiro-de-2026 | 16/11/2026 |
+| DOC-005 (Situação eleitoral) | https://www.tse.jus.br/comunicacao/noticias/2026/Abril/eleitor-em-dia-saiba-como-verificar-se-seu-titulo-esta-regular-1, https://www.tse.jus.br/institucional/corregedoria-geral-eleitoral/sistemas-e-servicos-1/consulta-situacao-eleitoral, https://www.tse.jus.br/servicos-eleitorais/certidoes | 16/11/2026 |
+| SRV-001 (Meu INSS e telefone 135) | https://www.gov.br/inss/pt-br/canais_atendimento/meu-inss/meu-inss | 17/11/2026 |
+| SRV-002 (Perícia médica do INSS) | https://www.gov.br/inss/pt-br/noticias/precisa-fazer-pericia-medica-confira-o-passo-a-passo-do-atestmed | 17/11/2026 |
+| SRV-003 (Extrato CNIS e aposentadoria) | https://www.gov.br/pt-br/servicos/emitir-extrato-de-contribuicao-cnis, https://www.gov.br/pt-br/servicos/simular-aposentadoria | 17/11/2026 |
+| SRV-004 (Inscrição no CadÚnico) | https://www.gov.br/pt-br/servicos/inscrever-se-no-cadastro-unico-para-programas-sociais-do-governo-federal | 17/11/2026 |
+| SRV-005 (Cartão Nacional de Saúde) | https://www.gov.br/saude/pt-br/composicao/seidigi/meususdigital/perguntas-e-respostas/cidadao/9-como-faco-o-cartao | 17/11/2026 |
+| SRV-006 (Meu SUS Digital) | https://www.gov.br/saude/pt-br/composicao/seidigi/meususdigital/perguntas-e-respostas/cidadao | 17/11/2026 |
+| DIR-001 (Reclamar no Consumidor.gov.br) | https://www.consumidor.gov.br/pages/conteudo/publico/1 | 17/11/2026 |
+| DIR-002 (Defensoria Pública) | https://www.dpu.def.br/noticias-institucional/233-slideshow/66949-saiba-como-a-defensoria-publica-da-uniao-pode-ajudar-voce | 17/11/2026 |
+| DIR-003 (Disque 100 e Ligue 180) | https://www.gov.br/mdh/pt-br/ondh, https://www.gov.br/mulheres/pt-br/ligue180 | 07/11/2026 |
+| DIR-004 (Certidão de nascimento gratuita) | https://www.planalto.gov.br/ccivil_03/leis/l9534.htm, https://www2.camara.leg.br/legin/fed/lei/1970-1979/lei-6015-31-dezembro-1973-357511-normaatualizada-pl.html | 17/11/2026 |
+| DIR-005 (Juizado Especial Cível) | https://www.cnj.jus.br/cnj-servico-para-que-servem-os-juizados-especiais/, https://www2.camara.leg.br/legin/fed/lei/1995/lei-9099-26-setembro-1995-348608-normaatualizada-pl.html | 17/11/2026 |
+| DIR-006 (Tarifa Social de Energia Elétrica) | https://www.gov.br/aneel/pt-br/assuntos/tarifas/tarifa-social | 17/11/2026 |
 
 ---
 
 ## 4. Regras de resposta, modelos de prompt e tratamento de limitações
-
-<!-- Responsável: Integrante A (com B, que faz a comparação) · Prazo: 16/11
-     Escrever: regra de decisão C·A·B (4 saídas); modelos A e B (papel, formato, obrigações e limites);
-     resultado da comparação A × B e o modelo escolhido; aviso de limitação; o que o assistente nunca faz.
-     Base: spec §7.3 e §8, docs/arquitetura.md §5.4. -->
 
 ### Regra de decisão
 
@@ -242,10 +221,10 @@ Os dois modelos formatam o **mesmo** resultado da busca; por isso taxa de acerto
 - Fonte com link e data: A 11/11, B 11/11.
 - Aviso de confirmação quando exigido (`confirmar_antes` ou estadual): A 5/5, B 5/5 (`n/a` nas outras 6).
 - Relacionados para continuar: A 11/11, B 11/11.
-- Tamanho médio: A 142,9 palavras, B 149,5 palavras. Passos numerados: A 0, B 4,6.
+- Tamanho médio: A 235,2 palavras, B 242,9 palavras. Passos numerados: A 0, B 5,7.
 - **Nota média de clareza (1 a 5, avaliação cega X/Y com os 3 integrantes + participante do teste de usabilidade):** **Modelo A = 3,61** · **Modelo B = 4,82**.
 
-**Modelo escolhido:** **Modelo B (passo a passo)** foi confirmado como padrão do assistente por apresentar leitura mais escaneável em orientações com várias etapas (como regularização eleitoral e inscrição no CadÚnico), sem aumentar significativamente o número de palavras (+4,6% em média).
+**Modelo escolhido:** **Modelo B (passo a passo)** foi confirmado como padrão do assistente por apresentar leitura mais escaneável em orientações com várias etapas (como regularização eleitoral e inscrição no CadÚnico), sem aumentar significativamente o número de palavras (3,3% em média).
 
 ### Tratamento de limitações
 
@@ -255,50 +234,47 @@ Sem base suficiente, o assistente diz que não encontrou orientação verificada
 
 ## 5. Plano de testes, indicadores e resultados
 
-<!-- Responsável: Integrante B · Prazo: 16/11 (indicadores fechados em 17/11)
-     Escrever: as 14 perguntas + limites L1–L3 e o protocolo contra viés (perguntas congeladas antes
-     das palavras-chave; conjunto do público coletado depois, anônimo); taxa de acerto da busca
-     (geral, por tipo e por conjunto); tempo médio (linear × índice); rubrica A × B; teste de
-     usabilidade; interpretação; pelo menos 2 melhorias; limitações da avaliação.
-     Base: spec §8 e §14, testes/resultados.csv, testes/comparacao_modelos.csv, testes/usabilidade.md. -->
-
 ### Plano de testes
 
-São **29 perguntas** em `testes/perguntas.json`, divididas em dois conjuntos segundo o protocolo contra viés (spec §14.1):
-- **Conjunto `equipe` (19 perguntas):** 8 diretas, 3 reformuladas, 3 fora da base e 5 de limite (entrada vazia, consulta ambígua `"documento"`, tópico sem base `"como tirar passaporte?"`, só símbolos `"???"` e texto longo). Foram **congeladas num commit antes** de preencher as palavras-chave da base.
-- **Conjunto `publico` (10 perguntas, `P01` a `P10`):** 5 diretas, 4 reformuladas e 1 fora da base, coletadas de forma anônima e medidas **sem reajustar pesos nem palavras-chave da base**.
+A avaliação usa **29 perguntas** em [`testes/perguntas.json`](testes/perguntas.json), divididas em dois conjuntos conforme o protocolo da especificação (§14.1).
 
-Todas as perguntas são fictícias ou anônimas, sem nenhum dado pessoal. Testes automatizados: `python -m unittest discover -s testes -t .` (256 testes cobrindo base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal, avaliação e módulos do servidor).
+- **Conjunto `equipe` (19 perguntas).** Inclui 8 diretas, 3 reformuladas, 3 fora da base e 5 casos de limite: entrada vazia, consulta ambígua (`documento`), assunto fora da base (`como tirar passaporte?`), entrada só com símbolos (`???`) e texto longo. As perguntas foram registradas em um commit antes da definição das palavras-chave da base.
+
+- **Conjunto `publico` (10 perguntas, `P01` a `P10`).** Inclui 5 diretas, 4 reformuladas e 1 fora da base. As perguntas foram coletadas de forma anônima. A primeira medição foi feita com os pesos e as palavras-chave já definidos.
+
+Todas as perguntas são fictícias ou anônimas, sem nenhum dado pessoal. Testes automatizados: `python -m unittest discover -s testes -t .` (259 testes cobrindo base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal, avaliação e módulos do servidor).
 
 ### Indicadores da busca
 
-<!-- A taxa de acerto e o tempo medem a busca, que é a mesma para os modelos A e B (spec §8).
-     Por isso não há coluna por modelo aqui; a comparação A × B fica na tabela seguinte. -->
+A taxa de acerto e o tempo medem a busca, que é a mesma para os modelos A e B (spec §8). Por isso não há coluna por modelo aqui; a comparação A × B fica na tabela seguinte. [Resultados por pergunta](testes/resultados.csv)
 
 | Indicador | Conjunto `equipe` (19) | Conjunto `publico` (10) | Geral (29) |
 |---|---|---|---|
-| **Taxa de acerto** | **100,0% (19/19)** | **90,0% (9/10)** | **96,6% (28/29)** |
-| — Perguntas diretas | 100,0% (8/8) | 100,0% (5/5) | 100,0% (13/13) |
-| — Perguntas reformuladas | 100,0% (3/3) | 75,0% (3/4) | 85,7% (6/7) |
-| — Fora da base | 100,0% (3/3) | 100,0% (1/1) | 100,0% (4/4) |
-| — Casos de limite | 100,0% (5/5) | — | 100,0% (5/5) |
-| **Tempo médio (índice invertido)** | 0,3228 ms (0,0069 ms sem L3/E14/L5) | 0,0357 ms | **0,2238 ms** |
-| **Tempo médio (busca linear)** | 1,2631 ms (0,79 ms mediana) | 0,8818 ms | **1,1316 ms** |
+| **Taxa de acerto** | **100,0% (19/19)** | **100,0% (10/10)** | **100,0% (29/29)** |
+| Perguntas diretas | 100,0% (8/8) | 100,0% (5/5) | 100,0% (13/13) |
+| Perguntas reformuladas | 100,0% (3/3) | 100,0% (4/4) | 100,0% (7/7) |
+| Perguntas fora da base | 100,0% (3/3) | 100,0% (1/1) | 100,0% (4/4) |
+| Casos de limite | 100,0% (5/5) | — | 100,0% (5/5) |
+| **Tempo médio com índice invertido** | 1,0155 ms | 0,3172 ms | **0,7747 ms** |
+| **Tempo médio com busca linear** | 4,2268 ms | 3,4833 ms | **3,9704 ms** |
 
 ### Comparação dos modelos A e B
+
+A comparação abrange 11 respostas por modelo. [Resultados da comparação](testes/comparacao_modelos.csv)
 
 | Critério (spec §8) | Modelo A (resumido) | Modelo B (passo a passo) |
 |---|---|---|
 | Respostas com fonte e data | 11/11 (100%) | 11/11 (100%) |
-| Aviso presente quando necessário | 5/5 (100%, 6 `n/a`) | 5/5 (100%, 6 `n/a`) |
-| Relacionados para continuar | 11/11 (100%) | 11/11 (100%) |
-| Tamanho médio (palavras) | 142,9 | 149,5 |
-| Passos numerados (média) | 0,0 | 4,6 |
-| **Nota média de clareza (1–5, cega X/Y)** | **3,61** | **4,82** |
+| Aviso presente quando necessário | 5/5 (100%, 6 não aplicáveis) | 5/5 (100%, 6 não aplicáveis) |
+| Assuntos relacionados para continuar | 11/11 (100%) | 11/11 (100%) |
+| Tamanho médio (palavras) | 235,2 | 242,9 |
+| Passos numerados (média) | 0,0 | 5,7 |
+| **Nota média de clareza (1 a 5)** | **3,61** | **4,82** |
 
 ### Teste de usabilidade
 
 Aplicado a participante externo (`P1`, sem coleta de dados pessoais) seguindo o roteiro de 5 tarefas de `docs/ux.md` §8, com registro completo em [`testes/usabilidade.md`](testes/usabilidade.md):
+
 - **Taxa de sucesso nas tarefas:** **5 de 5 (100%)** concluídas sem ajuda (meta: ≥ 4 de 5).
 - **Tempo até a primeira resposta útil (T1):** **38 s** (meta: < 1 min).
 - **Tempo para abrir assunto relacionado (T2):** **14 s** (meta: < 30 s).
@@ -309,7 +285,12 @@ Aplicado a participante externo (`P1`, sem coleta de dados pessoais) seguindo o 
 
 Na primeira medição do conjunto da equipe, **antes de ajustes**, a busca acertou 17 de 19 perguntas (erros em `E02` e `E14`, corrigidos nas palavras-chave de `DOC-002` e `DIR-006`). Como esse ajuste foi feito olhando as perguntas da equipe, os 100% (19/19) não são uma medida independente. A medida independente veio com o **conjunto do público (`P01` a `P10`)**, em que a busca obteve **90,0% (9/10)** sem mexer na base. O único erro foi `P10` (*"Quero pedir auxílio-doença pelo aplicativo, como funciona?"*): `SRV-002` somou 5 pontos (`auxilio` + `doenca`) e `DOC-002` somou 4 pontos (porque `aplicativo` é palavra-chave de `DOC-002`), deixando a diferença em 1 ponto (`< MARGEM = 2`) e acionando `PEDIR_ESCOLHA` (com `SRV-002` em 1º lugar na lista de escolha) em vez de responder direto.
 
-Nas consultas sem correção ortográfica, o índice invertido leva cerca de **0,007 a 0,010 ms** contra **~0,85 ms** da busca linear (~100× mais rápido), chegando a **~200× mais rápido** nas bases sintéticas ampliadas de 1.700 e 17.000 registros.
+Após a revisão da orientação de `SRV-002`, o termo `aplicativo` passou a pontuar nesse registro, que chegou a 6 pontos. A diferença de 2 pontos permitiu responder diretamente com o registro esperado. A reavaliação chegou a **10/10 no conjunto do público** e **29/29 no total**. Esse resultado se refere às mesmas perguntas já usadas na primeira medição. [Resultados da reavaliação](testes/resultados.csv)
+
+Na execução no Windows, o índice invertido levou em média **0,7747 ms** por pergunta, ante **3,9704 ms** da busca linear. A comparação usa as mesmas 29 perguntas e inclui os casos de limite e fora da base.
+
+
+### Limitações e melhorias
 
 **Melhorias propostas (≥ 2):**
 1. **Ampliar sinônimos e palavras-chave compostas** (ex.: adicionar `"auxilio doenca"` como palavra-chave composta em `SRV-002` para dar o bônus de expressão +2 e evitar ambiguidade com termos genéricos como `"aplicativo"`).
@@ -321,9 +302,6 @@ Nas consultas sem correção ortográfica, o índice invertido leva cerca de **0
 ---
 
 ## 6. 🔧 Como executar
-
-<!-- Responsável: Integrante A · Prazo: 16/11
-     Conferir os comandos numa máquina limpa antes da entrega. -->
 
 ### Pré-requisitos
 
@@ -391,33 +369,82 @@ Variáveis do `.env` (nomes em `.env.example`; **nunca** commitar o `.env`):
 ### Pergunta com resposta e fonte
 
 ```text
+================================================================
+  CITIZEN ASSIST AI  -  orientação cidadã NÃO OFICIAL
+================================================================
+Respondo só com informações verificadas em fontes oficiais.
+Não sou um canal oficial do governo.
+
+Digite sua pergunta (ex.: como tirar a segunda via do RG)
+ou escolha uma opção:
+
+  1  Ver assuntos por tema
+  2  Ver o caminho entre dois assuntos
+  3  Formato da resposta (agora: passo a passo)
+  ?  Ajuda
+  0  Sair
+> 1
+Temas disponíveis:
+  1  Documentação pessoal (5 assuntos)
+  2  Serviços públicos (6 assuntos)
+  3  Direitos e orientações comunitárias (6 assuntos)
+
+[1-3] escolher tema  [m] menu
+> 1
+Documentação pessoal
+  1  2ª via da identidade (CIN/RG)
+  2  CIN digital no app gov.br
+  3  2ª via do título de eleitor
+  4  Título de eleitor cancelado
+  5  Situação eleitoral
+
+[número] abrir assunto  [m] menu  ou digite uma pergunta sobre este tema
+> 5
 --------------------------------------------------------------------------------
 Situação eleitoral
 --------------------------------------------------------------------------------
-1. No Autoatendimento Eleitoral do Portal do TSE, abra o menu "Consultas" e
-   clique em "Situação do título".
-2. Informe o número do título, o CPF ou o nome, e a data de nascimento. A
-   consulta é gratuita e mostra pendências e como regularizar.
-3. Também dá para consultar pela página principal do TSE, em "Situação
-   eleitoral", no menu de serviços.
-4. Para comprovar que está em dia, emita a certidão de quitação eleitoral:
-   Portal do TSE, Serviços Eleitorais, Certidões. É gratuita.
+1. Para consultar sua situação eleitoral gratuitamente, acesse
+   https://www.tse.jus.br, entre em 'Autoatendimento Eleitoral', abra o menu
+   'Consultas' e selecione 'Situação do título'.
+2. Informe o número do título de eleitor, CPF ou nome completo e a data de
+   nascimento, conforme solicitado. A consulta permite verificar se a inscrição
+   eleitoral está regular, cancelada ou suspensa e obter orientações sobre
+   possíveis providências.
+3. Também é possível consultar a situação eleitoral pela página inicial do TSE,
+   selecionando 'Situação eleitoral' no menu de serviços, ou pelo aplicativo
+   e-Título.
+4. Atenção: estar com o título regular significa que a inscrição está habilitada
+   para votar, mas não garante que todas as obrigações eleitorais estejam
+   quitadas. Para verificar multas por ausências injustificadas, acesse
+   'Consultas' e 'Débitos Eleitorais' no Autoatendimento Eleitoral.
+5. Para comprovar que está em dia com a Justiça Eleitoral, emita gratuitamente a
+   Certidão de Quitação Eleitoral. No Autoatendimento Eleitoral, selecione
+   'Certidões' e depois 'Certidão de Quitação Eleitoral', preenchendo os dados
+   solicitados. Também é possível emitir a certidão pelo aplicativo e-Título, em
+   'Mais opções'.
+6. Se o título estiver cancelado ou suspenso, ou se houver pendências, consulte
+   as orientações do TSE ou procure a zona eleitoral responsável para verificar
+   como regularizar a situação.
 
 Fonte:
   https://www.tse.jus.br/comunicacao/noticias/2026/Abril/eleitor-em-dia-saiba-como-verificar-se-seu-titulo-esta-regular-1
-  (verificado em 07/11/2026)
+  (verificado em 16/11/2026)
+Fonte:
+  https://www.tse.jus.br/institucional/corregedoria-geral-eleitoral/sistemas-e-servicos-1/consulta-situacao-eleitoral
+  (verificado em 16/11/2026)
+Fonte: https://www.tse.jus.br/servicos-eleitorais/certidoes (verificado em
+  16/11/2026)
 
 Continue consultando:
   1  2ª via do título de eleitor
   2  Título de eleitor cancelado
-  3  2ª via da carteira de identidade (CIN/RG)
+  3  2ª via da identidade (CIN/RG)
 
 Este assistente não é um canal oficial.
 
 [1-3] abrir assunto  [m] menu  ou digite outra pergunta
-A opção 0 não existe aqui. Escolha um dos números da lista.
-
-[1-3] abrir assunto  [m] menu  ou digite outra pergunta
+>
+--------------------------------------------------------------------------------
 ```
 
 ### Pergunta ambígua
@@ -486,9 +513,11 @@ No painel, o critério de contraste para texto comum é de pelo menos 4,5:1, con
 
 ### Privacidade
 
-O núcleo em terminal roda localmente e não coleta dados pessoais. Na camada extra, o cofre é opcional. Ele cifra o nome e o conteúdo dos arquivos antes de armazená-los, usando AES-256-GCM e uma chave derivada da senha com PBKDF2-HMAC-SHA-256, 600 mil iterações e um sal aleatório por cofre. As operações são filtradas por `user_id`. Após confirmação, `/apagar_meus_dados` remove os dados da pessoa armazenados pelo aplicativo, inclusive os documentos do cofre.
+O núcleo em terminal roda localmente e não coleta nem armazena dados pessoais. Na camada extra, o cofre é opcional. O nome e o conteúdo dos documentos são cifrados antes do armazenamento com AES-256-GCM. A chave é derivada da senha com PBKDF2-HMAC-SHA-256, 600 mil iterações e um sal aleatório por cofre. As operações são filtradas por `user_id`. Após confirmação, o comando `/apagar_meus_dados` remove os dados da pessoa armazenados pelo aplicativo, inclusive os documentos do cofre.
 
-No ambiente publicado, a senha digitada no painel chega ao servidor via HTTPS. O servidor mantém a chave temporariamente em memória e pode decifrar documentos enquanto o cofre está aberto. A proteção combina criptografia em trânsito e em repouso, sem criptografia de ponta a ponta. Quando o Gemini gratuito está habilitado para sugerir nomes, o envio do documento depende de consentimento. A pessoa pode escolher o nome manualmente. As demonstrações, os testes e o vídeo usam documentos fictícios.
+Quando o painel é publicado com HTTPS, a senha digitada no painel trafega por uma conexão cifrada até o servidor. Durante o desbloqueio, o servidor mantém a chave temporariamente em memória e decifra os documentos para visualização. O cofre oferece criptografia em repouso, e o HTTPS protege o tráfego do painel. A criptografia de ponta a ponta fica como melhoria futura.
+
+Quando o Gemini gratuito está habilitado para sugerir nomes, o envio do documento ao serviço exige consentimento prévio. A pessoa pode escolher o nome manualmente e evitar esse envio. Os testes, as demonstrações e o vídeo usam somente documentos fictícios.
 
 ### Informação não oficial
 
@@ -512,25 +541,28 @@ O Citizen Assist AI é um projeto acadêmico independente e não representa nenh
 
 ### Conclusões
 
-O núcleo roda só com Python, offline e sem chaves. Acertou 19 de 19 perguntas da equipe (8 diretas, 3 reformuladas, 3 fora da base e 5 de limite), e o índice invertido é de 100 a 200 vezes mais rápido que a busca linear nos tamanhos testados. A resposta ao cidadão nunca é gerada livremente pela IA: o conteúdo vem sempre da base, com fonte e data. Sobre a camada de produto, o bot no Telegram, os lembretes e o roteador foram testados no Telegram real; cofre, foto/PDF, resumo da manhã e Mini App têm testes automatizados, mas ainda faltam testes reais (ver "Estado do projeto").
+O Citizen Assist AI roda localmente com Python no terminal, sem dependências externas. O assistente consulta a base de conhecimento, apresenta orientações com fonte oficial e data de verificação e avisa quando a pergunta está fora da cobertura. A resposta ao cidadão nunca é gerada livremente pela IA: o conteúdo vem sempre da base, com fonte e data. Sobre a camada de produto, o bot no Telegram, os lembretes e o roteador foram testados no Telegram real; cofre, foto/PDF, resumo da manhã e Mini App têm testes automatizados, mas ainda faltam testes reais (ver "Estado do projeto").
+
+Na primeira avaliação independente, o assistente acertou **9 de 10 perguntas do público**. Após a revisão da base, a reavaliação com as mesmas perguntas chegou a **29 acertos em 29 consultas**. Na execução no Windows, o índice invertido levou em média **0,7747 ms** por consulta, ante **3,9704 ms** da busca linear no mesmo conjunto. No teste de usabilidade, o participante externo concluiu **5 de 5 tarefas sem ajuda** e atribuiu ao sistema uma pontuação SUS de **92,5/100**.
 
 ### Limitações
 
-- **Base pequena:** 17 registros em 3 temas, escritos a partir das fontes oficiais e ainda sem revisão humana completa.
-- **Avaliação enviesada:** as 19 perguntas foram escritas pela própria equipe. O conjunto do público (anônimo) e o teste de usabilidade ainda não foram aplicados, então 100% não deve ser lido como taxa de acerto geral.
-- **Busca por palavras-chave:** não entende o sentido da frase. Perguntas muito diferentes das palavras-chave caem em "sem base".
-- **Informação que muda:** taxas, prazos e regras mudam. Por isso cada resposta mostra a data de verificação e orienta a confirmar no site oficial.
-- **Cofre e Gemini:** o Gemini usado é o plano gratuito, em que o Google pode usar o conteúdo enviado para melhorar produtos; o aviso de consentimento explica isso. Só E2E real existe no painel; no chat, o servidor vê o arquivo enquanto o cofre está desbloqueado.
-- **Infraestrutura:** VM, HTTPS e deploy automático ainda não foram testados em produção.
+- **Cobertura da base.** A base tem 17 orientações em três temas. A busca depende das palavras presentes na pergunta e nos registros. Regras, prazos e valores podem mudar, por isso cada orientação indica quando a informação foi verificada e onde confirmá-la.
+
+- **Amostra da avaliação.** O conjunto tem 29 perguntas, e o teste de usabilidade teve um participante externo. A reavaliação reutilizou as perguntas anteriores, e os testes de escala usaram cópias sintéticas dos registros.
+
+- **Privacidade do cofre.** Os documentos são cifrados em repouso e decifrados no servidor durante o desbloqueio. A sugestão de nomes pelo Gemini gratuito depende de consentimento. A pessoa também pode dar um nome ao arquivo sem enviá-lo ao serviço.
+
+- **Validação da camada extra.** A VM, o HTTPS e o deploy automático ainda aguardam validação em produção. As demonstrações e os testes do cofre usam documentos fictícios.
+
 
 ### Melhorias e roadmap
 
-<!-- Completar com o que virar roadmap na regra de corte de 13/11. -->
 
 - **Ampliar sinônimos e palavras-chave** na base (hoje o `base.json` não tem sinônimos), medindo antes e depois com o conjunto do público.
-- **Ampliar a base** com novos temas e registros (por exemplo CNH e CPF), mantendo a conferência na fonte oficial.
-- **Detalhar os estados** em `referencias_estaduais` do DOC-001 e do que mais variar por UF.
-- **Classificador de documentos local**, para não enviar arquivos ao Gemini.
+- **Ampliar a base de orientações** com temas como CNH, CPF e passaporte, conferindo os procedimentos nas fontes oficiais.
+- **Ampliar a cobertura estadual** da segunda via da CIN. O `DOC-001` já tem referências específicas para 10 UFs.
+- **Avaliar um classificador local** para sugerir nomes de documentos no próprio dispositivo ou servidor do projeto.
 
 - **Números de contexto para o relatório (planejado, opcional, baixa prioridade):** consultar uma única vez na [Base dos Dados](https://basedosdados.org) alguns números públicos que justifiquem o problema e o impacto social (ex.: famílias no CadÚnico, eleitores por UF). O resultado vai só para o relatório, com fonte e data citadas; não entra no código, porque a Base dos Dados exige `pip install`, BigQuery e internet (spec §5.3) e traz estatísticas, não orientações passo a passo.
 - Ferramenta `consultar_site_oficial`, classificador de documentos local, CNH e CPF na base, fuso por usuário (spec §3 e §11).
@@ -547,24 +579,52 @@ GlobalSolution_CitizenTech/
 ├── .env.example              nomes das variáveis do modo servidor, sem valores
 ├── requirements.txt          dependências do modo servidor (o terminal não precisa)
 ├── data/
-│   └── base.json             base de conhecimento verificada
+│   ├── base.json                  orientações, fontes e datas de verificação
+│   └── feeds.json                 fontes de notícias do resumo da manhã
 ├── docs/
+│   ├── Solicitação GS.md          enunciado e checklist da entrega
+│   ├── arquitetura.md             arquitetura e decisões técnicas
+│   ├── deploy_vm.md               instruções de implantação
+│   ├── design/                    identidade visual e protótipos
 │   ├── especificacao/
-│   │   └── CITIZEN_ASSIST_SPEC.md   especificação (fonte de verdade)
-│   ├── processo_desenvolvimento.md  processo SDD e ciclo de vida
-│   ├── planejamento.md       divisão de atividades e prazos
-│   ├── arquitetura.md        arquitetura, fluxos e decisões
-│   ├── ux.md                 interfaces, textos, acessibilidade e roteiro de usabilidade
-│   ├── design/               identidade visual: tokens.css, tokens.json e imagens das telas
-│   ├── uso_ia.md             registro do uso de IA
-│   ├── relatorio.pdf         relatório final (4 a 8 páginas)
-│   └── link_video.txt        link do vídeo no YouTube
-├── src/                      código-fonte (python src/sistema.py)
-├── testes/                   perguntas de teste, resultados e usabilidade
-└── scripts/                  utilitários (ex.: registros com verificação antiga)
+│   │   └── CITIZEN_ASSIST_SPEC.md  especificação do projeto
+│   ├── index.html                 página pública no GitHub Pages
+│   ├── link_video.txt             URL do vídeo de apresentação
+│   ├── planejamento.md           divisão de atividades e prazos
+│   ├── processo_desenvolvimento.md
+│   ├── relatorio.pdf              relatório da Global Solution
+│   ├── uso_ia.md                  registro de uso de IA e validação crítica
+│   └── ux.md                      interfaces e avaliação de usabilidade
+├── painel/
+│   ├── index.html                 interface do painel web
+│   ├── painel.css                 estilos do painel
+│   ├── painel.js                  interação e chamadas à API
+│   ├── tokens.css                 cores e estilos compartilhados
+│   └── icone.svg                  ícone do painel
+├── scripts/
+│   ├── folha_clareza.py            folha e cálculo da avaliação cega
+│   ├── gerar_relatorio.py         gerador do relatório PDF
+│   ├── testar_gemini.py            verificação da configuração do Gemini
+│   └── verificacoes_antigas.py     identificação de fontes a rever
+├── src/
+│   ├── sistema.py                 ponto de entrada do terminal
+│   ├── base.py                    leitura e validação da base
+│   ├── busca.py                   busca, pontuação e grafo de assuntos
+│   ├── respostas.py               modelos de resposta A e B
+│   ├── avaliacao.py               execução das avaliações e cálculo dos indicadores
+│   ├── servidor.py                inicialização do bot, da API e do agendador
+│   ├── telegram_bot.py            interface do bot
+│   ├── painel.py                  rotas e autenticação do painel
+│   ├── cofre.py                   operações do cofre
+│   └── criptografia.py            derivação de chaves e cifragem
+└── testes/
+    ├── perguntas.json             consultas e resultados esperados
+    ├── resultados.csv             resultados e tempos de busca
+    ├── comparacao_modelos.csv      indicadores dos modelos A e B
+    ├── notas_clareza.csv           notas individuais da avaliação cega
+    ├── usabilidade.md             registro do teste de usabilidade
+    └── test_*.py                  suíte de testes automatizados
 ```
-
-<!-- TODO: atualizar quando a estrutura final estiver pronta (painel/, .github/workflows/ etc.). -->
 
 ---
 
@@ -581,7 +641,7 @@ As principais decisões e suas justificativas estão em [`docs/arquitetura.md`](
 
 <!-- OBRIGATÓRIO pelo modelo da coordenação: a equipe precisa marcar uma das opções abaixo. -->
 
-* **Participação na Competição:** [ ] Sim, aceitamos participar / [ ] Não vamos participar.
+* **Participação na Competição:** [x] Sim, aceitamos participar / [ ] Não vamos participar.
 * **Uso de IA:** registrado em [`docs/uso_ia.md`](docs/uso_ia.md).
 * **Aviso:** o Citizen Assist AI **não é um canal oficial** de nenhum órgão público. Confirme sempre as informações no site oficial indicado em cada resposta.
 
