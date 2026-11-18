@@ -10,6 +10,7 @@ ordem fixa da spec 19.5: conteúdo, Atenção, Fonte, assuntos para continuar,
 frase de não-oficialidade.
 """
 from __future__ import annotations
+from base import links_da_referencia
 
 import re
 import textwrap
@@ -74,7 +75,10 @@ def linha_fonte(reg: dict) -> str:
         verificado = "(verificado em %s)" % formatar_data(reg["data_verificacao"])
     else:
         verificado = "(%s)" % formatar_data("")
-    return _quebrar("Fonte: %s %s" % (reg["referencia"], verificado), recuo="  ")
+    linhas = []
+    for link in links_da_referencia(reg["referencia"]):
+        linhas.append(_quebrar("Fonte: %s %s" % (link, verificado), recuo="  "))
+    return "\n".join(linhas)
 
 
 def texto_do_aviso(reg: dict) -> str:

@@ -47,6 +47,29 @@ def _data_valida(valor: str) -> bool:
     return True
 
 
+def _referencia_valida(referencia) -> bool:
+    """Aceita um link HTTP(S) ou uma lista não vazia de links HTTP(S)."""
+    if isinstance(referencia, str):
+        return referencia.startswith(("http://", "https://"))
+
+    if isinstance(referencia, list) and referencia:
+        return all(
+            isinstance(link, str)
+            and link.startswith(("http://", "https://"))
+            for link in referencia
+        )
+
+    return False
+
+
+def links_da_referencia(referencia):
+    """Retorna os links de uma referência já validada."""
+    if isinstance(referencia, str):
+        return [referencia]
+    return referencia
+
+
+
 def _validar_registro(reg, posicao: int, temas: dict) -> list:
     """Valida um registro isolado e devolve a lista de problemas achados."""
     if not isinstance(reg, dict):
@@ -70,8 +93,11 @@ def _validar_registro(reg, posicao: int, temas: dict) -> list:
         erros.append("registro %s: 'pergunta' está vazia" % nome)
     if not _texto_ok(reg["orientacao"]):
         erros.append("registro %s: 'orientacao' está vazia" % nome)
-    if not _texto_ok(reg["referencia"]) or not reg["referencia"].startswith("http"):
-        erros.append("registro %s: 'referencia' deve ser um link (http...)" % nome)
+    if not _referencia_valida(reg["referencia"]):
+        erros.append(
+            "registro %s: 'referencia' deve ser um link (http...) "
+            "ou uma lista não vazia de links (http...)" % nome
+        )
 
     palavras = reg["palavras_chave"]
     if (not isinstance(palavras, list) or not palavras

@@ -149,7 +149,11 @@ function desenharResposta(d) {
     ic.appendChild(check);
     const txt = el("div");
     txt.appendChild(el("strong", "Fonte conferida"));
-    const fonte = el("span"); fonte.append("Verificado em " + d.verificado_em + " · ", linkExterno(d.fonte, d.fonte));
+    const fonte = el("span");
+    fonte.append("Verificado em " + d.verificado_em);
+    for (const url of (d.fontes || [d.fonte])) {
+      fonte.append(" · ", linkExterno(url, url));
+    }
     txt.appendChild(fonte);
     selo.append(ic, txt); adicionar(selo, depois + 0.3);
 

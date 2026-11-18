@@ -140,7 +140,8 @@ class TestComBaseReal(unittest.TestCase):
             sug = [x for x in r["relacionados"]][:3]
             for modelo in "AB":
                 texto = respostas.montar_resposta(modelo, r, sug, por_id)
-                self.assertIn(r["referencia"], texto)
+                for link in base.links_da_referencia(r["referencia"]):
+                    self.assertIn(link, texto, f"{rid}, modelo {modelo}")
 
 
 if __name__ == "__main__":

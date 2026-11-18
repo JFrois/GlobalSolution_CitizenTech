@@ -68,7 +68,7 @@ def montar_html():
     t_ind = sum(float(l["tempo_indice_ms"]) for l in resultados) / len(resultados)
     t_lin = sum(float(l["tempo_linear_ms"]) for l in resultados) / len(resultados)
     escala = avaliacao.medir_escala(dados, perguntas, repeticoes=2, repeticoes_base=100)
-    dominios = sorted({urlparse(r["referencia"]).netloc for r in regs})
+    dominios = sorted({urlparse(link).netloc for r in regs for link in base.links_da_referencia(r["referencia"])})
     datas = sorted({r["data_verificacao"] for r in regs})
     media = {m: [] for m in "AB"}
     for l in comparacao:
@@ -88,7 +88,7 @@ def montar_html():
                    for t, l in sorted(por_tipo.items())]
     linhas_escala = [[str(m["registros"]), "%.4f" % m["indice_ms"], "%.4f" % m["linear_ms"],
                       "%.0fx" % (m["linear_ms"] / m["indice_ms"])] for m in escala]
-    linhas_fontes = [[esc(r["id"]), esc(r.get("titulo", r["pergunta"])), esc(urlparse(r["referencia"]).netloc),
+    linhas_fontes = [[esc(r["id"]), esc(r.get("titulo", r["pergunta"])), esc(", ".join(dict.fromkeys(urlparse(link).netloc for link in base.links_da_referencia(r["referencia"])))),
                       esc(r["data_verificacao"])] for r in regs]
     linhas_res = [[esc(l["id"]), esc(l["tipo"]), esc(l["pergunta"]), esc(l["esperado"]), esc(l["obtido"]),
                    esc(l["resultado"])] for l in resultados]

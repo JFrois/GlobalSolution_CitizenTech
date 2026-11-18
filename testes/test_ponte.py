@@ -2,6 +2,8 @@
 import sys
 import unittest
 from pathlib import Path
+from datetime import datetime
+from src.base import carregar_base
 
 RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ / "src"))
@@ -65,9 +67,18 @@ class TestPonte(unittest.TestCase):
     def test_formatar_telegram_tem_aviso_fonte_e_frase_oficial(self):
         reg = self.base["registros_por_id"]["DOC-001"]  # estadual, confirmar antes
         html_ = ponte.formatar_telegram(reg)
+
+        # Obtém a data diretamente do registro no base.json
+        data_iso = reg["data_verificacao"]
+
+        # Converte AAAA-MM-DD para DD/MM/AAAA
+        ano, mes, dia = data_iso.split("-")
+        data_formatada = f"{dia}/{mes}/{ano}"
+
+        # Verifica o conteúdo da resposta do Telegram
         self.assertIn("<b>Atenção:</b> o procedimento", html_)
         self.assertIn("<b>Fonte:</b>", html_)
-        self.assertIn("verificado em 07/11/2026", html_)
+        self.assertIn(f"verificado em {data_formatada}", html_)
         self.assertTrue(html_.rstrip().endswith("</i>"))
         self.assertIn(ponte.NAO_OFICIAL, html_)
 

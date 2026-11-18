@@ -20,6 +20,7 @@ import secrets
 import time
 from pathlib import Path
 from urllib.parse import parse_qsl
+from base import links_da_referencia
 
 import armazenamento
 import briefing
@@ -195,9 +196,10 @@ def resposta_estruturada(pergunta, base, uf=None):
         rid = r["candidatos"][0][0]
         reg = por_id[rid]
         link, aviso = ponte.fonte_e_aviso(reg, uf)
+        fontes = links_da_referencia(link)
         saida.update({
             "id": rid, "titulo": reg["pergunta"], "passos": ponte.passos(reg),
-            "atencao": aviso or None, "fonte": link,
+            "atencao": aviso or None, "fonte": fontes[0],"fontes": fontes,
             "verificado_em": ponte.formatar_data(reg["data_verificacao"]),
             "relacionados": [{"id": i, "titulo": por_id[i]["pergunta"]}
                              for i in ponte.relacionados(base, rid)],

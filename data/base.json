@@ -13,12 +13,12 @@
       "tema": "documentacao",
       "palavras_chave": ["segunda via", "rg", "identidade", "cin", "perdi", "carteira de identidade", "documento"],
       "pergunta": "Como solicitar a 2ª via da carteira de identidade (CIN/RG)?",
-      "orientacao": "A segunda via da CIN é emitida pelos órgãos de identificação dos estados e do Distrito Federal, e pode ser pedida em qualquer estado, mesmo naquele onde você não nasceu nem mora.\nSe perdeu o documento, registre um boletim de ocorrência no seu estado.\nAcesse gov.br/identidade e clique em \"Saiba como fazer a sua\" para ver as regras do seu estado e agendar a emissão.\nLeve a certidão de nascimento ou de casamento atualizada. A segunda via pode ser cobrada, e o valor e os documentos exigidos variam de estado para estado.\nEnquanto a nova via não fica pronta, a versão digital da CIN no aplicativo gov.br pode ser usada.",
+      "orientacao": "A segunda via da Carteira de Identidade Nacional (CIN) pode ser solicitada aos órgãos de identificação civil dos estados e do Distrito Federal. Não é necessário solicitar o documento no estado onde você nasceu ou reside.\nSe perdeu ou teve a identidade furtada ou roubada, é recomendado registrar um boletim de ocorrência para reduzir o risco de uso indevido do documento. Verifique se o registro é exigido pelo órgão emissor do seu estado.\nAcesse https://www.gov.br/identidade e selecione a opção 'Saiba como fazer a sua' para consultar as orientações do estado onde pretende solicitar a CIN, incluindo locais de atendimento e agendamento.\nPara emitir a CIN, normalmente é necessário apresentar a certidão de nascimento ou de casamento atualizada. Consulte o órgão responsável para confirmar os demais documentos e requisitos.\nA primeira emissão da CIN em papel é gratuita. A segunda via pode ser cobrada, conforme a legislação estadual. Verifique o valor e as possíveis hipóteses de isenção antes de solicitar.\nSe você já recebeu uma CIN física, poderá consultar sua versão digital no aplicativo gov.br, na opção 'Carteira de documentos', desde que ela esteja disponível em sua conta. Essa versão pode facilitar sua identificação enquanto aguarda a nova via.",
       "confirmar_antes": true,
       "abrangencia": "estadual",
       "referencia": "https://www.gov.br/secom/pt-br/acompanhe-a-secom/noticias/2026/02/saiba-como-solicitar-a-2a-via-da-cin-apos-caso-de-perda",
       "referencias_estaduais": {
-        "SP": "https://www.poupatempo.sp.gov.br",
+        "SP": "https://poupatempo.sp.gov.br/carta/4FC0FEE9-9E3F-4220-8A73-9C49BFDD7288",
         "MG": "https://www.mg.gov.br/servico/obter-carteira-de-identidade-nacional-cin",
         "RJ": "https://www.detran.rj.gov.br",
         "PR": "https://www.policiacientifica.pr.gov.br/Pagina/Carteira-de-Identidade",
@@ -29,7 +29,7 @@
         "PE": "https://www.iitb.pe.gov.br",
         "CE": "https://www.pefoce.ce.gov.br"
       },
-      "data_verificacao": "2026-11-07",
+      "data_verificacao": "2026-11-16",
       "relacionados": ["DOC-002", "DOC-003", "SRV-004", "DIR-004"]
     },
     {
@@ -38,9 +38,9 @@
       "tema": "documentacao",
       "palavras_chave": ["cin digital", "identidade digital", "carteira digital", "identidade no celular", "celular", "app gov.br", "aplicativo", "documento"],
       "pergunta": "Como ter a Carteira de Identidade Nacional (CIN) digital no app gov.br?",
-      "orientacao": "Tenha em mãos a CIN impressa que você recebeu na emissão.\nAbra o aplicativo gov.br, entre na seção \"carteira de documentos\" e baixe a CIN em formato digital.\nÉ preciso ter conta gov.br para usar o aplicativo.\nTodo modelo físico da CIN (papel ou cartão) tem uma versão digital, mas só a última CIN emitida tem o QR Code válido.",
-      "referencia": "https://www.gov.br/gestao/pt-br/assuntos/noticias/2026/junho/governo-do-brasil-envia-notificacoes-personalizadas-sobre-o-uso-da-versao-digital-da-cin-saiba-como-usar",
-      "data_verificacao": "2026-11-07",
+      "orientacao": "Para ter a Carteira de Identidade Nacional (CIN) digital, primeiro é necessário ter recebido a CIN física, emitida em papel ou cartão pelo órgão de identificação do estado ou do Distrito Federal.\nInstale ou abra o aplicativo gov.br no celular e entre com seu CPF e senha. Para acessar a Carteira de Documentos Digitais, sua conta gov.br deve ser de nível prata ou ouro.\nNo aplicativo, acesse 'Carteira de documentos', selecione 'Adicionar documento' e escolha 'Carteira de Identidade Nacional (CIN)'. Depois de adicionada, abra o documento para visualizar sua versão digital.\nSe sua conta for nível bronze, você poderá aumentar o nível utilizando o QR Code da CIN física e o reconhecimento facial, seguindo as instruções do aplicativo gov.br.\nA CIN digital tem validade em todo o território nacional. Tanto a CIN física em papel quanto a versão em cartão possuem correspondente digital, mas somente a última CIN emitida terá o QR Code válido.\nSe a CIN ainda não aparecer no aplicativo, verifique se o documento já foi processado pelo órgão emissor e consulte os canais oficiais de atendimento do gov.br.",
+      "referencia": ["https://www.gov.br/gestao/pt-br/assuntos/noticias/2026/junho/governo-do-brasil-envia-notificacoes-personalizadas-sobre-o-uso-da-versao-digital-da-cin-saiba-como-usar", "https://www.gov.br/governodigital/pt-br/identidade/carteira-de-documentos-digitais", "https://www.gov.br/governodigital/pt-br/acessibilidade-e-usuario/atendimento-gov.br/duvidas-na-conta-gov.br/duvidas-para-aumentar-o-nivel-da-conta-gov.br/duvidas-para-aumentar-o-nivel-com-a-cin/duvidas-para-aumentar-o-nivel-com-a-cin"],
+      "data_verificacao": "2026-11-16",
       "relacionados": ["DOC-001"]
     },
     {
@@ -108,7 +108,7 @@
       "palavras_chave": ["cnis", "extrato", "simulacao", "aposentadoria", "contribuicao", "inss"],
       "pergunta": "Como tirar o extrato CNIS e simular a aposentadoria?",
       "orientacao": "Para emitir o extrato CNIS, acesse o Meu INSS pelo site ou aplicativo, entre com CPF e senha da conta gov.br e, no campo\"Do que você precisa?\", digite 'CNIS'. Selecione o serviço, siga as instruções e baixe o documento. O serviço é gratuito e realizado pela internet.\nO CNIS apresenta vínculos empregatícios, remunerações e contribuições previdenciárias. Existem três tipos de extrato: Relações Previdenciárias, Relações Previdenciárias e Remunerações e Ano Civil, que apresenta contribuições a partir de novembro de 2019.\nPara simular a aposentadoria, acesse o Meu INSS, procure \"Simular aposentadoria\", confira ou altere seus dados pelo ícone de lápis e clique em \"Recalcular\".É possível consultar o resultado e baixar o PDF.\nA simulação é apenas uma estimativa baseada nos dados disponíveis e não garante o direito à aposentadoria. A concessão depende da análise do INSS.",
-      "referencia": "https://www.gov.br/pt-br/servicos/emitir-extrato-de-contribuicao-cnis",
+      "referencia": ["https://www.gov.br/pt-br/servicos/emitir-extrato-de-contribuicao-cnis", "https://www.gov.br/pt-br/servicos/simular-aposentadoria"],
       "data_verificacao": "2026-11-17",
       "relacionados": ["SRV-001"]
     },
@@ -174,7 +174,7 @@
       "palavras_chave": ["disque 100", "ligue 180", "denuncia", "violencia", "direitos humanos", "mulher"],
       "pergunta": "Quando usar o Disque 100 e o Ligue 180?",
       "orientacao": "O Disque 100 e o Ligue 180 são serviços públicos gratuitos para denunciar violações de direitos, mas atendem a situações diferentes.\nO Disque 100 recebe denúncias de violações de direitos humanos, como violência, negligência, discriminação e abusos contra crianças, adolescentes, pessoas idosas, pessoas com deficiência e outros grupos vulneráveis. Funciona 24 horas por dia, todos os dias da semana. As denúncias podem ser anônimas e recebem um número de protocolo para acompanhamento. Também existem canais digitais de atendimento, como WhatsApp e outros meios divulgados no site gov.br/mdh.\nO Ligue 180 é a Central de Atendimento à Mulher, destinada a orientar, acolher e registrar denúncias de violência contra mulheres. A ligação é gratuita e o atendimento funciona 24 horas por dia, inclusive aos finais de semana e feriados. Também é possível entrar em contato pelo WhatsApp (61) 9610-0180. O serviço oferece informações sobre direitos, indica locais de atendimento e encaminha denúncias aos órgãos responsáveis.\nEm situações de emergência, violência em andamento ou risco imediato à integridade física, ligue 190 para acionar a Polícia Militar. O Disque 100 e o Ligue 180 não substituem o atendimento policial de emergência.",
-      "referencia": "https://www.gov.br/mdh/pt-br/ondh", 
+      "referencia": ["https://www.gov.br/mdh/pt-br/ondh", "https://www.gov.br/mulheres/pt-br/ligue180"],
       "data_verificacao": "2026-11-17",
       "relacionados": ["DIR-002"]
     },
@@ -186,7 +186,7 @@
       "pergunta": "Como conseguir a certidão de nascimento gratuita?",
       "orientacao": "O registro civil de nascimento e a primeira via da certidão de nascimento são gratuitos para todas as pessoas, independentemente da renda. Para solicitar, procure um Cartório de Registro Civil das Pessoas Naturais e informe-se sobre os documentos necessários.\nA segunda via da certidão também é gratuita para pessoas reconhecidamente pobres, conforme a Lei nº 9.534/1997. Para obter a gratuidade, é necessário declarar a condição de pobreza, sem exigência automática de comprovante de renda.\nA declaração pode ser feita pela própria pessoa. Caso seja analfabeta, outra pessoa poderá fazer a declaração a seu pedido, com a assinatura de duas testemunhas.\nA apresentação de informações falsas na declaração pode gerar responsabilidade civil e criminal.\nProcure o cartório de registro civil para solicitar a certidão e receber orientações sobre os procedimentos. Caso tenha direito à gratuidade e encontre dificuldades para obter o documento, procure a Defensoria Pública para orientação jurídica gratuita.",
       "confirmar_antes": true,
-      "referencia": "https://www.planalto.gov.br/ccivil_03/leis/l9534.htm",
+      "referencia": ["https://www.planalto.gov.br/ccivil_03/leis/l9534.htm", "https://www2.camara.leg.br/legin/fed/lei/1970-1979/lei-6015-31-dezembro-1973-357511-normaatualizada-pl.html"],
       "data_verificacao": "2026-11-17",
       "relacionados": ["DIR-002", "DOC-001"]
     },
@@ -197,7 +197,7 @@
       "palavras_chave": ["juizado especial civel", "juizado", "pequenas causas", "processo", "justica"],
       "pergunta": "Como funciona o Juizado Especial Cível?",
       "orientacao": "O Juizado Especial Cível, conhecido como Juizado de Pequenas Causas, atende conflitos de menor complexidade, como problemas de consumo, cobranças, produtos com defeito, serviços não prestados e pequenos acidentes de trânsito. O procedimento é simplificado e busca, sempre que possível, uma solução por acordo.\nEm regra, o valor da causa não pode ultrapassar 40 salários mínimos. Para ações de até 20 salários mínimos, é possível iniciar o processo sem advogado. Acima desse valor, até o limite de 40 salários mínimos, é obrigatório ter advogado. Para apresentar recurso contra uma decisão, também é necessária a assistência de advogado.\nPodem entrar com ação pessoas físicas capazes e maiores de 18 anos, microempreendedores individuais (MEIs), microempresas, empresas de pequeno porte e outras entidades autorizadas pela legislação.\nO atendimento em primeira instância é gratuito, sem cobrança inicial de custas judiciais. Entretanto, recursos e situações específicas previstas em lei podem gerar despesas.\nO Juizado Especial Cível estadual não atende causas trabalhistas, de pensão alimentícia, herança, inventário, falência, questões fiscais, acidentes de trabalho ou ações contra a Fazenda Pública, entre outras excluídas por lei.\nPara iniciar uma ação, procure o Juizado Especial Cível do tribunal de Justiça do seu estado e informe-se sobre os documentos necessários e as formas de atendimento presencial ou eletrônico.",
-      "referencia": "https://www.cnj.jus.br/cnj-servico-para-que-servem-os-juizados-especiais/",
+      "referencia": ["https://www.cnj.jus.br/cnj-servico-para-que-servem-os-juizados-especiais/", "https://www2.camara.leg.br/legin/fed/lei/1995/lei-9099-26-setembro-1995-348608-normaatualizada-pl.html"],
       "data_verificacao": "2026-11-17",
       "relacionados": ["DIR-001", "DIR-002"]
     },
