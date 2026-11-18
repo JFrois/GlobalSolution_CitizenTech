@@ -16,71 +16,43 @@ Assistente de orientação cidadã **não oficial** que responde dúvidas sobre 
 
 > Global Solution 2026.2 · Desafio CitizenTech
 
-## Estado do projeto (atualizado em 09/11/2026, `main` até o PR #52)
+## Estado do projeto
 
-> Resumo para quem está chegando agora. O detalhe de quem faz o quê está em [`docs/planejamento.md`](docs/planejamento.md) (seção "Status e onde parou"). Prazos: **código congelado em 13/11**, **entrega em 19/11**.
+Atualizado em **18/11/2026**, com referência à `main` após o merge do [PR #55]
 
-**Concluído e testado (Onda 1, núcleo avaliado pela GS):**
 
-- Base com 17 registros em 3 temas, validada por `src/base.py` (arquivo ausente, vazio, JSON inválido, campos, ids duplicados e relacionados inexistentes). `--validar-entrega` passa.
-- Busca por palavras-chave com pontuação, sinônimos, índice invertido e busca linear (mesmo resultado), regra de decisão com 4 saídas, correção de erro de digitação quando nada casa, grafo de temas e Dijkstra (`src/busca.py`).
-- Modelos de resposta A e B, aviso de limitação e mensagens de entrada inválida (`src/respostas.py`).
-- Terminal completo (`python src/sistema.py`), com cores e texto puro de reserva, `--validar-entrega` e `--avaliar`.
-- Perguntas de teste da equipe congeladas antes das palavras-chave: **19/19 (100%)**; índice invertido cerca de 100 vezes mais rápido que a busca linear. Resultados em `testes/resultados.csv` e `testes/comparacao_modelos.csv`.
-- **259 testes automatizados** (`python -m unittest discover -s testes -t .`), todos passando. O CI roda a suíte duas vezes: no Python 3.9 só com a biblioteca padrão (o que o avaliador usa) e no 3.12 com as bibliotecas do servidor, sem pular os testes do painel, cofre e bot.
+### Histórico de entregas
 
-**Concluído e testado no Telegram real (Onda 2, camada de produto), em 07/11:**
+A tabela usa a data de integração na `main` ou, quando indicado, a data do commit na branch.
 
-- Bot `@CitizenAssistAIBot` rodando localmente: `/start`, `/menu` (temas, assuntos e "Voltar aos temas"), perguntas por texto para os 17 assuntos, pergunta ambígua (candidatos em botões), entrada inválida, fora da base, erro de digitação, `/localizacao` (UF), `/apagar_meus_dados` (confirmação), botões de assuntos relacionados.
-- **Voz:** o áudio é transcrito localmente pelo Whisper (`src/transcricao.py`), o bot avisa "Recebi seu áudio…" e depois mostra "Entendi: …". Testado com um áudio real em português.
-- Roteador com cascata de modelos do Gemini: a IA só entra quando a base não resolve (fora da base) ou há pedido de cofre/tarefa/briefing; botões, perguntas respondidas e ambíguas **nunca** chamam a IA.
+| Data | O que foi entregue | PR ou commit |
+|---|---|---|
+| 06/11/2026 | Especificação inicial, processo de desenvolvimento, planejamento e arquitetura. Primeira versão do README e do registro de uso de IA. | [#1](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/1), [#2](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/2) |
+| 07/11/2026 | Núcleo em Python com base de 17 orientações, busca, grafo de assuntos, modelos A e B, terminal e avaliação automatizada. | [#4](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/4) |
+| 07/11/2026 | Integração do servidor ao núcleo, com bot do Telegram, roteador, painel inicial e armazenamento. Ajustes de robustez do painel e do workflow. | [#5](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/5), [#6](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/6) |
+| 07/11/2026 | Ajustes na cascata do Gemini, transcrição local de voz com Whisper e tolerância a erros de digitação na busca. | [#16](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/16), [#17](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/17), [#19](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/19), [#20](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/20), [#23](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/23) |
+| 08/11/2026 | Implementação da criptografia, do cofre, do classificador de documentos, do painel e dos fluxos de tarefas, resumo da manhã e recebimento de foto/PDF. | [#25](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/25), [#26](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/26), [#27](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/27), [#28](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/28), [#29](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/29), [#30](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/30), [#31](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/31) |
+| 08/11/2026 | Aba Tarefas do painel, ajustes no agendador, atualização de `cryptography` para 50.0.2, encerramento conjunto com Ctrl+C e correção do roteamento de lembretes. O teste de entrega de um lembrete no Telegram foi registrado nessa data. | [#37](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/37), [#38](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/38), [#42](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/42), [#43](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/43), [#44](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/44), [#47](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/47) |
+| 08/11/2026 | Respostas do bot em ordem por usuário, distinção entre lembretes pendentes e já avisados, definição dos cinco temas do resumo e aviso sobre o Gemini gratuito. | [#48](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/48) |
+| 09/11/2026 | Primeira versão do relatório, folha de avaliação cega e roteiros de deploy e testes. Supabase opcional com SQLite como padrão. Publicação da vitrine para GitHub Pages. | [#49](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/49), [#50](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/50), [#51](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/51), [#52](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/52) |
+| 16/11/2026 | Indicadores da Frente B, com as primeiras medidas no conjunto do público, avaliação cega dos modelos, teste de usabilidade e referências de 10 UFs para a segunda via da CIN. | [#54](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/54) |
+| 16/11/2026 | Atualização do status na vitrine e no planejamento e correção do layout do terminal ilustrado em telas pequenas. | [`13fb4ca`](https://github.com/JFrois/GlobalSolution_CitizenTech/commit/13fb4ca), [`13e452a`](https://github.com/JFrois/GlobalSolution_CitizenTech/commit/13e452a) |
+| 17/11/2026 | Revisão das orientações de Serviços e Direitos (E2), seção 8 do README (E6), suporte a múltiplas fontes por registro e ajuste das rotas do cofre e das tarefas. Commits da branch integrados no dia seguinte. | [#55](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/55), commits `235dd14`, `1eb2fac`, `dea767a` e `6b2f605` |
+| 18/11/2026 | Registro da revisão de segurança do cofre e do painel (C9), geração do relatório atualizado (E7), atualização dos perfis e das fontes no README e alinhamento da especificação sobre o cofre. | [#55](https://github.com/JFrois/GlobalSolution_CitizenTech/pull/55), commits `d7e1629`, `51348f9` e `040903b` |
 
-**Testado de ponta a ponta com o servidor local em 08/11 (PRs #42 a #44):**
+### Situação atual
 
-- **Lembrete pelo chat:** "me lembra de pagar a luz amanhã às 9h" cria a tarefa (antes caía na busca e respondia a Tarifa Social de Energia; corrigido no PR #44). O aviso chega no Telegram na hora certa (o atraso de 39 min foi corrigido no PR #42).
-- **Lembrete pelo painel local:** "daqui a 1 minuto" foi marcado como avisado pelo agendador no tick seguinte (cerca de 30 s depois). Lembrete criado para as 20:10 chegou no Telegram real às 20:10 e foi marcado como avisado no banco.
-- **Desligar o servidor:** Ctrl+C agora encerra bot, painel e agendador juntos (PR #43). Se a porta 8000 estiver ocupada, o `--servidor` avisa e não sobe um segundo bot.
-- Painel local: sem sessão ou com link vencido, a API responde 401 e a tela pede um novo link pelo `/painel`.
+- **Núcleo.** O terminal roda offline com a biblioteca padrão do Python. A base reúne 17 orientações em três temas. A revisão de Documentação integra os resultados da Frente B, e a revisão de Serviços e Direitos foi registrada na atividade E2.
+- **Indicadores.** Na primeira avaliação independente, o assistente acertou **9 de 10 perguntas do público**. A reavaliação após os ajustes da base reutilizou as perguntas e obteve **29/29**. O Modelo B foi escolhido na avaliação cega (**4,82**, ante **3,61** do Modelo A). No teste de usabilidade, o participante concluiu **5/5 tarefas sem ajuda** e o sistema obteve **92,5/100 no SUS**.
+- **Testes e documentação.** Os **259 testes automatizados** passaram em uma execução local com Python 3.12 e as dependências do servidor. O [relatório da GS](docs/relatorio.pdf) foi regenerado em 18/11 e a revisão de segurança está registrada em [`docs/uso_ia.md`](docs/uso_ia.md).
+- **Camada extra.** A equipe registrou testes no Telegram com consultas por texto, voz, localização e roteamento em 07/11, e com lembretes em 08/11. O painel foi conferido no navegador local. O cofre cifra os arquivos em repouso e a decifragem ocorre no servidor
 
-**Implementado em 08/11 (Onda 2), testado só por testes automatizados e no navegador local; nunca no Telegram real nem na VM:**
 
-- **Criptografia e cofre** (`src/criptografia.py`, `src/cofre.py`): PBKDF2-SHA256 (600 mil iterações, salt por usuário), AES-256-GCM, verificador de senha, chave só na memória com validade de 10 min; nome e conteúdo cifrados; tudo filtrado por `user_id`.
-- **Classificador** (`src/classificador.py`): o Gemini escolhe um tipo de uma lista fechada; o nome é montado pelo código, nunca copiado do texto do modelo; falha vira `documento-AAAAMMDD`.
-- **Painel** (`painel/` + rotas em `src/painel.py`): abas Perguntar (cena da verificação), Tarefas (anotar, ver pendentes e concluir; o aviso chega pelo bot; botão protegido contra envio duplo), Cofre (criar, desbloquear, ver, apagar em dois passos) e Ajustes (UF, temas e horário do resumo). Conferido no navegador local; Mini App no Telegram real não.
-- **Tarefas e agendador** (`src/tarefas.py`, `src/agendador.py`): lembretes com data lida por regras (fuso de Brasília) e autodestruição das mensagens com documento em 5 min. O estado fica no SQLite e o APScheduler só dispara o tick; assim, ao subir, o servidor cumpre o que venceu. Chat e painel usam as mesmas regras (`tarefas.tentar_criar`).
-- **Resumo da manhã** (`src/briefing.py`, `data/feeds.json`): tarefas do dia + até 3 manchetes por tema, rotuladas "não oficial". O usuário escolhe entre 5 temas (Cultura, Tecnologia, Saúde e bem-estar, Música, Filmes); os feeds de cada um ficam em `data/feeds.json` e podem ser trocados sem mexer no código. A fonte de Filmes é fraca (reavaliar).
-- **Foto/PDF e cofre no chat** (`src/documentos.py`, `src/telegram_bot.py`): cofre fechado não guarda nada (botão para o painel); consentimento do Gemini; nome confirmado ou editado; "me envie meu RG" envia e apaga em 5 min.
-
-**Armazenamento (09/11):** SQLite é o padrão. O Supabase (`src/armazenamento_supabase.py`) liga sozinho quando `SUPABASE_URL` e uma chave `sb_secret_` estão no `.env`; foi testado no projeto real (grava e lê) e, se falhar, o sistema volta para o SQLite. Schema: `deploy/supabase_schema.sql`.
-
-**Página pública do projeto:** `docs/index.html`, servida pelo GitHub Pages (Settings > Pages > Branch `main`, pasta `/docs`); o endereço fica em `https://jfrois.github.io/GlobalSolution_CitizenTech/`. Ao mudar o estado do projeto, atualize também essa página.
-
-**Páginas e materiais (09/11):** relatório em `docs/relatorio.pdf`; folha cega de clareza `testes/clareza_folha.md`; roteiro de teste real `testes/roteiro_telegram_real.md`; roteiro de VM `docs/deploy_vm.md`; página pública do projeto em `docs/index.html` (GitHub Pages).
-
-**Rascunho, precisa de revisão humana:**
-
-- As 17 orientações de `data/base.json` foram redigidas pela IA a partir das páginas oficiais lidas em 07/11/2026 (todas com `data_verificacao` 2026-11-07). Cada orientação precisa ser conferida por um integrante (atividade E2 do planejamento). Pontos de atenção em `docs/uso_ia.md`.
-
-**Pendente, por prioridade:**
-
-1. **Antes do congelamento (13/11), Onda 1:** revisão humana das 17 orientações (E2) e links por estado da 2ª via da CIN (`referencias_estaduais` de DOC-001 está vazio; todos os estados caem no `gov.br`); conferir `python src/sistema.py` numa máquina limpa e no Windows.
-2. **Indicadores (até 15/11):** perguntas do público (≥ 10, anônimas; hoje só existe o conjunto `equipe`) medidas **antes** de ajustar a busca; teste de usabilidade com pessoa de fora (`testes/usabilidade.md` está vazio); nota de clareza A × B (coluna `clareza_1a5` vazia). Só depois se escolhe o formato padrão (hoje o passo a passo é provisório).
-3. **Onda 2, teste real:** no Telegram real (com documentos fictícios): foto/PDF, cofre pelo chat, resumo da manhã, Mini App (incluindo a aba Tarefas) e o botão "Sim, apagar tudo". O lembrete pelo chat já foi testado (08/11). `/painel` precisa de `PAINEL_URL` com https.
-4. **Infraestrutura (bloqueio principal):** não há VM. O subdomínio DuckDNS existe, mas aponta para um IP residencial e as portas 80/443 não respondem; a conta Oracle não foi criada. Alternativas: GitHub Student Pack + DigitalOcean, Google Cloud e2-micro ou computador + Cloudflare Tunnel (só demonstração). Passo a passo em `docs/deploy_vm.md`; o deploy só liga com `DEPLOY_ATIVO=true`; `ffmpeg` e Whisper na VM.
-5. **Segurança:** `cryptography` atualizada para 50.0.2 em 08/11 (fecha os 6 alertas do Dependabot). Para atualizar um ambiente já criado: `.venv/bin/python -m pip install cryptography==50.0.2` (não use `pip install -r requirements.txt` fora do `.venv` nem antes do passo do Whisper, ver §6). Antes da VM, gerar **novo** token do bot e **nova** chave do Gemini (os de teste foram compartilhados fora do `.env`) e conferir o histórico do Git (busca feita em 08/11 não achou tokens).
-6. **Decisões EM ABERTO:** fuso por usuário (hoje todos em America/Sao_Paulo). Armazenamento: SQLite padrão e Supabase opcional (testado em 09/11 contra o projeto real com a chave secret: grava e lê; volta sozinho para o SQLite se falhar). Gemini no plano gratuito (decidido em 08/11; ver spec §12).
-7. **Documentação e entrega:** seções 2, 8 e 10 escritas em 09/11 (revisar). Faltam o nome do grupo e os perfis da seção 1, o link da seção 9, "Participação na Competição", conferir o `docs/relatorio.pdf` (rascunho gerado em 09/11 por `scripts/gerar_relatorio.py`), o vídeo e `docs/link_video.txt`, e o `.txt` na FIAP ON.
-8. **Roadmap planejado (opcional, baixa prioridade):** números de contexto da Base dos Dados para o relatório (ver seção 10, "Melhorias e roadmap").
-
-Melhorias conhecidas que não bloqueiam a entrega:
-
-- Sem `httpx` no `.venv`, 18 testes do painel e do cofre são pulados localmente (o CI roda todos). Para rodar tudo: `.venv/bin/python -m pip install httpx`.
+A divisão de atividades está em [`docs/planejamento.md`](docs/planejamento.md).
 
 ---
 
 ## 1. Equipe
-
-<!-- Responsável: todos (A consolida) · Prazo: 16/11 · Exigência do enunciado: nome da equipe e RMs -->
 
 ### Nome do grupo
 
@@ -94,6 +66,7 @@ Melhorias conhecidas que não bloqueiam a entrega:
 | Flávia Roberta Pennachin | RM561860 | Bot e roteador (Integrante B) | [GitHub](https://github.com/flaviapennachin) · [LinkedIn](https://www.linkedin.com/in/flavia-pennachin/) |
 | Pedro Valente | RM570394 | Cofre, painel e infraestrutura (Integrante C) | [GitHub](https://github.com/P3dr0vt) · [LinkedIn](https://www.linkedin.com/in/pedro-valente-toledo/) |
 
+
 ### 👩‍🏫 Professores
 
 **Tutor(a)**
@@ -105,10 +78,6 @@ Melhorias conhecidas que não bloqueiam a entrega:
 ---
 
 ## 2. Problema, público e temas
-
-<!-- Responsável: Integrante B · Prazo: 16/11
-     Escrever: o problema (informação dispersa, termos difíceis, instruções incompletas),
-     quem é beneficiado e os 3 temas da base. Base: processo_desenvolvimento.md §A.1–A.3 e spec §1. -->
 
 ### O problema
 
@@ -132,18 +101,12 @@ Cidadãos que precisam de orientação básica sobre documentos, serviços e dir
 
 ## 3. Base de conhecimento, estruturas e estratégia de busca
 
-<!-- Responsável: Integrante A · Prazo: 16/11
-     Escrever: formato de data/base.json e campos obrigatórios; como acrescentar/corrigir registros
-     sem mexer no código; listas e dicionários usados; grafo de temas (relacionados) e Dijkstra;
-     normalização, pesos, índice invertido × busca linear; De Morgan nos filtros; o que acontece com
-     várias correspondências (desempate e pedido de escolha).
-     Base: spec §7 e docs/arquitetura.md §5. -->
-
 ### Organização da base
 
-Toda a base fica em `data/base.json`: `versao`, `temas`, `sinonimos` e `registros`. Cada registro tem `id`, `titulo` (opcional), `tema`, `palavras_chave`, `pergunta`, `orientacao`, `referencia`, `data_verificacao` e `relacionados`; os campos opcionais são `confirmar_antes`, `abrangencia` e `referencias_estaduais`. São 17 registros em 3 temas.
+Toda a base fica em `data/base.json`: `versao`, `temas`, `sinonimos` e `registros`. Cada registro tem `id`, `titulo` (opcional), `tema`, `palavras_chave`, `pergunta`, `orientacao`, `referencia`, `data_verificacao` e `relacionados`; os campos opcionais são `confirmar_antes`, `abrangencia` e `referencias_estaduais`. O campo `referencia` aceita uma URL ou uma lista de URLs. São 17 registros em 3 temas.
 
 Para acrescentar ou corrigir um registro basta editar o JSON, sem mexer no código. Ao abrir, `src/base.py` valida tudo e, se algo estiver errado, o programa mostra uma mensagem clara e sai sem traceback. `python src/sistema.py --validar-entrega` confere se nenhum registro ficou como `PREENCHER` ou sem data de verificação. Na `orientacao`, cada linha vira um passo no formato passo a passo.
+
 
 ### Estruturas de dados utilizadas
 
@@ -151,6 +114,7 @@ Para acrescentar ou corrigir um registro basta editar o JSON, sem mexer no códi
 - **Dicionário de temas** (id do tema para nome) e **dicionário de sinônimos**, que vira grupos de equivalência nos dois sentidos.
 - **Índice invertido**: palavra para `{id: campos onde aparece}`, montado uma vez na carga.
 - **Lista de adjacência** (`id` para conjunto de ids) para o grafo de temas e **fila de prioridade** (`heapq`) para o Dijkstra.
+
 
 ### Estratégia de busca
 
@@ -161,13 +125,13 @@ Para acrescentar ou corrigir um registro basta editar o JSON, sem mexer no códi
 5. **Filtros com De Morgan**: `incluir = not (fora_do_tema or ja_exibido)` é equivalente a `(not fora_do_tema) and (not ja_exibido)`. No menu de temas a pergunta é buscada só dentro do tema, e o assunto que acabou de ser exibido não volta em "Continue consultando".
 6. **Várias correspondências**: ordena por pontuação, desempata pelo menor `id`; se o primeiro e o segundo ficam muito próximos, o programa pede ao usuário que escolha entre até 3 candidatos.
 
+
 ### Grafo de temas e navegação
 
 O campo `relacionados` forma um grafo **não direcionado** (se A aponta para B, B também enxerga A). A aresta custa 1 entre assuntos do mesmo tema e 2 entre temas diferentes. O **Dijkstra** calcula o menor caminho (menu 2 do terminal) e escolhe os 3 assuntos mais próximos do que acabou de ser exibido, com os vizinhos diretos primeiro. Os 17 registros formam um único componente conexo; o caso "sem caminho" continua tratado no código para bases futuras.
 
-### Fontes consultadas
 
-<!-- Lista das fontes oficiais usadas na base, com a data de verificação. Pode ser gerada a partir do base.json. -->
+### Fontes consultadas
 
 | Registro | Fonte | Verificado em |
 |---|---|---|
@@ -206,13 +170,16 @@ Variáveis: `C` = entrada válida (não vazia, com pelo menos uma palavra útil)
 
 Esta tabela é a base do mapa de Karnaugh do relatório.
 
+
 ### Modelo A: direto e compacto
 
 Um parágrafo com o título e a orientação, `Atenção:` quando exige confirmação, `Fonte:` com link e data, uma linha `Veja também:` com 3 assuntos e a frase de não-oficialidade. Papel: assistente de orientação cidadã não oficial. Limite: só o texto da base. Para o cidadão aparece como "resumido".
 
+
 ### Modelo B: estruturado em passos
 
 Título do assunto, lista numerada de passos (cada linha da orientação), `Atenção:` quando exige confirmação, `Fonte:` com link e data, `Continue consultando:` com 3 assuntos e a frase de não-oficialidade. Limite: nunca cria passo que não esteja na orientação. Para o cidadão aparece como "passo a passo".
+
 
 ### Comparação entre os modelos
 
@@ -225,6 +192,7 @@ Os dois modelos formatam o **mesmo** resultado da busca; por isso taxa de acerto
 - **Nota média de clareza (1 a 5, avaliação cega X/Y com os 3 integrantes + participante do teste de usabilidade):** **Modelo A = 3,61** · **Modelo B = 4,82**.
 
 **Modelo escolhido:** **Modelo B (passo a passo)** foi confirmado como padrão do assistente por apresentar leitura mais escaneável em orientações com várias etapas (como regularização eleitoral e inscrição no CadÚnico), sem aumentar significativamente o número de palavras (3,3% em média).
+
 
 ### Tratamento de limitações
 
@@ -244,6 +212,7 @@ A avaliação usa **29 perguntas** em [`testes/perguntas.json`](testes/perguntas
 
 Todas as perguntas são fictícias ou anônimas, sem nenhum dado pessoal. Testes automatizados: `python -m unittest discover -s testes -t .` (259 testes cobrindo base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal, avaliação e módulos do servidor).
 
+
 ### Indicadores da busca
 
 A taxa de acerto e o tempo medem a busca, que é a mesma para os modelos A e B (spec §8). Por isso não há coluna por modelo aqui; a comparação A × B fica na tabela seguinte. [Resultados por pergunta](testes/resultados.csv)
@@ -258,6 +227,7 @@ A taxa de acerto e o tempo medem a busca, que é a mesma para os modelos A e B (
 | **Tempo médio com índice invertido** | 1,0155 ms | 0,3172 ms | **0,7747 ms** |
 | **Tempo médio com busca linear** | 4,2268 ms | 3,4833 ms | **3,9704 ms** |
 
+
 ### Comparação dos modelos A e B
 
 A comparação abrange 11 respostas por modelo. [Resultados da comparação](testes/comparacao_modelos.csv)
@@ -271,6 +241,7 @@ A comparação abrange 11 respostas por modelo. [Resultados da comparação](tes
 | Passos numerados (média) | 0,0 | 5,7 |
 | **Nota média de clareza (1 a 5)** | **3,61** | **4,82** |
 
+
 ### Teste de usabilidade
 
 Aplicado a participante externo (`P1`, sem coleta de dados pessoais) seguindo o roteiro de 5 tarefas de `docs/ux.md` §8, com registro completo em [`testes/usabilidade.md`](testes/usabilidade.md):
@@ -280,6 +251,7 @@ Aplicado a participante externo (`P1`, sem coleta de dados pessoais) seguindo o 
 - **Tempo para abrir assunto relacionado (T2):** **14 s** (meta: < 30 s).
 - **Pontuação SUS (System Usability Scale):** **92,5 / 100** (meta de referência: ≥ 68).
 - **Dificuldade observada:** na T4, o participante tentou usar `0` para voltar ao menu a partir de uma resposta (hábito de URAs telefônicas); a mensagem de opção inexistente e o rodapé `[m] menu` permitiram que ele se corrigisse sozinho.
+
 
 ### Interpretação dos resultados
 
@@ -308,7 +280,8 @@ Na execução no Windows, o índice invertido levou em média **0,7747 ms** por 
 - Python 3.9 ou superior para o modo terminal (o modo `--servidor` usa Python 3.11+).
 - Nenhuma biblioteca externa, chave de API ou conexão com a internet é necessária para o modo terminal.
 
-### Passo a passo
+
+### Rodar no terminal
 
 ```bash
 git clone https://github.com/JFrois/GlobalSolution_CitizenTech.git
@@ -320,51 +293,65 @@ python src/sistema.py
 
 | Comando | O que faz |
 |---|---|
-| `python src/sistema.py --avaliar` | Roda as perguntas de teste e mostra taxa de acerto e tempo médio |
-| `python src/sistema.py --validar-entrega` | Confere se todos os registros da base estão completos |
-| `python src/sistema.py --simples` | Texto puro, sem cor nem molduras (leitores de tela); também automático com `NO_COLOR` ou saída redirecionada |
-| `python src/sistema.py --base caminho.json` | Usa outra base JSON (para testes) |
-| `python src/sistema.py --servidor` | Sobe o bot do Telegram e a API do painel (precisa de `.env` e do ambiente descrito abaixo), com o agendador de lembretes, autodestruição e resumo da manhã |
-| `python -m unittest discover -s testes -t .` | Roda os testes automatizados |
+| `python src/sistema.py --avaliar` | Avalia a busca e os modelos A e B. O comando atualiza `testes/resultados.csv` e `testes/comparacao_modelos.csv`. |
+| `python src/sistema.py --validar-entrega` | Confere se os registros da base estão completos para a entrega. |
+| `python src/sistema.py --simples` | Exibe texto puro, sem cores nem molduras. Também é usado com `NO_COLOR` preenchida ou com a saída redirecionada. |
+| `python src/sistema.py --base caminho.json` | Usa outro arquivo JSON como base. |
+| `python src/sistema.py --servidor` | Inicia o bot do Telegram, a API do painel e o agendador. |
+| `python -m unittest discover -s testes -t .` | Executa a suíte. Os testes da camada extra dependem das bibliotecas do servidor e do `httpx`. |
 
-### Rodar o bot (modo `--servidor`)
 
-Use **Python 3.11 a 3.13** (no 3.14 o `pydantic-core` não compila). Exemplo no macOS:
+### Rodar o bot e o painel
 
-```bash
-python3.12 -m venv .venv && source .venv/bin/activate
-# Voz (Whisper local): precisa do ffmpeg no sistema e de ser instalado ANTES do requirements.txt
-brew install ffmpeg            # Linux: sudo apt install ffmpeg
-pip install "setuptools<81" wheel && pip install --no-build-isolation openai-whisper==20240930
-pip install -r requirements.txt   # sem o passo acima, falha com "No module named 'pkg_resources'"
-pip install httpx                 # opcional: para rodar também os testes do painel
-cp .env.example .env           # preencha TELEGRAM_BOT_TOKEN e, se quiser IA, GEMINI_API_KEY
-python src/sistema.py --servidor
+Crie e ative um ambiente virtual. No Windows, com PowerShell:
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
 ```
 
-Para parar: **Ctrl+C** no terminal do servidor desliga o bot, o painel e o agendador juntos. Se aparecer "A porta 8000 já está em uso", ainda há um servidor rodando: `lsof -i :8000` mostra o número do processo.
+No macOS ou Linux:
 
-Variáveis do `.env` (nomes em `.env.example`; **nunca** commitar o `.env`):
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+```
+
+Com o ambiente ativo, instale as dependências nesta ordem. Para transcrever mensagens de voz, instale também o FFmpeg e confira se `ffmpeg -version` funciona.
+
+```text
+python -m pip install "setuptools<81" wheel
+python -m pip install --no-build-isolation openai-whisper==20240930
+python -m pip install -r requirements.txt
+```
+
+Para rodar os testes das rotas do painel, instale também `httpx` com `python -m pip install httpx`.
+
+Crie o arquivo `.env` a partir de [`.env.example`](.env.example) e preencha as variáveis obrigatórias. Mantenha o `.env` fora do Git.
 
 | Variável | Para quê |
 |---|---|
-| `TELEGRAM_BOT_TOKEN` | Obrigatória. Token do @BotFather |
-| `GEMINI_API_KEY` | Opcional. Sem ela o bot usa só as regras (sem IA) |
-| `GEMINI_MODELO` | Opcional. Deixe vazio: o bot percorre os modelos que a chave enxerga |
-| `WHISPER_MODELO` | Opcional (`tiny`, `base`, `small`, `medium`). Padrão `base` |
-| `PAINEL_URL`, `PAINEL_PORTA` | Painel web. Sem `PAINEL_URL`, `/painel` responde "não está configurado". Porta padrão 8000 |
+| `TELEGRAM_BOT_TOKEN` | Obrigatória. Token do bot fornecido pelo BotFather. |
+| `SESSAO_SEGREDO` | Obrigatória. Segredo aleatório para assinar as sessões do painel. Use `python -c "import secrets; print(secrets.token_urlsafe(32))"` para gerar um valor. |
+| `GEMINI_API_KEY` | Opcional. Sem a chave, o bot usa as regras locais. |
+| `GEMINI_MODELO` | Opcional. Define o primeiro modelo que o roteador tentará usar. |
+| `WHISPER_MODELO` | Opcional. Define o modelo de transcrição (`tiny`, `base`, `small` ou `medium`). O padrão é `base`. |
+| `PAINEL_URL` | Endereço do painel. Para abrir o painel pelo Telegram, configure uma URL HTTPS acessível. |
+| `PAINEL_PORTA` | Porta local da API. O padrão é `8000`. |
 
 `python scripts/testar_gemini.py` confere a chave e lista os modelos. Se a porta 8000 estiver ocupada, o servidor avisa e sai (`lsof -i :8000` mostra o processo).
 
-> Estado de cada parte: veja a seção "Estado do projeto" no início deste README.
+Inicie o servidor e envie `/start` ao bot correspondente ao token configurado.
+
+```text
+python src/sistema.py --servidor
+```
+
+Para encerrar o bot, o painel e o agendador, pressione **Ctrl+C**. Se a porta estiver ocupada, identifique o processo que a está usando ou ajuste `PAINEL_PORTA`. O comando `python scripts/testar_gemini.py` confere a configuração do Gemini e lista os modelos disponíveis.
 
 ---
 
 ## 7. Exemplos de uso
-
-<!-- Responsável: Integrante B · Prazo: 16/11
-     Copiar saídas reais do terminal (não inventar). Incluir: pergunta direta, reformulada,
-     ambígua (pedir escolha), fora da base (aviso de limitação), entrada vazia e opção inexistente. -->
 
 ### Pergunta com resposta e fonte
 
@@ -499,12 +486,6 @@ A opção 7 não existe aqui. Escolha um dos números da lista.
 
 ## 8. Clareza, acessibilidade, privacidade e informação não oficial
 
-<!-- Responsável: Integrante C · Prazo: 16/11
-     Escrever: linguagem simples; o que o assistente não coleta; o que o produto (Onda 2) guarda
-     e como protege (cofre, senha só no painel, criptografia); limites honestos (E2E só no painel,
-     documentos passam pelo Gemini com consentimento); que não é canal oficial.
-     Base: spec §10, §13 e docs/arquitetura.md §7. -->
-
 ### Clareza e acessibilidade
 
 O assistente usa linguagem simples, instruções diretas e rótulos como **Atenção** e **Fonte**, que continuam legíveis sem cor. 
@@ -527,23 +508,19 @@ O Citizen Assist AI é um projeto acadêmico independente e não representa nenh
 
 ## 9. 🔗 Vídeo de apresentação
 
-<!-- Responsável: todos · Prazo: 18/11. Mesmo link de docs/link_video.txt. -->
 
-* **[Vídeo de apresentação no YouTube (Não Listado)](http://url-aqui)**: _A preencher_
+* **[Vídeo de apresentação no YouTube (Não Listado)](http://url-aqui)**: 
 
 ---
 
 ## 10. Conclusões, limitações e melhorias
 
-<!-- Responsável: todos (A consolida) · Prazo: 16/11
-     Escrever: o que funcionou; limitações (base pequena, perguntas feitas pela equipe, etc.);
-     pelo menos 2 melhorias; itens que viraram roadmap na regra de corte de 13/11. -->
-
 ### Conclusões
 
-O Citizen Assist AI roda localmente com Python no terminal, sem dependências externas. O assistente consulta a base de conhecimento, apresenta orientações com fonte oficial e data de verificação e avisa quando a pergunta está fora da cobertura. A resposta ao cidadão nunca é gerada livremente pela IA: o conteúdo vem sempre da base, com fonte e data. Sobre a camada de produto, o bot no Telegram, os lembretes e o roteador foram testados no Telegram real; cofre, foto/PDF, resumo da manhã e Mini App têm testes automatizados, mas ainda faltam testes reais (ver "Estado do projeto").
+O Citizen Assist AI roda localmente com Python no terminal, sem dependências externas. O assistente consulta a base de conhecimento, apresenta orientações com fonte oficial e data de verificação e avisa quando a pergunta está fora da cobertura. A camada extra inclui bot no Telegram, painel, cofre e lembretes. A cobertura dos testes está no [estado do projeto](#estado-do-projeto).
 
 Na primeira avaliação independente, o assistente acertou **9 de 10 perguntas do público**. Após a revisão da base, a reavaliação com as mesmas perguntas chegou a **29 acertos em 29 consultas**. Na execução no Windows, o índice invertido levou em média **0,7747 ms** por consulta, ante **3,9704 ms** da busca linear no mesmo conjunto. No teste de usabilidade, o participante externo concluiu **5 de 5 tarefas sem ajuda** e atribuiu ao sistema uma pontuação SUS de **92,5/100**.
+
 
 ### Limitações
 
@@ -558,7 +535,6 @@ Na primeira avaliação independente, o assistente acertou **9 de 10 perguntas d
 
 ### Melhorias e roadmap
 
-
 - **Ampliar sinônimos e palavras-chave** na base (hoje o `base.json` não tem sinônimos), medindo antes e depois com o conjunto do público.
 - **Ampliar a base de orientações** com temas como CNH, CPF e passaporte, conferindo os procedimentos nas fontes oficiais.
 - **Ampliar a cobertura estadual** da segunda via da CIN. O `DOC-001` já tem referências específicas para 10 UFs.
@@ -566,7 +542,6 @@ Na primeira avaliação independente, o assistente acertou **9 de 10 perguntas d
 
 - **Números de contexto para o relatório (planejado, opcional, baixa prioridade):** consultar uma única vez na [Base dos Dados](https://basedosdados.org) alguns números públicos que justifiquem o problema e o impacto social (ex.: famílias no CadÚnico, eleitores por UF). O resultado vai só para o relatório, com fonte e data citadas; não entra no código, porque a Base dos Dados exige `pip install`, BigQuery e internet (spec §5.3) e traz estatísticas, não orientações passo a passo.
 - Ferramenta `consultar_site_oficial`, classificador de documentos local, CNH e CPF na base, fuso por usuário (spec §3 e §11).
-
 
 ---
 
@@ -625,15 +600,20 @@ GlobalSolution_CitizenTech/
     ├── usabilidade.md             registro do teste de usabilidade
     └── test_*.py                  suíte de testes automatizados
 ```
-
 ---
+
 
 ## 🧠 Decisões técnicas
 
-As principais decisões e suas justificativas estão em [`docs/arquitetura.md`](docs/arquitetura.md) (seção 11) e na [especificação](docs/especificacao/CITIZEN_ASSIST_SPEC.md).
+- **Orientações com fonte verificável.** As respostas sobre documentos, serviços e direitos vêm de `data/base.json` e incluem a fonte oficial e a data de verificação. Quando a busca encontra assuntos próximos, pede que a pessoa escolha. Quando a base é insuficiente, informa a limitação.
 
-<!-- Opcional: resumir aqui as 3 ou 4 decisões mais importantes (ex.: resposta sempre vem da base;
-     núcleo sem dependências; senha do cofre só no painel). -->
+- **Terminal leve e offline.** O núcleo usa apenas a biblioteca padrão do Python. Isso facilita a execução em outras máquinas, sem instalar dependências ou configurar chaves de API. O Telegram e o painel são extensões opcionais.
+
+- **Busca por índice invertido.** O índice identifica os registros que contêm termos da pergunta e reduz o trabalho da busca. A busca linear serve de referência para comparar os tempos, usando as mesmas regras de pontuação.
+
+- **Cofre opcional.** O nome e o conteúdo dos documentos são cifrados antes de serem armazenados. A senha é digitada no painel, e o servidor decifra os arquivos durante o desbloqueio. O acesso aos documentos é filtrado por `user_id`.
+
+As justificativas completas estão na [seção 11 da arquitetura](docs/arquitetura.md) e na [especificação do projeto](docs/especificacao/CITIZEN_ASSIST_SPEC.md).
 
 ---
 
