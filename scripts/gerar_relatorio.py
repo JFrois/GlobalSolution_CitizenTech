@@ -22,6 +22,7 @@ sys.path.insert(0, str(RAIZ / "src"))
 
 import avaliacao  # noqa: E402
 import base  # noqa: E402
+import busca  # noqa: E402
 
 CHROMES = ("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "google-chrome",
            "chromium", "chrome")
@@ -60,6 +61,7 @@ def esc(t):
 def montar_html():
     dados = base.carregar_base(RAIZ / "data" / "base.json")
     regs = dados["registros"]
+    ufs_cin = dados["por_id"]["DOC-001"].get("referencias_estaduais", {})
     resultados = ler_csv("resultados.csv")
     comparacao = ler_csv("comparacao_modelos.csv")
     perguntas = avaliacao.carregar_perguntas()
@@ -99,7 +101,7 @@ def montar_html():
 <h1>Citizen Assist AI</h1>
 <p><strong>Global Solution 2026.2 · CitizenTech · FIAP</strong><br>
 Juan de Lucas Frois (RM563260) · Flávia Roberta Pennachin (RM561860) · Pedro Valente (RM570394)</p>
-<p><small>Relatório gerado em 18/11/2026 por <code>scripts/gerar_relatorio.py</code> a partir dos dados do repositório.</small></p>
+<p><small>Relatório gerado em 19/11/2026 por <code>scripts/gerar_relatorio.py</code> a partir dos dados do repositório.</small></p>
 
 <h2>1. Problema e público</h2>
 <p>Quem precisa de um documento ou serviço público encontra a informação espalhada em vários portais, com termos técnicos e instruções incompletas. O Citizen Assist AI orienta o cidadão sobre documentos, serviços e direitos <strong>somente com base em registros verificados</strong> (<code>data/base.json</code>), sempre citando a fonte oficial e a data de verificação, e avisa quando não há base suficiente, sem inventar instruções.</p>
@@ -108,23 +110,27 @@ Juan de Lucas Frois (RM563260) · Flávia Roberta Pennachin (RM561860) · Pedro 
 
 <h2>2. Arquitetura</h2>
 <p>Duas camadas. O <strong>núcleo</strong> (avaliado pela GS) roda no terminal, offline e só com a biblioteca padrão do Python 3.9+: <code>base.py</code> (carga e validação), <code>busca.py</code> (pontuação, índice invertido, grafo e Dijkstra), <code>respostas.py</code> (modelos A e B) e <code>sistema.py</code>. A <strong>camada de produto</strong> (diferencial) adiciona bot no Telegram, roteador com Gemini (function calling, com reserva por regras), cofre criptografado, tarefas e lembretes, resumo da manhã e painel web (Mini App ou navegador).</p>
-<pre>Usuário -> Telegram -> telegram_bot.py -> roteador.py (Gemini + function calling; reserva por regras)
-                          |                     |
-                  painel (Mini App)   buscar_orientacao | cofre_documento | gerenciar_tarefas | briefing_matinal
-                  painel.py (API)     busca.py + base.py   cofre.py          tarefas.py          briefing.py
-                                              |               |
-                                        data/base.json   armazenamento (SQLite) - tudo filtrado por user_id
+<pre>Usuário -> Telegram -> telegram_bot.py -> roteador.py (Gemini + regras de reserva)
+                          |                |
+                  painel (Mini App)     buscar_orientacao -> busca.py + base.py -> data/base.json
+                  painel.py (API)       cofre_documento -> cofre.py
+                                        gerenciar_tarefas -> tarefas.py
+                                        briefing_matinal -> briefing.py
+                  painel e bot -> armazenamento por user_id
 agendador.py: lembretes, resumo da manhã e exclusão de mensagens (ao subir, cumpre o que venceu)</pre>
+<p>O servidor usa SQLite por padrão. O Supabase é opcional. Se a verificação inicial do Supabase falhar, o servidor usa SQLite.</p>
 <div class="cx"><strong>Princípio de projeto:</strong> a resposta ao cidadão nunca é gerada livremente pelo LLM. O LLM só escolhe a ferramenta e sugere o nome de documentos do cofre. O conteúdo vem sempre da base, o que mantém a taxa de acerto mensurável e evita informação inventada. A voz é transcrita localmente pelo Whisper, sem LLM.</div>
 
 <h2 class="pg">3. Base e fontes</h2>
-<p>%(n)d registros em %(nt)d temas (Documentação pessoal, Serviços públicos, Direitos e orientações comunitárias). Cada registro contém identificador, tema, palavras-chave, pergunta, orientação, referência, data de verificação e assuntos relacionados. Os registros de Serviços e Direitos foram revisados na atividade E2. Domínios das fontes oficiais: %(dom)s. Datas de verificação: %(datas)s.</p>
+<p>%(n)d registros em %(nt)d temas (Documentação pessoal, Serviços públicos, Direitos e orientações comunitárias). Cada registro contém identificador, tema, palavras-chave, pergunta, orientação, referência, data de verificação e assuntos relacionados. Os registros de Serviços e Direitos foram revisados na atividade E2. Domínios das fontes gerais: %(dom)s. Datas de verificação: %(datas)s.</p>
 %(t_fontes)s
+<p><strong>Segunda via da CIN/RG.</strong> A base tem referências para %(n_ufs_cin)d UFs. Quando a pessoa escolhe o estado pelo teclado da orientação no Telegram, a confirmação exibe a fonte daquele assunto. O bot usa a fonte estadual quando disponível e a fonte nacional do gov.br nas demais UFs.</p>
 
-<h2>4. Busca, decisão e Karnaugh</h2>
-<p><strong>Busca:</strong> normalização (minúsculas, sem acentos, sem pontuação, sem <em>stopwords</em>), expansão por sinônimos (nos dados, não no código), pontuação por palavra-chave (3), pergunta (2) e orientação (1), bônus de +2 para expressão completa, índice invertido e busca linear (mesmo resultado). Várias correspondências: ordem por pontuação e, no empate, pelo menor id. Correção de digitação (difflib) só quando nada casa. <strong>Filtros com De Morgan:</strong> <code>incluir = not (fora_do_tema or ja_exibido)</code> equivale a <code>(not fora_do_tema) and (not ja_exibido)</code>.</p>
+<h2 class="pg">4. Busca, decisão e Karnaugh</h2>
+<p><strong>Busca:</strong> normalização (minúsculas, sem acentos, sem pontuação, sem <em>stopwords</em>), expansão por sinônimos (nos dados, não no código), pontuação por palavra-chave (3), pergunta (2) e orientação (1), bônus de +2 para expressão completa, índice invertido e busca linear (mesmo resultado). Várias correspondências: ordem por pontuação e, no empate, pelo menor id. A correção de digitação (<code>difflib</code>) é tentada quando a primeira busca retorna <code>SEM_BASE</code>. <strong>Filtros com De Morgan:</strong> <code>incluir = not (fora_do_tema or ja_exibido)</code> equivale a <code>(not fora_do_tema) and (not ja_exibido)</code>.</p>
 <p><strong>Grafo e Dijkstra:</strong> a lista de adjacência vem de <code>relacionados</code> (não direcionado); o custo é 1 no mesmo tema e 2 entre temas. O Dijkstra (<code>heapq</code>) dá o caminho entre dois assuntos e ordena os 3 próximos assuntos sugeridos.</p>
-<p><strong>Regra de decisão:</strong> C = entrada válida; A = melhor pontuação ≥ 3; B = (1ª − 2ª pontuação) ≥ 2.</p>
+<p><strong>Regra de decisão.</strong> C indica entrada válida. A exige pontuação ≥ %(limiar)d e que o melhor candidato passe pelo filtro de correspondência parcial. B exige diferença ≥ %(margem)d entre a primeira e a segunda pontuação.</p>
+<p>O filtro invalida A quando a pergunta contém um termo fora do vocabulário e nenhuma palavra-chave do melhor candidato corresponde por inteiro. Por exemplo, “tarifa de ônibus” soma 6 pontos para Tarifa Social de Energia e recebe <code>SEM_BASE</code>.</p>
 <table><tr><th rowspan="2">C</th><th colspan="4">Mapa de Karnaugh (linhas C, colunas A B)</th></tr>
 <tr><th>A B = 00</th><th>01</th><th>11</th><th>10</th></tr>
 <tr><th>0</th><td>Inválida</td><td>Inválida</td><td>Inválida</td><td>Inválida</td></tr>
@@ -147,7 +153,7 @@ agendador.py: lembretes, resumo da manhã e exclusão de mensagens (ao subir, cu
 <h3>Resultados por pergunta (esperado × obtido)</h3>
 %(t_res)s
 <p><strong>Usabilidade (<code>testes/usabilidade.md</code>):</strong> roteiro de 5 tarefas (<code>docs/ux.md</code> §8) aplicado a participante externo (<code>P1</code>, anônimo). Concluiu <strong>5 de 5 tarefas sem ajuda</strong> (primeira resposta útil em <strong>38 s</strong>, meta &lt; 1 min; abrir assunto relacionado em <strong>14 s</strong>, meta &lt; 30 s) e obteve pontuação <strong>SUS de 92,5 / 100</strong> (meta ≥ 68). Único atrito observado: tentativa de usar <code>0</code> para voltar ao menu a partir de uma resposta, contornada pela mensagem de ajuda no rodapé.</p>
-<p><strong>Testes automatizados.</strong> Na execução local no Windows com <code>python -m unittest discover -s testes -t .</code>, os 259 testes passaram, sem falhas nem casos pulados. A suíte cobre validação da base, normalização, busca, regras de decisão, Dijkstra, isolamento por usuário, criptografia, <code>initData</code>, agendador, resumo da manhã e painel. O CI executa a suíte no Python 3.9 com a biblioteca padrão e no Python 3.12 com as dependências do servidor.</p>
+<p><strong>Testes automatizados.</strong> Na execução local no Windows com <code>python -m unittest discover -s testes -t .</code>, os 262 testes passaram, sem falhas nem casos pulados. A suíte cobre validação da base, normalização, busca, regras de decisão, Dijkstra, isolamento por usuário, criptografia, <code>initData</code>, agendador, resumo da manhã e painel. O CI executa a suíte no Python 3.9 com a biblioteca padrão e no Python 3.12 com as dependências do servidor.</p>
 
 <h2 class="pg">7. Privacidade, cofre e limites</h2>
 <ul>
@@ -155,17 +161,19 @@ agendador.py: lembretes, resumo da manhã e exclusão de mensagens (ao subir, cu
 <li><strong>Cofre opcional.</strong> O nome e o conteúdo dos documentos são cifrados antes do armazenamento com AES-256-GCM. A chave é derivada da senha com PBKDF2-HMAC-SHA-256, 600 mil iterações e um sal aleatório por cofre. As operações são filtradas por <code>user_id</code>. Após confirmação, <code>/apagar_meus_dados</code> remove os dados da pessoa armazenados pelo aplicativo.</li>
 <li><strong>Limites da proteção.</strong> Quando o painel é publicado com HTTPS, a senha trafega por uma conexão cifrada até o servidor. Durante o desbloqueio, o servidor mantém a chave temporariamente em memória e decifra os arquivos para visualização ou envio pelo bot. O cofre oferece criptografia em repouso. A criptografia de ponta a ponta fica como melhoria futura.</li>
 <li><strong>Gemini:</strong> usado no plano gratuito. Nesse plano o Google pode usar o conteúdo enviado para melhorar seus produtos e permitir revisão humana, e pode processá-lo em outros países. Por isso o primeiro envio exige consentimento com esse aviso, o usuário pode escolher um nome próprio sem enviar o arquivo, e demonstração, vídeo e testes usam <strong>somente documentos fictícios</strong>. Classificador local e plano pago são roadmap.</li>
-<li><strong>Segredos:</strong> nunca no repositório; ficam nos GitHub Secrets e no <code>.env</code> da VM. Logs sem tokens, conteúdo de documentos nem texto de mensagens.</li>
+<li><strong>Segredos.</strong> A configuração local vem do <code>.env</code> ou de variáveis de ambiente. O workflow prevê GitHub Secrets para configurar a VM. Os segredos ficam fora do Git. Logs sem tokens, conteúdo de documentos nem texto de mensagens.</li>
 <li><strong>Resumo da manhã:</strong> manchetes de feeds RSS, sempre rotuladas "Notícias — fonte não oficial" e separadas da base verificada.</li>
 </ul>
 
 <h2>8. Limitações e melhorias</h2>
-<p><strong>Limitações:</strong> base com 17 registros, com revisão dos temas Serviços e Direitos na atividade E2. A avaliação da busca abrange 29 perguntas, repetidas na reavaliação após a revisão da base. O teste de usabilidade teve um participante externo, e as notas de clareza correspondem às respostas avaliadas antes da revisão. A busca depende dos termos presentes na pergunta e na base. As medições de escala usam cópias sintéticas dos registros. Cada resposta informa a data de verificação e orienta a confirmar as informações na fonte oficial. A VM, o HTTPS e o deploy automático ainda aguardam validação em produção. Os testes de foto/PDF, cofre, resumo da manhã e Mini App no Telegram real permanecem pendentes.</p>
-<p><strong>Melhorias (≥ 2):</strong> (1) ampliar sinônimos e palavras-chave e medir antes e depois com o conjunto do público; (2) ampliar a base (CNH, CPF) e detalhar os estados em <code>referencias_estaduais</code>; (3) classificador de documentos local, sem enviar arquivos ao Gemini; (4) fuso por usuário.</p>
+<p><strong>Limitações:</strong> base com 17 registros, com revisão dos temas Serviços e Direitos na atividade E2. A avaliação da busca abrange 29 perguntas, repetidas na reavaliação após a revisão da base. O teste de usabilidade teve um participante externo, e as notas de clareza correspondem às respostas avaliadas antes da revisão. A busca depende dos termos presentes na pergunta e na base. As medições de escala usam cópias sintéticas dos registros. Cada resposta informa a data de verificação e orienta a confirmar as informações na fonte oficial.</p>
+<p><strong>Hospedagem e validação.</strong> O workflow de deploy por SSH está implementado. A implantação em VM, a validação do HTTPS público e o deploy em produção seguem pendentes. Os testes no Telegram com o servidor local cobriram texto, voz, UF, roteamento e lembretes. Falta registrar os resultados de foto/PDF, cofre, resumo da manhã e Mini App no Telegram real.</p>
+<p><strong>Melhorias (≥ 2):</strong> (1) ampliar sinônimos e palavras-chave e medir antes e depois com o conjunto do público; (2) ampliar a base (CNH, CPF) e a cobertura estadual da CIN/RG em <code>referencias_estaduais</code>; (3) classificador de documentos local, sem enviar arquivos ao Gemini; (4) fuso por usuário.</p>
 <p><small>Fontes de contexto externas (por exemplo, Base dos Dados) não foram usadas no código e, se entrarem neste relatório, devem trazer fonte e data da consulta.</small></p>
 </body></html>""" % {
         "css": CSS, "n": len(regs), "nt": len(dados["temas"]), "dom": esc(", ".join(dominios)),
-        "datas": esc(", ".join(datas)),
+        "datas": esc(", ".join(datas)), "n_ufs_cin": len(ufs_cin),
+        "limiar": busca.LIMIAR_MINIMO, "margem": busca.MARGEM,
         "t_fontes": tabela(["Id", "Assunto", "Fonte (domínio)", "Verificado em"], linhas_fontes),
         "t_ab": tabela(["Critério (spec §8)", "Modelo A", "Modelo B"], [
             ["Respostas com fonte e data", "%d/%d" % (sum(l["tem_fonte_com_data"] == "sim" for l in media["A"]), len(media["A"])),

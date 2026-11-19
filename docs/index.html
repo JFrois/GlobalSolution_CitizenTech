@@ -399,7 +399,7 @@ footer a{color:#fff}
     </div>
     <div class="chips-hero sobe" style="animation-delay:.34s">
       <span class="vidro"><b data-conta="17">17</b> orientações verificadas</span>
-      <span class="vidro"><b data-conta="259">259</b> testes automatizados</span>
+      <span class="vidro"><b data-conta="262">262</b> testes automatizados</span>
       <span class="vidro"><b>3</b> interfaces: terminal, Telegram e painel</span>
     </div>
   </div>
@@ -436,7 +436,7 @@ footer a{color:#fff}
     <div class="nums">
       <div class="cartao"><div class="n"><span data-conta="17">17</span></div>orientações em 3 temas: documentos, serviços e direitos</div>
       <div class="cartao"><div class="n"><span data-conta="19">19</span>/19</div>acertos da busca nas perguntas da equipe <span data-nivel="tecnico">(não é medida independente)</span></div>
-      <div class="cartao"><div class="n"><span data-conta="259">259</span></div>testes automatizados passando</div>
+      <div class="cartao"><div class="n"><span data-conta="262">262</span></div>testes automatizados passando</div>
       <div class="cartao"><div class="n">0</div>pacotes externos para rodar o núcleo</div>
     </div>
     <p class="aviso"><svg class="i" aria-hidden="true"><use href="#i-escudo"/></svg><span><b>Atenção:</b> o Citizen Assist <b>não é um canal oficial</b> de nenhum órgão público. Confirme sempre no site oficial indicado em cada resposta. Demonstrações e testes usam somente documentos fictícios.</span></p>
@@ -822,7 +822,7 @@ footer a{color:#fff}
         <div class="cartao"><h3>Armazenamento com volta automática</h3><p>SQLite é o padrão. O Supabase (API REST pela biblioteca padrão) liga com URL e chave secreta; se a verificação falhar, volta sozinho para o SQLite.</p></div>
         <div class="cartao"><h3>IA só escolhe a ferramenta</h3><p>O Gemini decide entre 4 ferramentas com argumentos validados e, se falhar, as regras assumem. O conteúdo de arquivos é dado, nunca instrução.</p></div>
         <div class="cartao"><h3>CI e deploy</h3><p>GitHub Actions roda a suíte no Python 3.9 e 3.12. O deploy por SSH só liga com <code>DEPLOY_ATIVO=true</code> e grava o <code>.env</code> a partir dos Secrets.</p></div>
-        <div class="cartao"><h3>Testes</h3><p>259 testes: validação da base, busca, as 4 saídas, Dijkstra, isolamento por usuário, criptografia, <code>initData</code>, agendador, painel e o Supabase contra um servidor falso.</p></div>
+        <div class="cartao"><h3>Testes</h3><p>262 testes: validação da base, busca, as 4 saídas, Dijkstra, isolamento por usuário, criptografia, <code>initData</code>, agendador, painel e o Supabase contra um servidor falso.</p></div>
         <div class="cartao"><h3>Python</h3><p>Núcleo em 3.9+ só com biblioteca padrão. Camada de produto em 3.11+ (aiogram, APScheduler, FastAPI, <code>cryptography</code>, <code>feedparser</code>).</p></div>
       </div>
     </div>
@@ -850,7 +850,7 @@ footer a{color:#fff}
       </div>
       <div class="cartao">
         <h3>Testes e usabilidade</h3>
-        <div class="valor">259<small> testes automatizados passaram</small></div>
+        <div class="valor">262<small> testes automatizados passaram</small></div>
         <div class="bar"><div class="bar-t"><span>Tarefas sem ajuda</span><b>5 de 5</b></div><div class="fio"><i class="v" data-w="100"></i></div></div>
         <div class="bar"><div class="bar-t"><span>Usabilidade (SUS)</span><b>92,5 / 100</b></div><div class="fio"><i class="v" data-w="92.5"></i></div></div>
         <p class="nota">Teste de usabilidade com um participante externo. O terminal usa apenas a biblioteca padrão do Python. O arquivo da base tem 33,2 kB.</p>
@@ -913,7 +913,7 @@ footer a{color:#fff}
     <details data-nivel="simples"><summary>Meus documentos ficam seguros?</summary><div class="resp">O cofre cifra antes de guardar e só abre com a sua senha, mas tem limites: no chat o servidor vê o arquivo ao enviar, e o Gemini (plano gratuito) pode reter o que for enviado para classificar. Por isso, nas demonstrações, usamos só documentos fictícios.</div></details>
     <details data-nivel="simples"><summary>O que a IA faz exatamente?</summary><div class="resp">Escolhe qual ferramenta usar e sugere o nome de um documento do cofre. Ela <b>não escreve</b> a resposta ao cidadão. A voz é transcrita localmente, sem IA na nuvem.</div></details>
     <details data-nivel="tecnico"><summary>Como a busca decide entre responder e perguntar?</summary><div class="resp">O sistema usa limiar de 3 pontos e margem de 2 pontos entre os dois primeiros resultados. Dependendo da correspondência, responde, apresenta até três candidatos ou avisa que a base é insuficiente.</div></details>
-    <details data-nivel="tecnico"><summary>Como rodo os testes e a avaliação?</summary><div class="resp"><code>python -m unittest discover -s testes -t .</code> executa a suíte, que tem 259 testes com as dependências do servidor. <code>python src/sistema.py --avaliar</code> mede acerto e tempo e grava os CSVs em <code>testes/</code>.</div></details>
+    <details data-nivel="tecnico"><summary>Como rodo os testes e a avaliação?</summary><div class="resp"><code>python -m unittest discover -s testes -t .</code> executa a suíte, que tem 262 testes com as dependências do servidor. <code>python src/sistema.py --avaliar</code> mede acerto e tempo e grava os CSVs em <code>testes/</code>.</div></details>
     <details data-nivel="tecnico"><summary>Como trocar o armazenamento para o Supabase?</summary><div class="resp">Rode o schema (<code>deploy/supabase_schema.sql</code>) no SQL Editor e coloque <code>SUPABASE_URL</code> e a chave <code>sb_secret_...</code> no <code>.env</code>. Se algo falhar, o sistema usa o SQLite sozinho.</div></details>
     <div class="bloco-cmd" style="margin-top:18px">
       <h3>Quer rodar?</h3>
@@ -1343,7 +1343,7 @@ footer a{color:#fff}
   var ROT = { ok: "Pronto", pa: "Parcial", pe: "Pendente", ro: "Roadmap" };
   var stFiltro = "todos";
   function desenhaStatus() {
-    var totais = { ok: 12, pa: 0, pe: 0, ro: 1 };
+    var totais = { ok: 0, pa: 0, pe: 0, ro: 0 };
     ST.forEach(function (item) { totais[item[1]]++; });
     var opcoes = [["todos", "Todos (" + ST.length + ")"]];
     Object.keys(ROT).forEach(function (chave) {
