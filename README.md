@@ -509,7 +509,7 @@ O Citizen Assist AI é um projeto acadêmico independente e não representa nenh
 ## 9. 🔗 Vídeo de apresentação
 
 
-* **[Vídeo de apresentação no YouTube (Não Listado)](http://url-aqui)**: 
+* **[Vídeo de apresentação no YouTube (Não Listado)](https://www.youtube.com/watch?v=ECvyaTtk-UA)**: 
 
 ---
 
