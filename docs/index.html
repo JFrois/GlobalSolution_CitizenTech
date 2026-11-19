@@ -142,6 +142,7 @@ th{font-size:13px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
 tr:last-child td{border-bottom:0}
 tbody tr{transition:background .2s}
 tbody tr:hover{background:#F2F8FC}
+.karn-scroll{max-width:100%;overflow-x:auto}
 .karn{width:auto;margin:10px 0;font:500 14px var(--mono)}
 .karn td,.karn th{padding:8px 14px;text-align:center;border:1px solid var(--linha)}
 .karn td.r{background:var(--verde-s);color:var(--verde-t);font-weight:700}
@@ -329,7 +330,7 @@ select{width:100%;min-height:44px;border:1.5px solid var(--borda);border-radius:
 .anel .prog{stroke:var(--verde);stroke-linecap:round;stroke-dasharray:314;stroke-dashoffset:314;transition:stroke-dashoffset 1.3s var(--curva)}
 .anel b{position:absolute;inset:0;display:grid;place-items:center;font-size:24px;font-weight:800}
 .selo2{display:inline-block;font-size:12.5px;font-weight:800;padding:3px 10px;border-radius:999px;white-space:nowrap}
-.s-ok{background:var(--verde-s);color:var(--verde-t)}.s-pa{background:#FFF1D1;color:#6A4A00}.s-pe{background:var(--coral-s);color:var(--atencao)}.s-bl{background:#E8EAF6;color:#2A2F6B}
+.s-ok{background:var(--verde-s);color:var(--verde-t)}.s-pa{background:#FFF1D1;color:#6A4A00}.s-pe{background:var(--coral-s);color:var(--atencao)}.s-ro{background:#E8EAF6;color:#2A2F6B}
 .tempo{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:16px}
 .tempo .cartao b{font-size:2.2rem;font-weight:800;color:var(--acao);letter-spacing:-.03em;display:block;line-height:1.1}
 
@@ -465,11 +466,13 @@ footer a{color:#fff}
     <div data-nivel="tecnico" style="margin-top:24px">
       <h3>Regra de decisão e mapa de Karnaugh</h3>
       <p class="nota" style="margin-top:0"><b>C</b> = entrada válida · <b>A</b> = melhor pontuação ≥ 3 · <b>B</b> = (1ª − 2ª pontuação) ≥ 2</p>
-      <table class="karn" aria-label="Mapa de Karnaugh da regra de decisão">
-        <tr><th>C \ A B</th><th>00</th><th>01</th><th>11</th><th>10</th></tr>
-        <tr><th>0</th><td class="i">Inválida</td><td class="i">Inválida</td><td class="i">Inválida</td><td class="i">Inválida</td></tr>
-        <tr><th>1</th><td class="s">Sem base</td><td class="s">Sem base</td><td class="r">Responde</td><td class="e">Pedir escolha</td></tr>
-      </table>
+      <div class="karn-scroll" role="region" aria-label="Tabela da regra de decisão" tabindex="0">
+        <table class="karn" aria-label="Mapa de Karnaugh da regra de decisão">
+          <tr><th>C \ A B</th><th>00</th><th>01</th><th>11</th><th>10</th></tr>
+          <tr><th>0</th><td class="i">Inválida</td><td class="i">Inválida</td><td class="i">Inválida</td><td class="i">Inválida</td></tr>
+          <tr><th>1</th><td class="s">Sem base</td><td class="s">Sem base</td><td class="r">Responde</td><td class="e">Pedir escolha</td></tr>
+        </table>
+      </div>
       <div class="grade" style="margin-top:12px">
         <div class="cartao"><h3>Pontuação</h3><p>Palavra-chave vale 3, pergunta vale 2, orientação vale 1. Expressão completa (ex.: "segunda via") ganha +2. Empate: menor id.</p></div>
         <div class="cartao"><h3>Índice invertido</h3><p>Mapa palavra → registros, montado na carga. A busca linear fica só para comparar o desempenho.</p></div>
@@ -829,23 +832,29 @@ footer a{color:#fff}
   <section class="sec rev" id="qualidade">
     <span class="rot">Resultados</span>
     <h2>O que foi medido</h2>
-    <p class="lead">Números reais atualizados em 16/11/2026 com o conjunto da equipe (19 perguntas), conjunto do público (10 perguntas anônimas), avaliação cega de clareza A × B e teste de usabilidade (SUS).</p>
+    <p class="lead">A primeira medição com o conjunto do público foi registrada em 16/11/2026. O relatório de 18/11/2026 apresenta a reavaliação das mesmas perguntas após a revisão da base.</p>
     <div class="metricas">
-      <div class="cartao"><h3>Integridade</h3><div class="valor">259<small> / 259 testes</small></div>
-        <div class="bar"><div class="bar-t"><span>Testes automatizados</span><b>100%</b></div><div class="fio"><i class="v" data-w="100"></i></div></div>
-        <div class="bar"><div class="bar-t"><span>Busca · equipe (19) / público (10)</span><b>100% / 90%</b></div><div class="fio"><i class="v" data-w="96.6"></i></div></div>
-        <div class="bar"><div class="bar-t"><span>Usabilidade (5 tarefas · SUS)</span><b>92,5 pts</b></div><div class="fio"><i class="v" data-w="92.5"></i></div></div>
-        <p class="nota">Taxa geral de acerto: 28/29 (96,6%). No conjunto independente do público (medido sem alterar a base), acertou 9/10 (90,0%).</p></div>
-      <div class="cartao"><h3>Latência</h3><div class="valor">0,009<small> ms por consulta</small></div>
-        <div class="bar"><div class="bar-t"><span>Índice · 17 registros</span><b>0,0090 ms</b></div><div class="fio"><i data-w="2"></i></div></div>
-        <div class="bar"><div class="bar-t"><span>Linear · 17 registros</span><b>0,9453 ms</b></div><div class="fio"><i class="a" data-w="100"></i></div></div>
-        <div class="bar"><div class="bar-t"><span>Índice · 17.000 registros</span><b>4,9 ms</b></div><div class="fio"><i data-w="1"></i></div></div>
-        <p class="nota">Com 17.000 registros sintéticos a busca linear leva 948 ms (cerca de 193 vezes mais). Barras na escala da busca linear de cada base.</p></div>
-      <div class="cartao"><h3>Consumo</h3><div class="valor">22,7<small> MB de pico</small></div>
-        <div class="bar"><div class="bar-t"><span>Memória do núcleo (19 consultas)</span><b>22,7 MB</b></div><div class="fio"><i data-w="2.3"></i></div></div>
-        <div class="bar"><div class="bar-t"><span>Base de conhecimento</span><b>18 KB</b></div><div class="fio"><i data-w="1"></i></div></div>
-        <div class="bar"><div class="bar-t"><span>Pacotes externos</span><b>0</b></div><div class="fio"><i data-w="0"></i></div></div>
-        <p class="nota">Memória em relação a 1 GB. O modo servidor usa mais (Whisper e bibliotecas do bot).</p></div>
+      <div class="cartao">
+        <h3>Acertos da busca</h3>
+        <div class="valor">29/29<small> na reavaliação</small></div>
+        <div class="bar"><div class="bar-t"><span>Primeira medição independente · público</span><b>9/10</b></div><div class="fio"><i class="a" data-w="90"></i></div></div>
+        <div class="bar"><div class="bar-t"><span>Reavaliação · equipe e público</span><b>29/29</b></div><div class="fio"><i class="v" data-w="100"></i></div></div>
+        <p class="nota">A rodada anterior teve 28/29 no total. A reavaliação reutilizou as 29 perguntas e obteve 19/19 na equipe e 10/10 no público.</p>
+      </div>
+      <div class="cartao">
+        <h3>Tempo de consulta</h3>
+        <div class="valor">0,7747<small> ms com índice</small></div>
+        <div class="bar"><div class="bar-t"><span>Índice invertido</span><b>0,7747 ms</b></div><div class="fio"><i data-w="19.5"></i></div></div>
+        <div class="bar"><div class="bar-t"><span>Busca linear</span><b>3,9704 ms</b></div><div class="fio"><i class="a" data-w="100"></i></div></div>
+        <p class="nota">Médias das 29 perguntas na execução registrada no Windows. As medições com bases sintéticas estão no relatório.</p>
+      </div>
+      <div class="cartao">
+        <h3>Testes e usabilidade</h3>
+        <div class="valor">259<small> testes automatizados passaram</small></div>
+        <div class="bar"><div class="bar-t"><span>Tarefas sem ajuda</span><b>5 de 5</b></div><div class="fio"><i class="v" data-w="100"></i></div></div>
+        <div class="bar"><div class="bar-t"><span>Usabilidade (SUS)</span><b>92,5 / 100</b></div><div class="fio"><i class="v" data-w="92.5"></i></div></div>
+        <p class="nota">Teste de usabilidade com um participante externo. O terminal usa apenas a biblioteca padrão do Python. O arquivo da base tem 33,2 kB.</p>
+      </div>
     </div>
     <h3 style="margin-top:26px">Comparação dos dois formatos de resposta</h3>
     <p class="nota" style="margin-top:0">O formato "resumido" (modelo A) e o "passo a passo" (modelo B) usam a mesma busca. Por isso acerto e tempo são iguais; a comparação mede o formato.</p>
@@ -853,15 +862,15 @@ footer a{color:#fff}
       <tr><td>Fonte com link e data</td><td>11/11</td><td>11/11</td></tr>
       <tr><td>Aviso quando necessário</td><td>5/5 (6 n/a)</td><td>5/5 (6 n/a)</td></tr>
       <tr><td>Próximos assuntos</td><td>11/11</td><td>11/11</td></tr>
-      <tr><td>Tamanho médio</td><td>141,3 palavras</td><td>147,9 palavras</td></tr>
-      <tr><td>Passos numerados</td><td>0</td><td>4,6</td></tr>
+      <tr><td>Tamanho médio</td><td>235,2 palavras</td><td>242,9 palavras</td></tr>
+      <tr><td>Passos numerados</td><td>0</td><td>5,7</td></tr>
       <tr><td>Clareza (nota 1 a 5, cega X/Y)</td><td><b>3,61 / 5,00</b> (44 notas)</td><td><span class="selo2 s-ok">4,82 / 5,00 (escolhido como padrão)</span></td></tr>
     </tbody></table></div>
-    <h3 style="margin-top:26px">Medições concluídas na Frente B e o que falta</h3>
+    <h3 style="margin-top:26px">Avaliação e situação da entrega</h3>
     <div class="grade">
-      <div class="cartao"><h3>Perguntas do público (concluído)</h3><p>10 perguntas anônimas (<code>P01</code> a <code>P10</code>) medidas antes de qualquer ajuste: <b>9/10 (90,0%)</b> de acerto (28/29 = 96,6% geral).</p></div>
+      <div class="cartao"><h3>Perguntas do público</h3><p>O conjunto tem 10 perguntas anônimas. O primeiro teste acertou 9 de 10. Após a revisão da base, o mesmo conjunto atingiu 10 de 10.</p></div>
       <div class="cartao"><h3>Teste de usabilidade (concluído)</h3><p>Participante externo concluiu <b>5 de 5 tarefas sem ajuda</b> (1ª resposta útil em 38 s; relacionado em 14 s) e nota <b>SUS de 92,5 / 100</b>.</p></div>
-      <div class="cartao"><h3>Frente C e entrega (concluído)</h3><p>A seção 8 do README foi finalizada, as orientações de Serviços e Direitos foram revisadas e o <code>docs/relatorio.pdf</code> foi atualizado. O vídeo foi publicado no YouTube como não listado e o arquivo <code>.txt</code> com o linkdo vídeo e do repositório foi enviado pela FIAP ON</p></div>
+      <div class="cartao"><h3>Documentação e entrega</h3><p>A seção 8 do README e a revisão das 17 orientações foram concluídas. O relatório e a revisão local de segurança foram registrados em 18/11. A URL do vídeo e o envio na FIAP ON aguardam confirmação.</p></div>
     </div>
   </section>
 
@@ -876,19 +885,19 @@ footer a{color:#fff}
     <div class="filtros" id="filtros-status" role="group" aria-label="Filtrar por situação"></div>
     <div class="tab"><table><thead><tr><th>Área</th><th>Situação</th><th>Detalhe</th></tr></thead><tbody id="tb-status"></tbody></table></div>
     <div class="tempo">
-      <div class="cartao"><svg class="i" aria-hidden="true" style="color:var(--acao)"><use href="#i-relogio"/></svg><b id="d-congela">—</b>para o congelamento do código (13/11/2026). O que não estiver testado vira roadmap.</div>
-      <div class="cartao"><svg class="i" aria-hidden="true" style="color:var(--acao)"><use href="#i-relogio"/></svg><b id="d-entrega">—</b>para a entrega na FIAP ON (19/11/2026): repositório público, vídeo "Não Listado" e um .txt com os dois links.</div>
+      <div class="cartao"><svg class="i" aria-hidden="true" style="color:var(--acao)"><use href="#i-relogio"/></svg><b>13/11/2026</b>Congelamento previsto do código.</div>
+      <div class="cartao"><svg class="i" aria-hidden="true" style="color:var(--acao)"><use href="#i-relogio"/></svg><b>19/11/2026</b>Prazo previsto na FIAP ON. O arquivo <code>.txt</code> deve conter os links do repositório público e do vídeo não listado.</div>
     </div>
   </section>
 
   <!-- ===== EQUIPE ===== -->
   <section class="sec rev" id="equipe">
     <span class="rot">Equipe</span>
-    <h2>Quem faz o quê agora</h2>
+    <h2>Contribuições da equipe</h2>
     <div class="grade">
-      <div class="cartao lift"><div class="avatar">JF</div><h3>Juan de Lucas Frois</h3><p>RM563260 · núcleo e dados</p><ul><li>Base de Orientações</li><li>Consolidar README e relatório</li><li>Testar em máquina limpa e no Windows</li><li>Decidir o formato padrão (A ou B)</li></ul></div>
-      <div class="cartao lift"><div class="avatar">FP</div><h3>Flávia Roberta Pennachin</h3><p>RM561860 · bot, testes e comparação A × B</p><ul><li>Coletar 10+ perguntas do público</li><li>Teste de usabilidade com pessoa de fora</li><li>Notas de clareza (folha cega)</li><li>Testar no Telegram real</li></ul></div>
-      <div class="cartao lift"><div class="avatar">PV</div><h3>Pedro Valente</h3><p>RM570394 · cofre, painel e infraestrutura</p><ul><li>Escolher onde hospedar e subir a VM</li><li>HTTPS com DuckDNS e Caddy; deploy</li><li>Testar o Mini App no Telegram real</li><li>Revisão de segurança</li></ul></div>
+      <div class="cartao lift"><div class="avatar">JF</div><h3>Juan de Lucas Frois</h3><p>RM563260 · núcleo e dados</p><ul><li>Base de orientações, busca e grafo de assuntos</li><li>Terminal offline e avaliação da busca</li></ul></div>
+      <div class="cartao lift"><div class="avatar">FP</div><h3>Flávia Roberta Pennachin</h3><p>RM561860</p><ul><li>Bot, roteador e testes no Telegram</li><li>Coleta de 10 perguntas, teste de usabilidade e avaliação cega</li></ul></div>
+      <div class="cartao lift"><div class="avatar">PV</div><h3>Pedro Valente</h3><p>RM570394</p><ul><li>Cofre, painel e armazenamento</li><li>Infraestrutura prevista para a implantação</li><li>Revisão de segurança</li></ul></div>
     </div>
     <p class="nota">Projeto acadêmico da FIAP, Global Solution 2026.2 (CitizenTech).</p>
   </section>
@@ -903,8 +912,8 @@ footer a{color:#fff}
     <details data-nivel="simples"><summary>Preciso instalar alguma coisa?</summary><div class="resp">Para o terminal, só o Python 3.9 ou superior. Sem internet, sem chaves, sem <code>pip install</code>. O Telegram e o painel dependem de um servidor ligado.</div></details>
     <details data-nivel="simples"><summary>Meus documentos ficam seguros?</summary><div class="resp">O cofre cifra antes de guardar e só abre com a sua senha, mas tem limites: no chat o servidor vê o arquivo ao enviar, e o Gemini (plano gratuito) pode reter o que for enviado para classificar. Por isso, nas demonstrações, usamos só documentos fictícios.</div></details>
     <details data-nivel="simples"><summary>O que a IA faz exatamente?</summary><div class="resp">Escolhe qual ferramenta usar e sugere o nome de um documento do cofre. Ela <b>não escreve</b> a resposta ao cidadão. A voz é transcrita localmente, sem IA na nuvem.</div></details>
-    <details data-nivel="tecnico"><summary>Como a busca decide entre responder e perguntar?</summary><div class="resp">Pela pontuação: se a melhor passa de 3 e a diferença para a segunda é de pelo menos 2, responde; se passa mas a diferença é menor, mostra até 3 candidatos; se não passa, avisa que não há base.</div></details>
-    <details data-nivel="tecnico"><summary>Como rodo os testes e a avaliação?</summary><div class="resp"><code>python -m unittest discover -s testes -t .</code> roda os 259 testes e <code>python src/sistema.py --avaliar</code> mede acerto e tempo e grava os CSVs em <code>testes/</code>.</div></details>
+    <details data-nivel="tecnico"><summary>Como a busca decide entre responder e perguntar?</summary><div class="resp">O sistema usa limiar de 3 pontos e margem de 2 pontos entre os dois primeiros resultados. Dependendo da correspondência, responde, apresenta até três candidatos ou avisa que a base é insuficiente.</div></details>
+    <details data-nivel="tecnico"><summary>Como rodo os testes e a avaliação?</summary><div class="resp"><code>python -m unittest discover -s testes -t .</code> executa a suíte, que tem 259 testes com as dependências do servidor. <code>python src/sistema.py --avaliar</code> mede acerto e tempo e grava os CSVs em <code>testes/</code>.</div></details>
     <details data-nivel="tecnico"><summary>Como trocar o armazenamento para o Supabase?</summary><div class="resp">Rode o schema (<code>deploy/supabase_schema.sql</code>) no SQL Editor e coloque <code>SUPABASE_URL</code> e a chave <code>sb_secret_...</code> no <code>.env</code>. Se algo falhar, o sistema usa o SQLite sozinho.</div></details>
     <div class="bloco-cmd" style="margin-top:18px">
       <h3>Quer rodar?</h3>
@@ -1146,7 +1155,25 @@ footer a{color:#fff}
   $("#pop-replay").addEventListener("click", function () { var p = $("#pop-demo"); p.classList.remove("go"); void p.offsetWidth; p.classList.add("go"); });
 
   /* ---------- Explorador das 17 orientações + Dijkstra ---------- */
-  var D = [{"id":"DOC-001","t":"2ª via da identidade (CIN/RG)","tema":"doc","d":"gov.br","v":"2026-11-16","r":["DOC-002","DOC-003","SRV-004","DIR-004"],"c":true},{"id":"DOC-002","t":"CIN digital no app gov.br","tema":"doc","d":"gov.br","v":"2026-11-16","r":["DOC-001"],"c":false},{"id":"DOC-003","t":"2ª via do título de eleitor","tema":"doc","d":"tse.jus.br","v":"2026-11-16","r":["DOC-001","DOC-004","DOC-005"],"c":true},{"id":"DOC-004","t":"Título de eleitor cancelado","tema":"doc","d":"tse.jus.br","v":"2026-11-16","r":["DOC-003","DOC-005"],"c":true},{"id":"DOC-005","t":"Situação eleitoral","tema":"doc","d":"tse.jus.br","v":"2026-11-16","r":["DOC-003","DOC-004"],"c":false},{"id":"SRV-001","t":"Meu INSS e telefone 135","tema":"ser","d":"gov.br","v":"2026-11-17","r":["SRV-002","SRV-003","SRV-004","SRV-006"],"c":false},{"id":"SRV-002","t":"Perícia médica do INSS","tema":"ser","d":"gov.br","v":"2026-11-17","r":["SRV-001"],"c":true},{"id":"SRV-003","t":"Extrato CNIS e aposentadoria","tema":"ser","d":"gov.br","v":"2026-11-17","r":["SRV-001"],"c":false},{"id":"SRV-004","t":"Inscrição no CadÚnico","tema":"ser","d":"gov.br","v":"2026-11-17","r":["DOC-001","SRV-001","DIR-006"],"c":false},{"id":"SRV-005","t":"Cartão Nacional de Saúde","tema":"ser","d":"gov.br","v":"2026-11-17","r":["SRV-006"],"c":false},{"id":"SRV-006","t":"Meu SUS Digital","tema":"ser","d":"gov.br","v":"2026-11-17","r":["SRV-005","SRV-001"],"c":false},{"id":"DIR-001","t":"Reclamar no Consumidor.gov.br","tema":"dir","d":"consumidor.gov.br","v":"2026-11-17","r":["DIR-002","DIR-005"],"c":false},{"id":"DIR-002","t":"Defensoria Pública","tema":"dir","d":"dpu.def.br","v":"2026-11-17","r":["DIR-001","DIR-003","DIR-004","DIR-005"],"c":false},{"id":"DIR-003","t":"Disque 100 e Ligue 180","tema":"dir","d":"gov.br","v":"2026-11-17","r":["DIR-002"],"c":false},{"id":"DIR-004","t":"Certidão de nascimento gratuita","tema":"dir","d":"planalto.gov.br","v":"2026-11-17","r":["DIR-002","DOC-001"],"c":true},{"id":"DIR-005","t":"Juizado Especial Cível","tema":"dir","d":"cnj.jus.br","v":"2026-11-17","r":["DIR-001","DIR-002"],"c":false},{"id":"DIR-006","t":"Tarifa Social de Energia Elétrica","tema":"dir","d":"gov.br","v":"2026-11-17","r":["SRV-004"],"c":true}];
+  var D = [
+    {"id":"DOC-001","t":"2ª via da identidade (CIN/RG)","tema":"doc","d":"gov.br","v":"2026-11-16","r":["DOC-002","DOC-003","SRV-004","DIR-004"],"c":true,"fontes":["https://www.gov.br/secom/pt-br/acompanhe-a-secom/noticias/2026/02/saiba-como-solicitar-a-2a-via-da-cin-apos-caso-de-perda"],"uf":{"SP":"https://poupatempo.sp.gov.br/carta/4FC0FEE9-9E3F-4220-8A73-9C49BFDD7288","MG":"https://www.mg.gov.br/servico/obter-carteira-de-identidade-nacional","RJ":"https://www.detran.rj.gov.br/todos-os-servicos/servicos-dic/2-via-de-identidade.html","PR":"https://www.policiacivil.pr.gov.br/Pagina/INFORMACOES-SOBRE-CARTEIRA-DE-IDENTIDADE-NACIONAL-CIN","RS":"https://www.igp.rs.gov.br/informacoes-e-encaminhamento","DF":"https://www.nahora.df.gov.br/policia_civil","BA":"https://www.ba.gov.br/servico/dpt/obter-2a-ou-demais-vias-da-carteira-de-identidade-nacional-cin","SC":"https://www.policiacientifica.sc.gov.br/carteira-de-identidade/","PE":"https://www.pe.gov.br/app/catalog/carta-de-servicos/adquirir-2a-via-da-carteira-de-identidade-nacional-cin-2334","CE":"https://www.al.ce.gov.br/paginas/casa-do-cidadao"}},
+    {"id":"DOC-002","t":"CIN digital no app gov.br","tema":"doc","d":"gov.br","v":"2026-11-16","r":["DOC-001"],"c":false,"fontes":["https://www.gov.br/gestao/pt-br/assuntos/noticias/2026/junho/governo-do-brasil-envia-notificacoes-personalizadas-sobre-o-uso-da-versao-digital-da-cin-saiba-como-usar","https://www.gov.br/governodigital/pt-br/identidade/carteira-de-documentos-digitais","https://www.gov.br/governodigital/pt-br/acessibilidade-e-usuario/atendimento-gov.br/duvidas-na-conta-gov.br/duvidas-para-aumentar-o-nivel-da-conta-gov.br/duvidas-para-aumentar-o-nivel-com-a-cin/duvidas-para-aumentar-o-nivel-com-a-cin"]},
+    {"id":"DOC-003","t":"2ª via do título de eleitor","tema":"doc","d":"tse.jus.br","v":"2026-11-16","r":["DOC-001","DOC-004","DOC-005"],"c":true,"fontes":["https://www.tse.jus.br/comunicacao/noticias/2024/Janeiro/precisa-da-2a-via-do-seu-titulo-confira-como-emitir-em-apenas-3-passos"]},
+    {"id":"DOC-004","t":"Título de eleitor cancelado","tema":"doc","d":"tse.jus.br","v":"2026-11-16","r":["DOC-003","DOC-005"],"c":true,"fontes":["https://www.tse.jus.br/comunicacao/noticias/2025/Dezembro/eleitor-em-dia-veja-como-regularizar-o-titulo-cancelado","https://www.tse.jus.br/servicos-eleitorais/titulo-eleitoral/quitacao-de-multas","https://www.tse.jus.br/legislacao/compilada/res/2026/resolucao-no-23-750-de-26-de-fevereiro-de-2026"]},
+    {"id":"DOC-005","t":"Situação eleitoral","tema":"doc","d":"tse.jus.br","v":"2026-11-16","r":["DOC-003","DOC-004"],"c":false,"fontes":["https://www.tse.jus.br/comunicacao/noticias/2026/Abril/eleitor-em-dia-saiba-como-verificar-se-seu-titulo-esta-regular-1","https://www.tse.jus.br/institucional/corregedoria-geral-eleitoral/sistemas-e-servicos-1/consulta-situacao-eleitoral","https://www.tse.jus.br/servicos-eleitorais/certidoes"]},
+    {"id":"SRV-001","t":"Meu INSS e telefone 135","tema":"ser","d":"gov.br","v":"2026-11-17","r":["SRV-002","SRV-003","SRV-004","SRV-006"],"c":false,"fontes":["https://www.gov.br/inss/pt-br/noticias/aprenda-como-acessar-e-navegar-pelo-meu-inss"]},
+    {"id":"SRV-002","t":"Perícia médica do INSS","tema":"ser","d":"gov.br","v":"2026-11-17","r":["SRV-001"],"c":true,"fontes":["https://www.gov.br/inss/pt-br/noticias/precisa-fazer-pericia-medica-confira-o-passo-a-passo-do-atestmed"]},
+    {"id":"SRV-003","t":"Extrato CNIS e aposentadoria","tema":"ser","d":"gov.br","v":"2026-11-17","r":["SRV-001"],"c":false,"fontes":["https://www.gov.br/pt-br/servicos/emitir-extrato-de-contribuicao-cnis","https://www.gov.br/pt-br/servicos/simular-aposentadoria"]},
+    {"id":"SRV-004","t":"Inscrição no CadÚnico","tema":"ser","d":"gov.br","v":"2026-11-17","r":["DOC-001","SRV-001","DIR-006"],"c":false,"fontes":["https://www.gov.br/pt-br/servicos/inscrever-se-no-cadastro-unico-para-programas-sociais-do-governo-federal"]},
+    {"id":"SRV-005","t":"Cartão Nacional de Saúde","tema":"ser","d":"gov.br","v":"2026-11-17","r":["SRV-006"],"c":false,"fontes":["https://www.gov.br/saude/pt-br/composicao/seidigi/meususdigital/perguntas-e-respostas/cidadao/9-como-faco-o-cartao"]},
+    {"id":"SRV-006","t":"Meu SUS Digital","tema":"ser","d":"gov.br","v":"2026-11-17","r":["SRV-005","SRV-001"],"c":false,"fontes":["https://www.gov.br/saude/pt-br/composicao/seidigi/meususdigital/perguntas-e-respostas/cidadao"]},
+    {"id":"DIR-001","t":"Reclamar no Consumidor.gov.br","tema":"dir","d":"consumidor.gov.br","v":"2026-11-17","r":["DIR-002","DIR-005"],"c":false,"fontes":["https://www.consumidor.gov.br/pages/conteudo/publico/1"]},
+    {"id":"DIR-002","t":"Defensoria Pública","tema":"dir","d":"dpu.def.br","v":"2026-11-17","r":["DIR-001","DIR-003","DIR-004","DIR-005"],"c":false,"fontes":["https://www.dpu.def.br/noticias-institucional/233-slideshow/66949-saiba-como-a-defensoria-publica-da-uniao-pode-ajudar-voce"]},
+    {"id":"DIR-003","t":"Disque 100 e Ligue 180","tema":"dir","d":"gov.br","v":"2026-11-17","r":["DIR-002"],"c":false,"fontes":["https://www.gov.br/mdh/pt-br/ondh","https://www.gov.br/mulheres/pt-br/ligue180"]},
+    {"id":"DIR-004","t":"Certidão de nascimento gratuita","tema":"dir","d":"planalto.gov.br","v":"2026-11-17","r":["DIR-002","DOC-001"],"c":true,"fontes":["https://www.planalto.gov.br/ccivil_03/leis/l9534.htm","https://www2.camara.leg.br/legin/fed/lei/1970-1979/lei-6015-31-dezembro-1973-357511-normaatualizada-pl.html"]},
+    {"id":"DIR-005","t":"Juizado Especial Cível","tema":"dir","d":"cnj.jus.br","v":"2026-11-17","r":["DIR-001","DIR-002"],"c":false,"fontes":["https://www.cnj.jus.br/cnj-servico-para-que-servem-os-juizados-especiais/","https://www2.camara.leg.br/legin/fed/lei/1995/lei-9099-26-setembro-1995-348608-normaatualizada-pl.html"]},
+    {"id":"DIR-006","t":"Tarifa Social de Energia Elétrica","tema":"dir","d":"gov.br","v":"2026-11-17","r":["SRV-004"],"c":true,"fontes":["https://www.gov.br/aneel/pt-br/assuntos/tarifas/tarifa-social"]}
+  ];
   var TEMAS = { doc: ["Documentos", ""], ser: ["Serviços públicos", "t"], dir: ["Direitos", "c"] };
   var porId = {}; D.forEach(function (r) { porId[r.id] = r; });
   var temaFiltro = "todos";
@@ -1170,6 +1197,14 @@ footer a{color:#fff}
       g.appendChild(b);
     });
   }
+  function linkFonte(url, nome) {
+    var link = el("a", "chip", nome);
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    return link;
+  }
+
   function abreFicha(id) {
     var r = porId[id], d = $("#det-base"); d.hidden = false; d.textContent = "";
     $$("#grade-base .ficha").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-id") === id ? "true" : "false"); });
@@ -1180,6 +1215,29 @@ footer a{color:#fff}
     m.appendChild(el("span", "tag", "Verificado em " + dataBr(r.v)));
     if (r.c) m.appendChild(el("span", "tag n", "Confirmar antes de ir"));
     d.appendChild(m);
+    d.appendChild(el("b", "", "Fontes oficiais"));
+    var links = el("div", "rels");
+    links.style.marginBottom = "12px";
+    r.fontes.forEach(function (url, indice) {
+      var dominio = new URL(url).hostname.replace(/^www\./, "");
+      var nome = r.fontes.length > 1 ? "Fonte " + (indice + 1) + " · " + dominio : dominio;
+      links.appendChild(linkFonte(url, nome));
+    });
+    d.appendChild(links);
+    if (r.uf) {
+      var estados = el("details");
+      estados.style.marginBottom = "12px";
+      var siglas = Object.keys(r.uf).sort();
+      estados.appendChild(el("summary", "", "Referências estaduais (" + siglas.length + " UFs)"));
+      var linksUF = el("div", "rels");
+      siglas.forEach(function (sigla) {
+        var referencia = linkFonte(r.uf[sigla], sigla);
+        referencia.setAttribute("aria-label", "Fonte oficial da CIN em " + sigla);
+        linksUF.appendChild(referencia);
+      });
+      estados.appendChild(linksUF);
+      d.appendChild(estados);
+    }
     var t = el("p", "nota"); t.setAttribute("data-nivel", "tecnico"); t.style.margin = "0 0 8px"; t.textContent = "Registro " + id + " · " + r.r.length + " assunto(s) relacionado(s)."; d.appendChild(t);
     d.appendChild(el("b", "", "Assuntos relacionados"));
     var rels = el("div", "rels");
@@ -1268,24 +1326,33 @@ footer a{color:#fff}
 
   /* ---------- Status ---------- */
   var ST = [
-    ["Núcleo no terminal", "ok", "Base com 17 registros, busca, grafo, Dijkstra, modelos A e B e --avaliar testados em Linux/WSL, macOS e Windows."],
-    ["Bot no Telegram", "ok", "Texto, voz, UF, /apagar_meus_dados e roteador testados no Telegram real."],
-    ["Tarefas e lembretes", "ok", "O lembrete chega no Telegram na hora certa (testado em 08/11)."],
-    ["Armazenamento", "ok", "SQLite padrão; Supabase opcional testado no projeto real, com volta automática."],
-    ["Perguntas do público", "ok", "10 perguntas anônimas (P01–P10) medidas sem alterar a base: 9/10 (90,0%) de acerto; 28/29 (96,6%) geral."],
-    ["Usabilidade e clareza A × B", "ok", "Teste aplicado (5/5 tarefas sem ajuda, SUS 92,5) e avaliação cega concluída (Modelo A = 3,61 vs. Modelo B = 4,82)."],
-    ["Painel, cofre, foto/PDF e resumo da manhã", "ok", "Implementados, cobertos por testes automatizados e validados no Telegram real em 18/11/2026."],
-    ["Relatório PDF", "ok", "Relatório regenerado em 18/11/2026 com os resultados da busca, da avaliação de clareza e do teste de usabilidade."],
-    ["README e Uso de IA", "ok", "README finalizado com perfis da equipe, seção 8, link do vídeo e opção de participação na competição. O registro de uso de IA inclui a revisão de segurança (C9)."],
-    ["Revisão das 17 orientações", "ok", "Revisão de Documentação, Serviços e Direitos registrada. O DOC-001 tem referências específicas para 10 UFs."],
-    ["Revisão de segurança (C9)", "ok", "Revisão local registrada em 18/11/2026 em docs/uso_ia.md. Os 77 testes selecionados passaram. HTTPS em produção ficou fora dessa revisão."],
-    ["Hospedagem (VM, HTTPS, deploy)", "bl", "Roadmap / Frente C: ainda não há VM (pode usar Cloudflare Tunnel local para demonstração)."],
-    ["Vídeo e envio na FIAP ON", "ok", "Publicado vídeo  como Não Listado no YouTube, registrar a URL em um arquivo .txt."]
+    ["Núcleo no terminal","ok","Execução offline com 17 orientações, busca, grafo e dois formatos de resposta."],
+    ["Bot no Telegram","ok","Consultas por texto e voz, UF e roteador exercitados com o servidor local."],
+    ["Tarefas e lembretes","ok","Entrega do lembrete pelo chat testada no Telegram em 08/11 com o servidor local."],
+    ["Armazenamento","ok","SQLite padrão e Supabase opcional, com fallback local na inicialização."],
+    ["Perguntas do público","ok","Primeira medição independente: 9/10 no público. Reavaliação das mesmas perguntas: 10/10 no público e 29/29 no total."],
+    ["Usabilidade e clareza A × B","ok","5 tarefas de 5 concluídas sem ajuda. SUS 92,5. Modelo B escolhido pela avaliação cega."],
+    ["Painel, cofre, foto/PDF e resumo da manhã","ok","Recursos implementados e cobertos por testes automatizados. A validação desses fluxos no Telegram real segue a confirmar."],
+    ["Relatório PDF","ok","Regenerado em 18/11/2026 com os resultados da busca, da avaliação cega e da usabilidade."],
+    ["README e Uso de IA","ok","Perfis, seção 8 e registro de uso de IA atualizados. A seção 9 aguarda a URL do vídeo."],
+    ["Revisão das 17 orientações","ok","Documentação revisada em 16/11. Serviços e Direitos revisados em 17/11. O DOC-001 tem referências específicas para 10 UFs."],
+    ["Revisão de segurança (C9)","ok","Revisão local registrada em 18/11. Os 77 testes selecionados passaram."],
+    ["Hospedagem (VM, HTTPS, deploy)","ro","Infraestrutura complementar para uma etapa posterior. O terminal funciona offline."],
+    ["Vídeo e envio na FIAP ON","ok","URL do vídeo e confirmação do envio do arquivo com os dois links aguardam registro."]
   ];
-  var ROT = { ok: "Pronto", pa: "Parcial", pe: "Pendente", bl: "Bloqueado" };
+  var ROT = { ok: "Pronto", pa: "Parcial", pe: "Pendente", ro: "Roadmap" };
   var stFiltro = "todos";
   function desenhaStatus() {
-    filtros($("#filtros-status"), [["todos", "Todos (13)"], ["ok", "Pronto (12)"], ["pa", "Parcial (0)"], ["pe", "Pendente (0)"], ["bl", "Bloqueado (1)"]], stFiltro, function (t) { stFiltro = t; desenhaStatus(); });
+    var totais = { ok: 12, pa: 0, pe: 0, ro: 1 };
+    ST.forEach(function (item) { totais[item[1]]++; });
+    var opcoes = [["todos", "Todos (" + ST.length + ")"]];
+    Object.keys(ROT).forEach(function (chave) {
+      opcoes.push([chave, ROT[chave] + " (" + totais[chave] + ")"]);
+    });
+    filtros($("#filtros-status"), opcoes, stFiltro, function (t) {
+      stFiltro = t;
+      desenhaStatus();
+    });
     var tb = $("#tb-status"); tb.textContent = "";
     ST.filter(function (s) { return stFiltro === "todos" || s[1] === stFiltro; }).forEach(function (s) {
       var tr = el("tr"); tr.appendChild(el("td", "", s[0]));
@@ -1298,14 +1365,8 @@ footer a{color:#fff}
   function animaStatus() {
     $("#anel").style.strokeDashoffset = String(314 * (1 - pct / 100));
     var n = $("#anel-n"); if (reduz) { n.textContent = pct + "%"; } else { var t0 = null; (function p(t) { if (t0 === null) t0 = t; var k = Math.min(1, (t - t0) / 1200); n.textContent = Math.round(pct * k) + "%"; if (k < 1) requestAnimationFrame(p); })(performance.now()); }
-    $("#anel-txt").textContent = pct + "% do projeto pronto";
+    $("#anel-txt").textContent = pct + "% no quadro de status";
   }
-  function dias(alvo, id) {
-    var h = new Date(); h.setHours(0, 0, 0, 0);
-    var n = Math.round((new Date(alvo + "T00:00:00") - h) / 86400000);
-    $(id).textContent = n > 0 ? n + (n === 1 ? " dia" : " dias") : n === 0 ? "Hoje" : "Prazo passou";
-  }
-  dias("2026-11-13", "#d-congela"); dias("2026-11-19", "#d-entrega");
 
   /* ---------- Copiar comandos ---------- */
   var cp = $("#copiar");

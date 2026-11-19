@@ -19,15 +19,15 @@
       "referencia": "https://www.gov.br/secom/pt-br/acompanhe-a-secom/noticias/2026/02/saiba-como-solicitar-a-2a-via-da-cin-apos-caso-de-perda",
       "referencias_estaduais": {
         "SP": "https://poupatempo.sp.gov.br/carta/4FC0FEE9-9E3F-4220-8A73-9C49BFDD7288",
-        "MG": "https://www.mg.gov.br/servico/obter-carteira-de-identidade-nacional-cin",
-        "RJ": "https://www.detran.rj.gov.br",
-        "PR": "https://www.policiacientifica.pr.gov.br/Pagina/Carteira-de-Identidade",
-        "RS": "https://igp.rs.gov.br/carteira-de-identidade",
-        "DF": "https://www.pcdf.df.gov.br/servicos/carteira-de-identidade",
-        "BA": "https://www.ba.gov.br",
-        "SC": "https://www.policiacientifica.sc.gov.br",
-        "PE": "https://www.iitb.pe.gov.br",
-        "CE": "https://www.pefoce.ce.gov.br"
+        "MG": "https://www.mg.gov.br/servico/obter-carteira-de-identidade-nacional",
+        "RJ": "https://www.detran.rj.gov.br/todos-os-servicos/servicos-dic/2-via-de-identidade.html",
+        "PR": "https://www.policiacivil.pr.gov.br/Pagina/INFORMACOES-SOBRE-CARTEIRA-DE-IDENTIDADE-NACIONAL-CIN",
+        "RS": "https://www.igp.rs.gov.br/informacoes-e-encaminhamento",
+        "DF": "https://www.nahora.df.gov.br/policia_civil",
+        "BA": "https://www.ba.gov.br/servico/dpt/obter-2a-ou-demais-vias-da-carteira-de-identidade-nacional-cin",
+        "SC": "https://www.policiacientifica.sc.gov.br/carteira-de-identidade/",
+        "PE": "https://www.pe.gov.br/app/catalog/carta-de-servicos/adquirir-2a-via-da-carteira-de-identidade-nacional-cin-2334",
+        "CE": "https://www.al.ce.gov.br/paginas/casa-do-cidadao"
       },
       "data_verificacao": "2026-11-16",
       "relacionados": ["DOC-002", "DOC-003", "SRV-004", "DIR-004"]
