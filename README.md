@@ -44,7 +44,7 @@ A tabela usa a data de integração na `main` ou, quando indicado, a data do com
 
 - **Núcleo.** O terminal roda offline com a biblioteca padrão do Python. A base reúne 17 orientações em três temas. A revisão de Documentação integra os resultados da Frente B, e a revisão de Serviços e Direitos foi registrada na atividade E2.
 - **Indicadores.** Na primeira avaliação independente, o assistente acertou **9 de 10 perguntas do público**. A reavaliação após os ajustes da base reutilizou as perguntas e obteve **29/29**. O Modelo B foi escolhido na avaliação cega (**4,82**, ante **3,61** do Modelo A). No teste de usabilidade, o participante concluiu **5/5 tarefas sem ajuda** e o sistema obteve **92,5/100 no SUS**.
-- **Testes e documentação.** Os **259 testes automatizados** passaram em uma execução local com Python 3.12 e as dependências do servidor. O [relatório da GS](docs/relatorio.pdf) foi regenerado em 18/11 e a revisão de segurança está registrada em [`docs/uso_ia.md`](docs/uso_ia.md).
+- **Testes e documentação.** Os **262 testes automatizados** passaram em uma execução local com Python 3.12 e as dependências do servidor. O [relatório da GS](docs/relatorio.pdf) foi regenerado em 19/11 e a revisão de segurança está registrada em [`docs/uso_ia.md`](docs/uso_ia.md).
 - **Camada extra.** A equipe registrou testes no Telegram com consultas por texto, voz, localização e roteamento em 07/11, e com lembretes em 08/11. O painel foi conferido no navegador local. O cofre cifra os arquivos em repouso e a decifragem ocorre no servidor
 
 
@@ -210,7 +210,7 @@ A avaliação usa **29 perguntas** em [`testes/perguntas.json`](testes/perguntas
 
 - **Conjunto `publico` (10 perguntas, `P01` a `P10`).** Inclui 5 diretas, 4 reformuladas e 1 fora da base. As perguntas foram coletadas de forma anônima. A primeira medição foi feita com os pesos e as palavras-chave já definidos.
 
-Todas as perguntas são fictícias ou anônimas, sem nenhum dado pessoal. Testes automatizados: `python -m unittest discover -s testes -t .` (259 testes cobrindo base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal, avaliação e módulos do servidor).
+Todas as perguntas são fictícias ou anônimas, sem nenhum dado pessoal. Testes automatizados: `python -m unittest discover -s testes -t .` (262 testes cobrindo base, busca, decisão, De Morgan, Dijkstra, respostas, sessões do terminal, avaliação e módulos do servidor).
 
 
 ### Indicadores da busca

@@ -74,31 +74,38 @@ def pedir_escolha(regs: list) -> str:
     return respostas.pedir_escolha(list(por_id), por_id)
 
 
+def formatar_fontes_telegram(reg: dict, uf=None) -> list[str]:
+    """Linhas de fonte em HTML com a referência e a data de verificação."""
+    link, _ = fonte_e_aviso(reg, uf)
+    verificado = (
+        "verificado em " + formatar_data(reg["data_verificacao"])
+        if reg["data_verificacao"]
+        else formatar_data("")
+    )
+    linhas = []
+    for url in links_da_referencia(link):
+        dominio = urlparse(url).netloc.removeprefix("www.") or url
+        linhas.append(
+            '<b>Fonte:</b> <a href="%s">%s</a> (%s)'
+            % (html.escape(url, quote=True), html.escape(dominio), verificado)
+        )
+    return linhas
+
+
 def formatar_telegram(reg: dict, uf=None) -> str:
     """Resposta em HTML do Telegram: título em negrito, passos numerados, aviso, fonte
     com link e a frase de não-oficialidade. Sem molduras nem quebra em 80 colunas (a
     tela do celular é estreita). Os assuntos para continuar vão em botões, não no texto.
     Todo texto vindo da base passa por html.escape."""
     esc = html.escape
-    link, _ = fonte_e_aviso(reg, uf)
     partes = ["<b>%s</b>" % esc(respostas.titulo_do(reg)), ""]
     partes += ["%d. %s" % (i, esc(p)) for i, p in enumerate(passos(reg), start=1)]
     aviso = respostas.texto_do_aviso(reg)
     if aviso:
         partes += ["", "<b>Atenção:</b> " + esc(aviso.replace("Atenção: ", "", 1))]
-    verificado = (
-        "verificado em " + formatar_data(reg["data_verificacao"])
-        if reg["data_verificacao"]
-        else formatar_data("")
-    )
-    partes.append("")
-    for url in links_da_referencia(link):
-        dominio = urlparse(url).netloc.removeprefix("www.") or url
-        partes.append(
-            '<b>Fonte:</b> <a href="%s">%s</a> (%s)'
-            % (esc(url, quote=True), esc(dominio), verificado)
-        )
     partes += [
+        "",
+        *formatar_fontes_telegram(reg, uf),
         "",
         "Quer ver outro assunto? Toque num botão abaixo ou escreva sua dúvida.",
         "",

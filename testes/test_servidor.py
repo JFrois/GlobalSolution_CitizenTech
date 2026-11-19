@@ -383,6 +383,85 @@ class TestBot(unittest.TestCase):
         self.assertEqual(m.answer.await_count, 2)
 
 
+@unittest.skipUnless(_tem_aiogram(), "precisa de aiogram (pip install -r requirements.txt)")
+class TestLocalizacaoBot(unittest.IsolatedAsyncioTestCase):
+    async def asyncSetUp(self):
+        from unittest import mock
+
+        import ponte
+        import telegram_bot
+
+        b = ponte.preparar(base.carregar_base(FIXTURE))
+        self.registro = b["registros_por_id"]["DOC-001"]
+        self.armazem = armazenamento.ArmazenamentoSQLite(":memory:")
+        self.bot, self.dp = telegram_bot.criar_bot({"TELEGRAM_BOT_TOKEN": TOKEN}, b,
+                                                  self.armazem, painel.LinksUnicos())
+        self.addAsyncCleanup(self.bot.session.close)
+        sessao = mock.patch.object(self.bot, "session", new_callable=mock.AsyncMock)
+        self.chamadas = sessao.start()
+        self.addCleanup(sessao.stop)
+        self.usuario = {"id": 42, "is_bot": False, "first_name": "Pessoa"}
+        self.chat = {"id": 42, "type": "private"}
+
+    async def _enviar(self, texto):
+        await self.dp.feed_raw_update(self.bot, {"update_id": 1, "message": {
+            "message_id": 10, "date": 0, "chat": self.chat, "from": self.usuario, "text": texto}})
+
+    async def _tocar(self, dados):
+        await self.dp.feed_raw_update(self.bot, {"update_id": 2, "callback_query": {
+            "id": "teste", "chat_instance": "42", "from": self.usuario, "data": dados,
+            "message": {"message_id": 11, "date": 1, "chat": self.chat}}})
+
+    def _botao_uf(self, uf):
+        from aiogram.methods import SendMessage
+
+        envios = [chamada.args[1] for chamada in self.chamadas.await_args_list
+                  if isinstance(chamada.args[1], SendMessage)]
+        menu = envios[-1].reply_markup
+        self.assertIsNotNone(menu)
+        botoes = {botao.text: botao.callback_data for linha in menu.inline_keyboard for botao in linha}
+        self.assertIn(uf, botoes)
+        return botoes[uf]
+
+    def _confirmacao(self):
+        from aiogram.methods import AnswerCallbackQuery, EditMessageText
+
+        edicao, resposta = [chamada.args[1] for chamada in self.chamadas.await_args_list[-2:]]
+        self.assertIsInstance(edicao, EditMessageText)
+        self.assertIsInstance(resposta, AnswerCallbackQuery)
+        return edicao.text
+
+    async def test_escolher_uf_no_assunto_salva_e_mostra_fonte_estadual(self):
+        await self._tocar("ab:DOC-001")
+        await self._tocar(self._botao_uf("SP"))
+        self.assertEqual(self.armazem.obter_uf(42), "SP")
+        texto = self._confirmacao()
+        self.assertIn("Estado salvo: SP", texto)
+        self.assertIn(self.registro["titulo"], texto)
+        self.assertIn('href="%s"' % self.registro["referencias_estaduais"]["SP"], texto)
+
+    async def test_escolher_uf_sem_fonte_estadual_mostra_fonte_nacional(self):
+        await self._enviar("Como tirar a segunda via do RG?")
+        await self._tocar(self._botao_uf("TO"))
+        self.assertEqual(self.armazem.obter_uf(42), "TO")
+        texto = self._confirmacao()
+        self.assertIn("fonte nacional", texto)
+        self.assertIn('href="%s"' % self.registro["referencia"], texto)
+
+    async def test_comando_localizacao_salva_uf_para_a_proxima_consulta(self):
+        await self._enviar("/localizacao")
+        self.assertEqual(self._botao_uf("SP"), "uf:SP")
+        await self._tocar("uf:SP")
+        self.assertEqual(self.armazem.obter_uf(42), "SP")
+        self.assertNotIn("href=", self._confirmacao())
+
+        self.chamadas.reset_mock()
+        await self._tocar("ab:DOC-001")
+        self.assertEqual(self.chamadas.await_count, 2)  # orientação e confirmação do toque
+        orientacao = self.chamadas.await_args_list[0].args[1].text
+        self.assertIn('href="%s"' % self.registro["referencias_estaduais"]["SP"], orientacao)
+
+
 class TestServidor(unittest.TestCase):
     def test_env_faltando_e_listado(self):
         self.assertEqual(servidor.faltando({}), ["TELEGRAM_BOT_TOKEN", "SESSAO_SEGREDO"])

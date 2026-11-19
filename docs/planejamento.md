@@ -13,7 +13,7 @@
 
 | Código | Situação | Evidência |
 |---|---|---|
-| A1–A11 | **Implementados** | Núcleo offline com busca, grafo, modelos A/B e avaliação. O README registra 259 testes automatizados passando no Windows com Python 3.12 e as dependências do servidor. |
+| A1–A11 | **Implementados** | Núcleo offline com busca, grafo, modelos A/B e avaliação. O README registra 262 testes automatizados passando no Windows com Python 3.12 e as dependências do servidor. |
 | E1–E2 | **Concluídos** | 17 orientações em 3 temas. Documentação revisada em 16/11. Serviços e Direitos revisados em 17/11. O DOC-001 tem referências para 10 UFs. |
 | B3, B11 e B12 | **Concluídos** | Modelo B escolhido por clareza (4,82 contra 3,61). No teste de usabilidade, o participante concluiu 5/5 tarefas sem ajuda e obteve SUS 92,5. A primeira medição independente teve 9/10 acertos no conjunto do público. Após os ajustes da base, a reavaliação das mesmas perguntas teve 29/29 no total. |
 | B4–B7 e voz de B10 | **Validação registrada** | Consultas por texto e voz, UF, roteamento e lembrete pelo chat foram testados no Telegram com o servidor local. |
@@ -68,7 +68,7 @@
 | A7 | Formatos de resposta A e B | §8 | 07/11/2026 | **Concluído.** Os formatos exibem a orientação, a fonte, a data e assuntos relacionados. O fluxo trata falta de base e ambiguidade. |
 | A8 | Terminal offline e opção `--simples` | §5.4, §6, §19 | 07–08/11/2026 | **Concluído.** O terminal permite consultar, navegar por temas e tratar entradas inválidas. A opção `--simples` oferece saída em texto puro. |
 | A9 | Avaliação com `python src/sistema.py --avaliar` | §8, §14.2 | 07/11/2026 · atualização em 18/11 | **Concluído.** Gera os CSVs de resultados e comparação de formatos. A reavaliação registrada no relatório obteve 29/29 nas mesmas perguntas. |
-| A10 | Testes automatizados do núcleo | §14.2 | 07/11/2026 · consolidação em 18/11 | **Concluído.** A suíte inclui testes de base, busca, terminal, respostas e avaliação. O README registra uma execução de 259 testes da suíte completa. |
+| A10 | Testes automatizados do núcleo | §14.2 | 07/11/2026 · consolidação em 18/11 | **Concluído.** A suíte inclui testes de base, busca, terminal, respostas e avaliação. A execução local de 19/11 passou com 262 testes da suíte completa. |
 | A11 | Script de verificação da idade das fontes | §7.1 | 07/11/2026 | **Concluído.** `scripts/verificacoes_antigas.py` lista os registros cuja data de verificação excede o limite configurado, de 90 dias por padrão. |
 
 ## 3. Integrante B (Flávia): Bot e roteador

@@ -100,6 +100,14 @@ def teclado(linhas):
         [InlineKeyboardButton(text=t, callback_data=c) for t, c in linha] for linha in linhas])
 
 
+def teclado_de_ufs(rid=None):
+    """Inclui o assunto nos botões quando a escolha de UF faz parte de uma orientação."""
+    ufs = armazenamento.UFS
+    sufixo = ":" + rid if rid else ""
+    return teclado([[(uf, "uf:" + uf + sufixo) for uf in ufs[i:i + 6]]
+                    for i in range(0, len(ufs), 6)])
+
+
 def botoes_assuntos(base, ids, voltar=False):
     """Um botão por assunto (callback 'ab:<id>'); o id nunca aparece para o usuário.
 
@@ -144,9 +152,11 @@ def criar_bot(config, base, armazem, links, cofre=None):
         if resultado["decisao"] == "SEM_BASE":
             markup = teclado([[(nome, "tema:" + tid)] for tid, nome in base["temas"].items()])
         await mensagem.answer(texto, reply_markup=markup)
-        registro = base["registros_por_id"].get(resultado.get("registro", ""), {})
+        rid = resultado.get("registro", "")
+        registro = base["registros_por_id"].get(rid, {})
         if registro.get("abrangencia") == "estadual" and not armazem.obter_uf(user_id):
-            await mensagem.answer("Para ver o link do seu estado, use /localizacao.")
+            await mensagem.answer("Escolha seu estado para ver a fonte oficial deste assunto.",
+                                  reply_markup=teclado_de_ufs(rid))
 
     def teclado_de_temas():
         return teclado([[(nome, "tema:" + tid)] for tid, nome in base["temas"].items()])
@@ -165,25 +175,34 @@ def criar_bot(config, base, armazem, links, cofre=None):
 
     @rota.message(Command("localizacao"))
     async def comando_localizacao(m: Message):
-        ufs = armazenamento.UFS
-        linhas = [[(uf, "uf:" + uf) for uf in ufs[i:i + 6]] for i in range(0, len(ufs), 6)]
         await m.answer("Qual é o seu estado (UF)? Uso só para mostrar o link certo.",
-                       reply_markup=teclado(linhas))
+                       reply_markup=teclado_de_ufs())
 
     @rota.callback_query(F.data.startswith("uf:"))
     async def escolheu_uf(c: CallbackQuery):
         ctx = contexto_do_botao(c)
         if ctx:
             mensagem, dados, user_id = ctx
+            uf, _, rid = dados[3:].partition(":")
             try:
-                armazem.definir_uf(user_id, dados[3:])
-                texto = "Estado salvo: %s. Você pode mudar quando quiser (/localizacao)." % dados[3:]
+                armazem.definir_uf(user_id, uf)
+            except ValueError:
+                await mensagem.answer(MSG_ERRO)
+            else:
+                uf = uf.upper()
+                texto = "Estado salvo: %s. Você pode mudar quando quiser (/localizacao)." % uf
+                registro = base["registros_por_id"].get(rid, {})
+                if registro.get("abrangencia") == "estadual":
+                    linhas = [texto, "", "<b>%s</b>" % html.escape(ponte.titulo_do(registro))]
+                    if uf not in registro.get("referencias_estaduais", {}):
+                        linhas.append("Para %s, consulte a fonte nacional. O procedimento pode variar por estado."
+                                      % uf)
+                    linhas.extend(ponte.formatar_fontes_telegram(registro, uf))
+                    texto = "\n".join(linhas)
                 try:  # troca o teclado de UFs pela confirmação, em vez de deixá-lo na tela
                     await mensagem.edit_text(texto)
                 except Exception:
                     await mensagem.answer(texto)
-            except ValueError:
-                await mensagem.answer(MSG_ERRO)
         await c.answer()
 
     # ---- Cofre no chat (spec §10.3): a senha NUNCA passa por aqui ----
